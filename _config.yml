@@ -3,7 +3,7 @@ description: >-
   A Ruby ecosystem for building LLM-powered applications —
   web agents, coding assistants, desktop apps, and automated workflows.
 url: "https://ask-rb.github.io"
-baseurl: ""
+baseurl: "/ask-docs"
 repository: ask-rb/ask-docs
 
 theme: just-the-docs
