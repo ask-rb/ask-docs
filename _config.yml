@@ -1,0 +1,56 @@
+title: ask-rb
+description: >-
+  A Ruby ecosystem for building LLM-powered applications —
+  web agents, coding assistants, desktop apps, and automated workflows.
+url: "https://ask-rb.github.io"
+baseurl: ""
+repository: ask-rb/ask-docs
+
+theme: just-the-docs
+
+aux_links:
+  "ask-rb on GitHub":
+    - "https://github.com/ask-rb"
+
+callouts:
+  highlight:
+    color: yellow
+  important:
+    title: Important
+    color: blue
+  new:
+    title: New
+    color: green
+  note:
+    title: Note
+    color: purple
+
+collections:
+  docs:
+    permalink: "/:collection/:path/"
+    output: true
+
+just_the_docs:
+  navigation:
+    - title: Home
+      url: /
+    - title: ask-core
+      url: /core
+    - title: ask-agent
+      url: /agent
+    - title: ask-tools
+      url: /tools
+    - title: Providers
+      url: /providers
+    - title: Design
+      url: /design
+
+plugins:
+  - jekyll-seo-tag
+  - jekyll-sitemap
+  - jekyll-github-metadata
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - README.md
