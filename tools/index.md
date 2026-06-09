@@ -128,3 +128,43 @@ end
 - **Source:** [github.com/ask-rb/ask-tools](https://github.com/ask-rb/ask-tools)
 - **Issues:** [github.com/ask-rb/ask-tools/issues](https://github.com/ask-rb/ask-tools/issues)
 - **Rubygems:** [rubygems.org/gems/ask-tools](https://rubygems.org/gems/ask-tools)
+
+---
+
+## ask-tools-shell
+
+**Shell, filesystem, and code execution tools.** Ships 7 tools every agent needs: Bash, Read, Write, Edit, Glob, Grep, and Code.
+
+```ruby
+gem "ask-tools-shell"
+```
+
+### Quick Start
+
+```ruby
+require "ask-tools-shell"
+
+Ask::Tools::Shell.all.map(&:name)
+# => ["bash", "read", "write", "edit", "glob", "grep", "code"]
+
+Ask::Tools::Bash.new.call(command: "echo hello")
+Ask::Tools::Read.new.call(path: "/etc/hosts")
+Ask::Tools::Code.new.call(code: "puts RUBY_VERSION")
+```
+
+### Available Tools
+
+| Tool | Params | Description |
+|------|--------|-------------|
+| **Bash** | `command` (req), `timeout`, `workdir` | Execute shell commands in a sandboxed temp dir. Returns stdout, stderr, exit_code, timed_out. Output truncated to 100KB |
+| **Read** | `path` (req), `offset`, `limit` | Read files with line numbers or list directories. Default limit 2000 lines |
+| **Write** | `path` (req), `content` (req) | Write to files, creating parent dirs automatically. Max 500KB |
+| **Edit** | `path` (req), `old_string` (req), `new_string` (req), `replace_all` | Replace exact text. Single replacement by default |
+| **Glob** | `pattern` (req), `path` | Find files matching glob. Max 1000 results, sorted newest first |
+| **Grep** | `pattern` (req), `path`, `include` | Regex search in files. Max 100 matches, 500 chars/line. Skips .git, node_modules, etc. |
+| **Code** | `code` (req) | Execute Ruby in a subprocess. Uses available gems, passes env through |
+
+### Links
+
+- **Source:** [github.com/ask-rb/ask-tools-shell](https://github.com/ask-rb/ask-tools-shell)
+- **Rubygems:** [rubygems.org/gems/ask-tools-shell](https://rubygems.org/gems/ask-tools-shell)
