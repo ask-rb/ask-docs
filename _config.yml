@@ -36,6 +36,8 @@ just_the_docs:
       url: /
     - title: ask-core
       url: /core
+    - title: ask-auth
+      url: /core/ask-auth
     - title: ask-agent
       url: /agent
     - title: ask-tools
