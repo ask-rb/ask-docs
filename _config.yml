@@ -38,6 +38,8 @@ just_the_docs:
       url: /core
     - title: ask-auth
       url: /core/ask-auth
+    - title: ask-llm-providers
+      url: /providers/ask-llm-providers
     - title: ask-slack
       url: /core/ask-slack
     - title: ask-notion
