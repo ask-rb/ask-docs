@@ -40,6 +40,8 @@ just_the_docs:
       url: /core/ask-auth
     - title: ask-slack
       url: /core/ask-slack
+    - title: ask-notion
+      url: /core/ask-notion
     - title: ask-agent
       url: /agent
     - title: ask-tools
