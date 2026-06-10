@@ -35,6 +35,7 @@ gem "ask-core"
 | [ask-linear](/core/ask-linear) | Linear — issue tracking |
 | [ask-notion](/core/ask-notion) | Notion — pages and databases |
 | [ask-slack](/core/ask-slack) | Slack — messaging and channels |
+| [ask-eval](/core/ask-eval) | LLM evaluation — Minitest-native assertions |
 | [ask-solid_errors](/core/ask-solid_errors) | SolidErrors — error tracking stored in your Rails database |
 
 ## Usage

@@ -47,7 +47,8 @@ just_the_docs:
     - title: ask-sentry
       url: /core/ask-sentry
     - title: ask-honeybadger
-      url: /core/ask-honeybadger
+    - title: ask-mcp
+      url: /core/ask-mcp      url: /core/ask-honeybadger
     - title: ask-agent
       url: /agent
     - title: ask-tools

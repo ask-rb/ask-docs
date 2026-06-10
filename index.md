@@ -55,4 +55,5 @@ gem "ask-agent"
 | `ask-mcp` | MCP client and server |
 | `ask-qdrant` | Qdrant vector store adapter |
 | `ask-rails` | Rails integration |
+| `ask-eval` | LLM evaluation — Minitest-native assertions for faithful, hallucination, bias, toxicity |
 | `ask-test` | VCR matchers and eval helpers |
