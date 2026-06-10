@@ -152,6 +152,36 @@ Ask::Tools::Read.new.call(path: "/etc/hosts")
 Ask::Tools::Code.new.call(code: "puts RUBY_VERSION")
 ```
 
+### Sandbox Configuration (v0.2.0+)
+
+Both `Bash` and `Code` tools use `Ask::Sandbox.provider` from the
+`ask-sandbox-providers` gem. By default, execution happens in a local
+subprocess with resource limits. To enable stronger isolation:
+
+```ruby
+require "ask-sandbox-providers"
+
+# Docker containers
+Ask::Sandbox.provider = Ask::Sandbox::Docker.new(
+  image: "ruby:3.4-alpine",
+  memory: "256m",
+  network: false
+)
+
+# Remote sandboxes via Daytona
+Ask::Sandbox.provider = Ask::Sandbox::Daytona.new(
+  api_key: ENV["DAYTONA_API_KEY"]
+)
+
+# Cloudflare Workers sandbox
+Ask::Sandbox.provider = Ask::Sandbox::Cloudflare.new(
+  worker_url: "https://sandbox-proxy.my-worker.workers.dev"
+)
+```
+
+When a command times out, `Bash` and `Code` return `Ask::Result.error` instead
+of `Ask::Result.ok`.
+
 ### Available Tools
 
 | Tool | Params | Description |
