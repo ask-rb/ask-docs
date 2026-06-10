@@ -24,6 +24,18 @@ gem "ask-core"
 | `Ask::Result` | Standardized tool return value |
 | `Ask::Error` | Structured error types (18 classes) |
 
+## Service Context Gems
+
+| Gem | Purpose |
+|---|---|
+| [ask-auth](/core/ask-auth) | Credential resolution chain |
+| [ask-github](/core/ask-github) | GitHub API — issues, PRs, repos |
+| [ask-sentry](/core/ask-sentry) | Sentry — error tracking via the Sentry API |
+| [ask-honeybadger](/core/ask-honeybadger) | Honeybadger — error tracking via the Honeybadger API |
+| [ask-linear](/core/ask-linear) | Linear — issue tracking |
+| [ask-notion](/core/ask-notion) | Notion — pages and databases |
+| [ask-slack](/core/ask-slack) | Slack — messaging and channels |
+
 ## Usage
 
 ### Provider

@@ -45,6 +45,7 @@ gem "ask-agent"
 |---|---|
 | `ask-core` | Foundation: conversation, streaming, provider interface, auth |
 | `ask-schema` | JSON Schema DSL (zero deps) |
+| `ask-sentry` | Sentry — error tracking via the Sentry API |
 | `ask-openai` | OpenAI + OpenAI-compatible providers |
 | `ask-anthropic` | Anthropic Claude |
 | `ask-google` | Google Gemini + Vertex AI |

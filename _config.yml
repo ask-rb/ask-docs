@@ -44,6 +44,10 @@ just_the_docs:
       url: /core/ask-slack
     - title: ask-notion
       url: /core/ask-notion
+    - title: ask-sentry
+      url: /core/ask-sentry
+    - title: ask-honeybadger
+      url: /core/ask-honeybadger
     - title: ask-agent
       url: /agent
     - title: ask-tools
