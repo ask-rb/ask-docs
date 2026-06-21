@@ -1,19 +1,18 @@
 ---
 layout: home
 title: ask-rb
-nav_exclude: true
+nav_order: 0
 ---
 
 # 🌀 ask-rb
 
 **A Ruby ecosystem for building with LLMs.**
 
-`ask-rb` is a suite of Ruby gems for building any kind of LLM-powered application — coding assistants, chatbots, batch
-processors, desktop apps, RAG pipelines, and automated workflows.
+`ask-rb` is a suite of Ruby gems for building any kind of LLM-powered application — coding assistants, chatbots, batch processors, desktop apps, RAG pipelines, and automated workflows.
 
 ```ruby
 gem "ask-core"
-gem "ask-openai"
+gem "ask-llm-providers"
 gem "ask-tools"
 gem "ask-agent"
 ```
@@ -22,11 +21,13 @@ gem "ask-agent"
 
 | Section | What's covered |
 |---|---|
-| [ask-core](/core) | Conversation, streaming, provider interface, auth |
-| [ask-agent](/agent) | Agent loop, sessions, extensions, guardrails |
-| [ask-tools](/tools) | Bash, read, write, edit, glob, grep |
-| [Providers](/providers) | OpenAI, Anthropic, Google, Ollama setup |
-| [Design](/design) | Architecture, philosophy, design decisions |
+| [Getting Started](/getting-started) | Your first agent, Rails integration, core concepts |
+| [Core Components](/core) | LLM providers, tools, sandboxes, agent loop, skills, schema, auth |
+| [Rails Integration](/rails) | Setup, database tools, persistence, error services |
+| [Service Contexts](/services) | GitHub, Slack, Notion, Linear, Sentry, Honeybadger |
+| [Production](/production) | Observability, monitoring, tracing, evaluation |
+| [Extending](/extending) | Custom tools, providers, agents, services, skills |
+| [Reference](/reference) | Gem index, API docs, design philosophy |
 
 ## Design philosophy
 
@@ -39,21 +40,6 @@ gem "ask-agent"
 7. **Extensions are first-class.** Third-party code can hook into every lifecycle event.
 8. **No required database.** In-memory is the default. ActiveRecord is an optional adapter.
 
-## The gems
+## Ready to build?
 
-| Gem | Purpose |
-|---|---|
-| `ask-core` | Foundation: conversation, streaming, provider interface, auth |
-| `ask-schema` | JSON Schema DSL (zero deps) |
-| `ask-sentry` | Sentry — error tracking via the Sentry API |
-| `ask-openai` | OpenAI + OpenAI-compatible providers |
-| `ask-anthropic` | Anthropic Claude |
-| `ask-google` | Google Gemini + Vertex AI |
-| `ask-ollama` | Local models |
-| `ask-tools` | Built-in tool implementations |
-| `ask-agent` | Agent loop, sessions, extensions, telemetry |
-| `ask-mcp` | MCP client and server |
-| `ask-qdrant` | Qdrant vector store adapter |
-| `ask-rails` | Rails integration |
-| `ask-eval` | LLM evaluation — Minitest-native assertions for faithful, hallucination, bias, toxicity |
-| `ask-test` | VCR matchers and eval helpers |
+Jump to [Getting Started](/getting-started/first-agent) and have an agent running in 5 minutes.

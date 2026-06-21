@@ -25,39 +25,14 @@ callouts:
     title: Note
     color: purple
 
-collections:
-  docs:
-    permalink: "/:collection/:path/"
-    output: true
 
 just_the_docs:
-  navigation:
-    - title: Home
-      url: /
-    - title: ask-core
-      url: /core
-    - title: ask-auth
-      url: /core/ask-auth
-    - title: ask-llm-providers
-      url: /providers/ask-llm-providers
-    - title: ask-slack
-      url: /core/ask-slack
-    - title: ask-notion
-      url: /core/ask-notion
-    - title: ask-sentry
-      url: /core/ask-sentry
-    - title: ask-honeybadger
-    - title: ask-mcp
-      url: /core/ask-mcp      url: /core/ask-honeybadger
-    - title: ask-agent
-      url: /agent
-    - title: ask-tools
-      url: /tools
-    - title: Providers
-      url: /providers
-    - title: Design
-      url: /design
-
+  nav_sort: case_sensitive
+sass:
+  quiet_deps: true
+  silence_deprecations:
+    - color-functions
+    - import
 plugins:
   - jekyll-seo-tag
   - jekyll-sitemap
