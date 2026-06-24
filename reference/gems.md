@@ -30,6 +30,7 @@ The complete ask-rb ecosystem. All gems are independently versioned and released
 |---|---|---|---|
 | **ask-tools** | 0.2.1 | None | Tool framework: Ask::Tool base class, Ask::Result, registry and discovery |
 | **ask-tools-shell** | 0.3.0 | ask-tools, ask-sandbox-providers | Shell and filesystem tools: Bash, Read, Write, Edit, Glob, Grep, Code |
+| **ask-web-search** | 0.2.0 | ask-tools | Web search via SearXNG — Ask::Tools::WebSearch tool |
 
 ## Agent
 
@@ -108,6 +109,8 @@ ask-eval           ──► (no deps)
   ├── ask-tools-shell  ──► ask-tools, ask-sandbox-providers
   │     └── ask-agent  ──► ask-core, ask-llm-providers, ask-tools, ask-skills
   │           └── ask-rails  ──► ask-agent, ask-tools-shell, ask-auth
+  │
+  ├── ask-web-search   ──► ask-tools
   │
   └── ask-mcp          ──► (no ask deps)
 ```

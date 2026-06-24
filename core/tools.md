@@ -188,3 +188,105 @@ of `Ask::Result.ok`.
 
 - **Source:** [github.com/ask-rb/ask-tools-shell](https://github.com/ask-rb/ask-tools-shell)
 - **Rubygems:** [rubygems.org/gems/ask-tools-shell](https://rubygems.org/gems/ask-tools-shell)
+
+---
+
+## ask-web-search
+
+**Web search tool powered by SearXNG.** Provides a single tool — `Ask::Tools::WebSearch` — that searches the web via a local SearXNG instance and returns formatted results for LLM consumption.
+
+```ruby
+gem "ask-web-search"
+```
+
+### Quick Start
+
+```ruby
+require "ask/web_search"
+
+tool = Ask::Tools::WebSearch.new
+result = tool.execute(query: "ruby programming language")
+puts result
+# => 1. Ruby — A Programmer's Best Friend
+#     https://www.ruby-lang.org
+#     Ruby is a dynamic, open-source programming language...
+```
+
+### Configuration
+
+Point to your SearXNG instance via the `SEARXNG_URL` environment variable:
+
+```sh
+export SEARXNG_URL=http://localhost:8888
+```
+
+Defaults to `http://localhost:8888`.
+
+Start SearXNG with Docker:
+
+```sh
+docker run -d --name searxng -p 8888:8080 searxng/searxng
+```
+
+### Usage with Chat
+
+```ruby
+chat = Ask::Agent::Chat.new(
+  model: "deepseek-v4-flash",
+  tools: [Ask::Tools::WebSearch.new]
+)
+
+chat.ask("What is the population of Tokyo? Search the web.")
+```
+
+### Usage with Agent
+
+```ruby
+agent = Ask::Agent.new(tools: [Ask::Tools::WebSearch])
+agent.run("Find recent news about Mars exploration.")
+```
+
+### Available Tools
+
+| Tool | Params | Description |
+|------|--------|-------------|
+| **WebSearch** | `query` (req) | Searches the web via SearXNG. Returns numbered results with title, URL, and content. Includes infobox results. Deduplicates by URL |
+
+### API
+
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `execute(query:)` | `String` | Searches the web and returns formatted results, or `"No results found."` |
+
+### Output Format
+
+Results are returned as a numbered markdown-like string:
+
+```
+1. Ruby — A Programmer's Best Friend
+   https://www.ruby-lang.org
+   Ruby is a dynamic, open-source programming language...
+
+2. Ruby on Rails
+   https://rubyonrails.org
+   Rails is a web application framework...
+```
+
+### Development
+
+```bash
+bundle install
+bundle exec rake test    # 12 tests, 25 assertions
+```
+
+Requires a running SearXNG instance for the integration test.
+
+### Dependencies
+
+- **Runtime:** `ask-tools >= 0.1`
+- **Zero of our own runtime deps** — clean dependency tree
+
+### Links
+
+- **Source:** [github.com/ask-rb/ask-web-search](https://github.com/ask-rb/ask-web-search)
+- **Rubygems:** [rubygems.org/gems/ask-web-search](https://rubygems.org/gems/ask-web-search)
