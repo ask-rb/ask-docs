@@ -9,78 +9,85 @@ nav_order: 1
 
 The complete ask-rb ecosystem. All gems are independently versioned and released on RubyGems.
 
+
 ## Foundation
+
+These gems have zero dependencies on other ask-rb gems. They form the bedrock of the ecosystem.
 
 | Gem | Version | Dependencies | Purpose |
 |---|---|---|---|
-| **ask-core** | 0.2.0 | None | Foundation: Conversation, Provider interface, Streaming, ModelCatalog, Error types |
-| **ask-schema** | 0.1.0 | None | JSON Schema DSL — zero dependencies |
-| **ask-auth** | 0.1.0 | base64 | Credential resolution chain (env → file → Rails → DB → OAuth) |
-| **ask-sandbox-providers** | 0.1.1 | None | Sandboxed execution: Local, Docker, Daytona, Cloudflare |
+| **[ask-core](https://github.com/ask-rb/ask-core)** | 0.2.0 | None | Defines the core abstractions every LLM application needs — conversation message containers that normalize roles, a streaming primitives for token-by-token responses, a provider interface that all LLM backends implement, and a model catalog that maps model names to their providers. Ships structured error types so errors bubble up cleanly. |
+| **[ask-schema](https://github.com/ask-rb/ask-schema)** | 0.1.0 | None | A Ruby DSL for building JSON Schema hashes without writing raw hashes. Declare object shapes with `param`, `required`, and type constraints the same way you would in a Rails strong parameters block. Designed for LLM function-calling schemas. |
+| **[ask-auth](https://github.com/ask-rb/ask-auth)** | 0.1.0 | base64 | A credential resolution chain that walks configured providers in order — environment variables, config files, Rails credentials, database-backed tokens, and OAuth flows — and returns the first match. Every service gem in the ecosystem calls `Ask::Auth.resolve(:service_token)` instead of reading env vars directly. |
+| **[ask-sandbox-providers](https://github.com/ask-rb/ask-sandbox-providers)** | 0.1.1 | None | Four sandbox backends for safely executing untrusted code: Local process with resource limits (rlimits), Docker containers with read-only rootfs and no network, remote containers via the Daytona API, and Cloudflare Workers sandbox. Swap backends with a single assignment — `Ask::Sandbox.provider = Ask::Sandbox::Docker.new(...)`. |
 
 ## LLM Providers
 
 | Gem | Version | Dependencies | Purpose |
 |---|---|---|---|
-| **ask-llm-providers** | 0.2.1 | ask-core, ask-auth | All LLM providers in one gem (OpenAI, Anthropic, Google, Bedrock, Ollama, Mistral, Cloudflare) |
+| **[ask-llm-providers](https://github.com/ask-rb/ask-llm-providers)** | 0.2.1 | ask-core, ask-auth | Every LLM provider in a single gem. Ships concrete implementations of `Ask::Provider` for OpenAI (and compatible APIs), Anthropic, Google Gemini (both AI Studio and Vertex AI), AWS Bedrock, Ollama, Mistral AI, and Cloudflare Workers AI. Handles authentication, request serialization, streaming, and error normalization for each wire format. |
 
 ## Tools
 
+These gems implement the `Ask::Tool` contract. Each tool is a standalone unit an agent can call.
+
 | Gem | Version | Dependencies | Purpose |
 |---|---|---|---|
-| **ask-tools** | 0.2.1 | None | Tool framework: Ask::Tool base class, Ask::Result, registry and discovery |
-| **ask-tools-shell** | 0.3.0 | ask-tools, ask-sandbox-providers | Shell and filesystem tools: Bash, Read, Write, Edit, Glob, Grep, Code |
-| **ask-web-search** | 0.2.0 | ask-tools | Web search via SearXNG — Ask::Tools::WebSearch tool |
+| **[ask-tools](https://github.com/ask-rb/ask-tools)** | 0.2.1 | ask-schema | The tool framework itself. Defines `Ask::Tool` — the base class every tool inherits from — along with `Ask::Result` (a standardized success/error return type), a thread-safe registry for discovering and looking up tools by name, and a scaffold generator for writing new tools. This gem ships no executable tools; it only provides the contract. |
+| **[ask-tools-shell](https://github.com/ask-rb/ask-tools-shell)** | 0.3.0 | ask-tools, ask-sandbox-providers | Seven execution tools every agent needs: `Bash` for shell commands in a sandboxed temp directory, `Read` for reading files with line numbers, `Write` for creating files with automatic parent directory creation, `Edit` for surgical string replacements, `Glob` for pattern-matching filenames, `Grep` for regex search across files (skipping `.git` and `node_modules`), and `Code` for executing Ruby in a sandboxed subprocess. Output is truncated at 100KB and timeouts are surfaced as errors. |
+| **[ask-web-search](https://github.com/ask-rb/ask-web-search)** | 0.2.0 | ask-tools | A single `Ask::Tools::WebSearch` tool that queries a local SearXNG instance and formats results as a numbered markdown-like string with title, URL, and content snippet. Deduplicates by URL and includes infobox results. Configure the endpoint with the `SEARXNG_URL` environment variable — defaults to `http://localhost:8888`. |
 
 ## Agent
 
 | Gem | Version | Dependencies | Purpose |
 |---|---|---|---|
-| **ask-agent** | 0.2.0 | ask-core, ask-llm-providers, ask-tools, ask-skills | Agent loop: Session, Loop, ToolExecutor, Compactor, Hooks, Events |
+| **[ask-agent](https://github.com/ask-rb/ask-agent)** | 0.2.0 | ask-core, ask-llm-providers, ask-tools, ask-skills | The core agent loop — think, call tools, execute, feed results back, repeat. Manages sessions (conversation state with an LLM), tool execution (resolving tool names to calls, passing results back as messages), conversation compaction (trimming history while preserving context), lifecycle hooks, and event emission. Ported from `RubyLLM::Conductor` into the `Ask::Agent` namespace. |
 
 ## Rails
 
 | Gem | Version | Dependencies | Purpose |
 |---|---|---|---|
-| **ask-rails** | 0.2.4 | ask-agent, ask-tools-shell, ask-auth, rails >= 7.1 | Rails integration: generators, persistence, database tools, service discovery |
+| **[ask-rails](https://github.com/ask-rb/ask-rails)** | 0.2.4 | ask-agent, ask-tools-shell, ask-auth, rails >= 7.1 | Rails integration that wires the full ask-rb stack into your application. Ships a Railtie for auto-loading gems, ActiveRecord-backed session persistence, database query and schema inspection tools, a generator for the initializer and migration, and automatic discovery of installed service gems so agents know what integrations are available. |
 
 ## MCP
 
 | Gem | Version | Dependencies | Purpose |
 |---|---|---|---|
-| **ask-mcp** | 0.1.0 | httpx, json-schema | MCP client — stdio, SSE, Streamable HTTP, OAuth 2.1 |
+| **[ask-mcp](https://github.com/ask-rb/ask-mcp)** | 0.1.0 | httpx, json-schema | A full Model Context Protocol client for Ruby. Connect to MCP servers via stdio (subprocess), SSE (Server-Sent Events), or Streamable HTTP. Discover tools, resources, and prompts from any MCP server — the same protocol used by Claude Code, Codex, Cursor, and GitHub Copilot. Supports OAuth 2.1 authentication. |
 
 ## Instrumentation & Observability
 
 | Gem | Version | Dependencies | Purpose |
 |---|---|---|---|
-| **ask-instrumentation** | 0.2.0 | activesupport | ActiveSupport::Notifications events for LLM operations |
-| **ask-opentelemetry** | 0.1.0 | ask-instrumentation, opentelemetry-api | OpenTelemetry tracing for LLM operations |
-| **ask-monitoring** | 0.1.0 | ask-instrumentation, rails | Rails engine dashboard for LLM usage monitoring |
+| **[ask-instrumentation](https://github.com/ask-rb/ask-instrumentation)** | 0.2.0 | activesupport | Emits `ActiveSupport::Notifications` events for every LLM operation — chat completions, embeddings, tool calls, and image generation. Works with any provider. Subscribe to events for cost tracking, custom logging, analytics dashboards, or alerting. The foundation that all other observability gems build on. |
+| **[ask-opentelemetry](https://github.com/ask-rb/ask-opentelemetry)** | 0.1.0 | ask-instrumentation, opentelemetry-api | Subscribes to `ask-instrumentation` events and creates OpenTelemetry spans for every LLM operation. Works with any OpenTelemetry-compatible backend — Langfuse, Datadog, Honeycomb, Jaeger, Arize Phoenix, and more. Install and call `Ask::OpenTelemetry.install` to start tracing. |
+| **[ask-monitoring](https://github.com/ask-rb/ask-monitoring)** | 0.1.0 | ask-instrumentation, rails | A Rails engine that provides a real-time monitoring dashboard at `/ask/monitoring`. Tracks cost, throughput, error rates, and response times for all LLM calls. Uses Hotwire Turbo to auto-refresh every 30 seconds. Ships Slack alert integration so your team gets notified when error rates spike. |
 
 ## Service Contexts
 
+Service gems provide an authenticated client and contextual metadata so agents can interact with third-party APIs by writing Ruby code, not by learning raw HTTP.
+
 | Gem | Version | Dependencies | Purpose |
 |---|---|---|---|
-| **ask-github** | 0.1.2 | ask-auth, octokit | GitHub API — issues, PRs, repos, search |
-| **ask-slack** | 0.1.2 | ask-auth, slack-ruby-client | Slack API — messaging, channels, files |
-| **ask-notion** | 0.1.1 | ask-auth, notion-ruby-client | Notion API — pages, databases, search |
-| **ask-linear** | 0.1.1 | ask-auth, faraday | Linear API — issues, project management |
-| **ask-sentry** | 0.1.1 | ask-core, ask-auth, faraday | Sentry error tracking API |
-| **ask-honeybadger** | 0.1.1 | ask-core, ask-auth, faraday | Honeybadger error tracking API |
-| **ask-solid_errors** | 0.1.1 | ask-core | Database-backed error tracking (via solid_errors) |
+| **[ask-github](https://github.com/ask-rb/ask-github)** | 0.1.2 | ask-auth, octokit | Provides an authenticated Octokit client, system prompt context describing the GitHub API surface, and a structured error guide that helps agents diagnose and recover from common GitHub API errors. Manage issues, pull requests, repositories, and code search. |
+| **[ask-slack](https://github.com/ask-rb/ask-slack)** | 0.1.2 | ask-auth, slack-ruby-client | An authenticated Slack Web API client with system prompt context and error knowledge. Post messages to channels, list conversations, manage users, upload files, and search message history. |
+| **[ask-notion](https://github.com/ask-rb/ask-notion)** | 0.1.1 | ask-auth, notion-ruby-client | An authenticated Notion API client using the `notion-ruby-client` gem. Query databases, retrieve and create pages, search workspaces, and update page properties. Includes structured error knowledge for common Notion API errors. |
+| **[ask-linear](https://github.com/ask-rb/ask-linear)** | 0.1.1 | ask-auth, faraday | An authenticated GraphQL client for the Linear API. List teams, create and update issues, query projects and cycles. Ships system prompt metadata and a structured error guide for the Linear API, all resolved via `ask-auth`. |
+| **[ask-sentry](https://github.com/ask-rb/ask-sentry)** | 0.1.1 | ask-core, ask-auth, faraday | A client for the Sentry error tracking API. List and inspect errors, project configuration, release tracking, and performance monitoring — all authenticated through `ask-auth`. |
+| **[ask-honeybadger](https://github.com/ask-rb/ask-honeybadger)** | 0.1.1 | ask-core, ask-auth, faraday | A client for the Honeybadger error tracking API. List recent faults, get fault summaries, inspect individual faults, and list projects. Authenticated through the shared credential resolution chain. |
+| **[ask-solid_errors](https://github.com/ask-rb/ask-solid_errors)** | 0.1.1 | ask-core | Accesses errors stored in your Rails database via the `solid_errors` gem. Query recent errors, inspect error details, and analyze error patterns — no API key needed since it reads directly from your database. |
 
 ## Skills
 
 | Gem | Version | Dependencies | Purpose |
 |---|---|---|---|
-| **ask-skills** | 0.2.1 | None | Skill discovery and management — ships built-in skills (design, compose) |
+| **[ask-skills](https://github.com/ask-rb/ask-skills)** | 0.2.1 | None | A skill discovery and loading system for agents. Searches project directories, user config paths, and installed gems for markdown skill files. Skills are listed in the agent's system prompt by name and description, then loaded on-demand when the agent decides it needs domain guidance. Ships built-in skills for codebase exploration and debugging methodology. |
 
 ## Evaluation
 
 | Gem | Version | Dependencies | Purpose |
 |---|---|---|---|
-| **ask-eval** | 0.1.0 | None | LLM evaluation — Minitest-native assertions (faithful, hallucination, bias, toxicity) |
+| **[ask-eval](https://github.com/ask-rb/ask-eval)** | 0.1.0 | None | An LLM evaluation framework built on Minitest. Ships Minitest-native assertions — `assert_faithful` for verifying responses stay true to provided context, `assert_not_hallucinating` for detecting fabricated information, plus bias and toxicity checks. Uses LLM-as-judge for the semantic checks and deterministic assertions for basic checks. Outputs CI-native test results. |
 
 ## Dependency Graph
 
