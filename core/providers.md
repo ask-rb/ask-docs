@@ -13,10 +13,83 @@ nav_order: 1
 gem "ask-llm-providers"
 ```
 
+## Model Catalog
+
+The gem ships a model catalog that loads known model data into `Ask::ModelCatalog` on startup. Call `load!` once during application boot:
 
 ```ruby
-gem "ask-llm-providers"
+require "ask-llm-providers"
+Ask::LLM::Catalog.load!
+
+# Models are now available through Ask::ModelCatalog
+Ask::ModelCatalog.find("gpt-4o")
+Ask::ModelCatalog.find("claude-sonnet-4-6")
 ```
+
+### Bundled model definitions
+
+Models are defined in JSON files under `lib/ask/llm/models/`. Each file represents a provider's models:
+
+```json
+{
+  "id": "gpt-4o",
+  "name": "GPT-4o",
+  "provider": "openai",
+  "family": "gpt",
+  "context_window": 128000,
+  "max_output_tokens": 16384,
+  "capabilities": ["function_calling", "structured_output", "vision"],
+  "modalities": {
+    "input": ["text", "image"],
+    "output": ["text"]
+  },
+  "pricing": {
+    "input_per_million": 2.5,
+    "output_per_million": 10.0
+  }
+}
+```
+
+### Alias resolution
+
+Short or familiar names are resolved to canonical model IDs automatically:
+
+```ruby
+Ask::LLM::Aliases.resolve("claude-sonnet-4")
+# => "claude-sonnet-4-6"
+
+# Aliases are also registered in the catalog, so ModelCatalog.find works directly:
+Ask::ModelCatalog.find("deepseek-v4")
+# => returns the ModelInfo for deepseek-v4-flash
+```
+
+### User overrides
+
+Place a JSON array at `~/.ask-llm-providers/models.json` to override bundled model data:
+
+```json
+[
+  {
+    "id": "gpt-4o",
+    "pricing": {
+      "input_per_million": 1.0,
+      "output_per_million": 5.0
+    }
+  }
+]
+```
+
+Overrides merge by `(id, provider)` key — user values win on conflict.
+
+### API refresh
+
+To fetch the latest model lists from provider APIs:
+
+```ruby
+Ask::LLM::Catalog.refresh!
+```
+
+This calls `list_models()` on every configured provider and adds any unknown models with minimal metadata.
 
 ## Supported Providers
 

@@ -25,7 +25,7 @@ These gems have zero dependencies on other ask-rb gems. They form the bedrock of
 
 | Gem | Purpose |
 |---|---|
-| **[ask-llm-providers](https://github.com/ask-rb/ask-llm-providers)** | Every LLM provider in a single gem. Ships concrete implementations of `Ask::Provider` for OpenAI (and compatible APIs), Anthropic, Google Gemini (both AI Studio and Vertex AI), AWS Bedrock, Ollama, Mistral AI, and Cloudflare Workers AI. Handles authentication, request serialization, streaming, and error normalization for each wire format. |
+| **[ask-llm-providers](https://github.com/ask-rb/ask-llm-providers)** | Every LLM provider in a single gem. Ships concrete implementations of `Ask::Provider` for OpenAI (and compatible APIs), Anthropic, Google Gemini (both AI Studio and Vertex AI), AWS Bedrock, Ollama, Mistral AI, and Cloudflare Workers AI. Handles authentication, request serialization, streaming, and error normalization for each wire format. Also ships bundled model definitions, alias resolution, and the `Ask::LLM::Catalog` loader that populates the model catalog on startup. |
 
 ## Tools
 

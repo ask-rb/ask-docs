@@ -2,9 +2,6 @@
 layout: default
 title: Foundation (ask-core)
 parent: Core Components
-nav_order: 8
----
-
 nav_order: 2
 ---
 
@@ -68,6 +65,64 @@ Ask::Auth::CredentialStore.new(path: "...")    # file-backed with 0600
 Ask::RoleMap.normalize("developer")  # => "system"
 Ask::RoleMap.normalize("ai")         # => "assistant"
 ```
+
+### Model Catalog
+
+A process-wide singleton registry of known LLM models. Each entry is an immutable `Ask::ModelInfo` value object.
+
+```ruby
+# Find a model by ID (provider preference resolves ambiguity)
+model = Ask::ModelCatalog.find("gpt-4o")
+model.provider         # => "openai"
+model.context_window   # => 128000
+model.max_output_tokens # => 16384
+model.supports?(:vision) # => true
+model.capabilities     # => ["function_calling", "structured_output", "vision"]
+
+# Filter by capability
+Ask::ModelCatalog.chat_models          # models that support chat
+Ask::ModelCatalog.embedding_models     # models that support embeddings
+Ask::ModelCatalog.audio_models         # models with audio output
+Ask::ModelCatalog.image_models         # models with image output
+
+# Filter by metadata
+Ask::ModelCatalog.by_provider("openai")
+Ask::ModelCatalog.by_family("gpt")
+
+# Refresh from models.dev API
+Ask::ModelCatalog.refresh!
+```
+
+Models are loaded into the catalog by `Ask::LLM::Catalog.load!` (from ask-llm-providers) or registered individually:
+
+```ruby
+model = Ask::ModelInfo.new(
+  id: "my-model",
+  provider: "local",
+  context_window: 4096,
+  max_output_tokens: 1024,
+  capabilities: ["chat"]
+)
+Ask::ModelCatalog.instance.register(model)
+```
+
+### ModelInfo
+
+Immutable value object for model metadata.
+
+| Attribute | Type | Description |
+|---|---|---|
+| `id` | String | Model identifier (e.g. `"gpt-4o"`) |
+| `name` | String | Human-readable name |
+| `provider` | String | Provider slug (e.g. `"openai"`) |
+| `family` | String, nil | Model family (e.g. `"gpt"`, `"claude"`) |
+| `capabilities` | Array<String> | Capability flags |
+| `context_window` | Integer, nil | Max context window in tokens |
+| `max_output_tokens` | Integer, nil | Max output tokens |
+| `modalities` | Hash | Input/output modality lists |
+| `pricing` | Hash | Cost per token |
+| `knowledge_cutoff` | Date, nil | Training data cutoff |
+| `created_at` | Date, nil | Release date |
 
 ## Exports
 
