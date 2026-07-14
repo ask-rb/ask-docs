@@ -15,13 +15,12 @@ gem "ask-llm-providers"
 
 ## Model Catalog
 
-The gem ships a model catalog that loads known model data into `Ask::ModelCatalog` on startup. Call `load!` once during application boot:
+The gem automatically populates `Ask::ModelCatalog` when loaded. No manual setup needed:
 
 ```ruby
 require "ask-llm-providers"
-Ask::LLM::Catalog.load!
 
-# Models are now available through Ask::ModelCatalog
+# Models are immediately available through Ask::ModelCatalog
 Ask::ModelCatalog.find("gpt-4o")
 Ask::ModelCatalog.find("claude-sonnet-4-6")
 ```
