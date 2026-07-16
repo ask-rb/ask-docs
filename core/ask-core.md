@@ -124,6 +124,50 @@ Immutable value object for model metadata.
 | `knowledge_cutoff` | Date, nil | Training data cutoff |
 | `created_at` | Date, nil | Release date |
 
+### Error Types
+
+Structured errors with actionable metadata. `RateLimitError` carries category, type, and retry-after for intelligent handling:
+
+```ruby
+rescue Ask::RateLimitError => e
+  e.category        # => :vendor (upstream provider) or :local (ask-rb)
+  e.rate_limit_type # => :requests, :tokens, :concurrent, or :budget
+  e.retry_after     # => seconds to wait before retrying (from provider headers)
+  
+  if e.category == :vendor && e.retry_after
+    sleep e.retry_after
+    retry
+  end
+end
+```
+
+| Error | When |
+|---|---|
+| `Ask::RateLimitError` | 429 — carries `category`, `rate_limit_type`, `retry_after` |
+| `Ask::Unauthorized` | 401/403 — API key missing or invalid |
+| `Ask::ServerError` | 5xx — provider outage |
+| `Ask::ServiceUnavailable` | 503 — temporary downtime |
+| `Ask::ContextLengthExceeded` | Context window exceeded |
+| `Ask::ProviderError` | Other provider API errors (carries `status_code`, `response_body`) |
+
+### CostCalculator
+
+`Ask::LLM::CostCalculator` computes API costs from model pricing data. Supports text and audio tokens, cache read/write, reasoning tokens, and batch tier pricing:
+
+```ruby
+cost = Ask::LLM::CostCalculator.calculate(model,
+  input_tokens: 1000, output_tokens: 500,
+  cache_read_tokens: 2000, reasoning_tokens: 200,
+  tier: :batch)
+
+Ask::LLM::CostCalculator.per_million(model)
+# => { input: 2.5, output: 10.0, cache_read: 1.25, ... }
+```
+
+### Model pricing data
+
+The gem ships **406 models across 12 providers** with pricing data sourced from models.dev and OpenRouter. Run `rake models:update` to refresh before releasing.
+
 ## Exports
 
 `Conversation`, `Stream`, `Chunk`, `Response`, `Provider`, `ToolDef`, `ToolCall`, `Auth`, `Auth::OAuth`,

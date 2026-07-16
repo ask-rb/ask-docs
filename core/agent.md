@@ -44,6 +44,50 @@ response = session.run("List the current directory")
 puts response
 ```
 
+## Cost & Token Tracking
+
+Every session tracks cumulative token usage and cost:
+
+```ruby
+session.run("Write a poem")
+session.total_input_tokens   # => 150
+session.total_output_tokens  # => 320
+session.total_cost           # => 0.0015
+```
+
+Turn and session events carry the same data:
+
+```ruby
+session.on(Ask::Agent::Events::TurnEnd) do |event|
+  puts "Turn #{event.turn_number}: #{event.input_tokens} in / #{event.output_tokens} out / $#{event.cost}"
+end
+
+session.on(Ask::Agent::Events::SessionEnd) do |event|
+  puts "Session total: #{event.input_tokens} in / #{event.output_tokens} out / $#{event.cost}"
+end
+```
+
+## Instrumentation
+
+The agent emits `ActiveSupport::Notifications` events via `ask-instrumentation`:
+
+- `chat.ask` — on each completion (model, provider, tokens, cost)
+- `chat.stream.ask` — on each streaming completion
+
+Subscribe from anywhere in your app:
+
+```ruby
+Ask::Instrumentation.subscribe("chat.ask") do |event|
+  Rails.logger.info "LLM call: #{event.payload[:model]} cost=$#{event.payload[:cost]}"
+end
+```
+
+The `ask-monitoring` Rails engine hooks into these automatically for its dashboard.
+
+## Rate-Limit Handling
+
+When a provider returns `RateLimitError`, the agent retries up to 3 times with exponential backoff. If the provider includes a `Retry-After` header, that value is used instead. No configuration needed.
+
 ## Events
 
 ```ruby
@@ -52,8 +96,7 @@ session.on_event do |event|
   when Ask::Agent::Events::TextDelta
     print event.content
   when Ask::Agent::Events::ToolExecutionStart
-    puts "
-Running #{event.name}..."
+    puts "Running #{event.name}..."
   end
 end
 ```
