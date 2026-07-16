@@ -7,90 +7,51 @@ nav_order: 1
 
 # LLM Providers
 
-**All LLM providers for the ask-rb ecosystem.** One gem containing OpenAI, Anthropic, Google Gemini, Amazon Bedrock, Ollama, Mistral AI, and Cloudflare Workers AI.
+**All LLM providers for the ask-rb ecosystem.** A single gem containing every provider — each with its own wire format, auth, and capabilities, all implementing the same `Ask::Provider` contract.
 
 ```ruby
 gem "ask-llm-providers"
 ```
 
-## Model Catalog
-
-The gem automatically populates `Ask::ModelCatalog` when loaded. No manual setup needed:
+## Quick Start
 
 ```ruby
 require "ask-llm-providers"
 
-# Models are immediately available through Ask::ModelCatalog
-Ask::ModelCatalog.find("gpt-4o")
-Ask::ModelCatalog.find("claude-sonnet-4-6")
+provider = Ask::Providers::OpenAI.new(api_key: "sk-...")
+response = provider.chat(
+  [{ role: "user", content: "Hello!" }],
+  model: "gpt-4o"
+)
+puts response.content
 ```
 
-### Bundled model definitions
+## Provider Transformation Contract
 
-Models are defined in JSON files under `lib/ask/llm/models/`. Each file represents a provider's models:
-
-```json
-{
-  "id": "gpt-4o",
-  "name": "GPT-4o",
-  "provider": "openai",
-  "family": "gpt",
-  "context_window": 128000,
-  "max_output_tokens": 16384,
-  "capabilities": ["function_calling", "structured_output", "vision"],
-  "modalities": {
-    "input": ["text", "image"],
-    "output": ["text"]
-  },
-  "pricing": {
-    "input_per_million": 2.5,
-    "output_per_million": 10.0
-  }
-}
-```
-
-### Alias resolution
-
-Short or familiar names are resolved to canonical model IDs automatically:
+Every provider implements the `Ask::LLM::ProviderConfig` interface, which separates wire-format concerns into five public methods:
 
 ```ruby
-Ask::LLM::Aliases.resolve("claude-sonnet-4")
-# => "claude-sonnet-4-6"
+provider.build_request(messages, model:, tools: nil, temperature: nil, stream: nil, schema: nil)
+  # => Hash (provider-native request payload)
 
-# Aliases are also registered in the catalog, so ModelCatalog.find works directly:
-Ask::ModelCatalog.find("deepseek-v4")
-# => returns the ModelInfo for deepseek-v4-flash
+provider.parse_response(body, model)
+  # => Ask::Message
+
+provider.parse_stream(raw, stream, model, &block)
+  # => yields Ask::Chunks
+
+provider.format_tools(tools)
+  # => Array (provider-native tool format)
+
+provider.format_message(msg)
+  # => Hash (provider-native message format)
 ```
 
-### User overrides
+This makes each wire-format concern testable in isolation and adding a new provider mechanical — implement five methods and the provider works. Inspired by LiteLLM's `BaseConfig` pattern.
 
-Place a JSON array at `~/.ask-llm-providers/models.json` to override bundled model data:
+## Canonical Providers
 
-```json
-[
-  {
-    "id": "gpt-4o",
-    "pricing": {
-      "input_per_million": 1.0,
-      "output_per_million": 5.0
-    }
-  }
-]
-```
-
-Overrides merge by `(id, provider)` key — user values win on conflict.
-
-### API refresh
-
-To fetch the latest model lists from provider APIs:
-
-```ruby
-Ask::LLM::Catalog.refresh!
-```
-
-This calls `list_models()` on every configured provider and adds any unknown models with minimal metadata.
-
-## Supported Providers
+These providers have distinct wire formats. Each is a dedicated class with its own serialization, streaming, and auth.
 
 | Provider | Class | Capabilities | Auth |
 |---|---|---|---|
@@ -102,18 +63,73 @@ This calls `list_models()` on every configured provider and adds any unknown mod
 | Mistral AI | `Ask::Providers::Mistral` | Chat, streaming, tools, structured output, embeddings | `MISTRAL_API_KEY` |
 | Cloudflare | `Ask::Providers::Cloudflare` | Chat, streaming, vision | `CLOUDFLARE_API_KEY` + Account ID |
 
-## Quick Start
+## OpenAI-Compatible Providers
+
+These share OpenAI's wire format. Each is configured via a registry entry — no subclass, no new file. Adding a new provider is one line in `lib/ask/llm/openai_compatible.rb`.
+
+| Provider | Env Var | Capabilities |
+|---|---|---|
+| DeepSeek | `DEEPSEEK_API_KEY` | Chat, streaming, tools, thinking |
+| OpenRouter | `OPENROUTER_API_KEY` | Chat, streaming, tools, vision, thinking, structured output |
+| Groq | `GROQ_API_KEY` | Chat, streaming, tools, vision |
+| Together | `TOGETHER_API_KEY` | Chat, streaming, tools |
+| Fireworks | `FIREWORKS_API_KEY` | Chat, streaming, tools |
+| Cerebras | `CEREBRAS_API_KEY` | Chat, streaming, tools |
+| xAI | `XAI_API_KEY` | Chat, streaming, tools, vision, thinking |
+| Perplexity | `PERPLEXITY_API_KEY` | Chat, streaming |
+| Moonshot | `MOONSHOT_API_KEY` | Chat, streaming |
+| DeepInfra | `DEEPINFRA_API_KEY` | Chat, streaming, tools |
+| Anyscale | `ANYSCALE_API_KEY` | Chat, streaming, tools |
+| SambaNova | `SAMBANOVA_API_KEY` | Chat, streaming, tools |
+| Nebius | `NEBIUS_API_KEY` | Chat, streaming, tools |
+| Nvidia NIM | `NVIDIA_NIM_API_KEY` | Chat, streaming, tools |
+| Friendli | `FRIENDLI_API_KEY` | Chat, streaming, tools |
+| Hyperbolic | `HYPERBOLIC_API_KEY` | Chat, streaming, tools |
+| Novita | `NOVITA_API_KEY` | Chat, streaming, tools |
+| Nscale | `NSCALE_API_KEY` | Chat, streaming, tools |
+| Featherless | `FEATHERLESS_API_KEY` | Chat, streaming, tools |
+| AI/ML API | `AIML_API_KEY` | Chat, streaming, tools |
+| AI21 | `AI21_API_KEY` | Chat, streaming, tools |
+| Meta (Llama) | `LLAMA_API_KEY` | Chat, streaming, tools |
+| GitHub Models | `GITHUB_API_KEY` | Chat, streaming, tools, vision |
+| OpenCode | `OPENCODE_API_KEY` | Chat, streaming, tools |
+| OpenCode Go | `OPENCODE_GO_API_KEY` | Chat, streaming, tools |
+| Mimo | `MIMO_API_KEY` | Chat, streaming |
+
+## Provider Registration
+
+All providers auto-register with `Ask::Provider` on gem load:
 
 ```ruby
-require "ask-llm-providers"
+Ask::Provider.providers  # => { openai: OpenAI, anthropic: Anthropic, deepseek: ..., groq: ..., ... }
+Ask::Provider.resolve(:openai)  # => Ask::Providers::OpenAI
+Ask::Provider.resolve(:deepseek)  # => resolves to the OpenAICompatible subclass for DeepSeek
+```
 
-# Use a provider directly
-provider = Ask::Providers::OpenAI.new(api_key: "sk-...")
-response = provider.chat(
-  [{ role: "user", content: "Hello!" }],
-  model: "gpt-4o"
-)
-puts response.content
+### Adding a new OpenAI-compatible provider
+
+Add one entry to the registry — no new file, no subclass:
+
+```ruby
+# lib/ask/llm/openai_compatible.rb
+OPENAI_COMPATIBLE = {
+  groq: { api_base: "https://api.groq.com/openai/v1", api_key_env: "GROQ_API_KEY",
+          capabilities: { chat: true, streaming: true, tool_calls: true, vision: true } },
+  # ... add yours here
+}
+```
+
+Special quirks are handled declaratively:
+
+```ruby
+deepseek: { api_base: "https://api.deepseek.com", api_key_env: "DEEPSEEK_API_KEY",
+            reasoning_content: true },  # injects reasoning_content for tool call messages
+
+openrouter: { api_base: "https://openrouter.ai/api/v1", api_key_env: "OPENROUTER_API_KEY",
+              extra_headers: { "HTTP-Referer" => "...", "X-Title" => "ask-rb" } },
+
+opencode_go: { api_base: "https://opencode.ai/zen/go/v1", api_key_env: "OPENCODE_GO_API_KEY",
+               alternate_env: "OPENCODE_API_KEY" },  # fallback env var
 ```
 
 ## Streaming
@@ -150,15 +166,6 @@ response = provider.chat(
 # response.tool_calls => [{ name: "get_weather", arguments: "..." }]
 ```
 
-## Provider Registration
-
-All providers auto-register with `Ask::Provider` on gem load:
-
-```ruby
-Ask::Provider.providers  # => { openai: OpenAI, anthropic: Anthropic, ... }
-Ask::Provider.resolve(:openai)  # => Ask::Providers::OpenAI
-```
-
 ## Capabilities Introspection
 
 ```ruby
@@ -180,6 +187,22 @@ Ask::ServerError          # 500
 Ask::ServiceUnavailable   # 503
 Ask::ContextLengthExceeded # context_length_exceeded
 Ask::ProviderError        # other errors
+```
+
+## Model Catalog
+
+The gem automatically populates `Ask::ModelCatalog` when loaded:
+
+```ruby
+Ask::ModelCatalog.find("gpt-4o")
+Ask::ModelCatalog.find("claude-sonnet-4-6")
+```
+
+Models are defined in JSON files under `lib/ask/llm/models/` with pricing, context windows, and capabilities. Short names are resolved via aliases:
+
+```ruby
+Ask::LLM::Aliases.resolve("claude-sonnet-4")
+# => "claude-sonnet-4-6"
 ```
 
 ## Development

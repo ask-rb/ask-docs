@@ -25,7 +25,7 @@ These gems have zero dependencies on other ask-rb gems. They form the bedrock of
 
 | Gem | Purpose |
 |---|---|
-| **[ask-llm-providers](https://github.com/ask-rb/ask-llm-providers)** | Every LLM provider in a single gem. Ships concrete implementations of `Ask::Provider` for OpenAI (and compatible APIs), Anthropic, Google Gemini (both AI Studio and Vertex AI), AWS Bedrock, Ollama, Mistral AI, and Cloudflare Workers AI. Handles authentication, request serialization, streaming, and error normalization for each wire format. Also ships bundled model definitions, alias resolution, and the `Ask::LLM::Catalog` loader that populates the model catalog on startup. |
+| **[ask-llm-providers](https://github.com/ask-rb/ask-llm-providers)** | Every LLM provider in a single gem — 33 total. Ships 7 canonical providers (OpenAI, Anthropic, Google Gemini, AWS Bedrock, Ollama, Mistral AI, Cloudflare Workers AI) with distinct wire formats and 26 OpenAI-compatible providers (DeepSeek, Groq, Together, Fireworks, Cerebras, xAI, Perplexity, DeepInfra, Anyscale, SambaNova, Nebius, Nvidia NIM, Friendli, Hyperbolic, Novita, Nscale, Featherless, AI/ML API, AI21, Meta, GitHub Models, OpenRouter, OpenCode, OpenCodeGo, Mimo, Moonshot) configured via a data-driven registry — one line per provider, no subclass needed. All providers implement the `Ask::LLM::ProviderConfig` transformation contract (`build_request`, `parse_response`, `parse_stream`, `format_tools`, `format_message`) for testable, mechanical provider addition. Also ships bundled model definitions, alias resolution, and the `Ask::LLM::Catalog` loader. |
 
 ## Tools
 
