@@ -1,0 +1,74 @@
+<!-- Dark mode stylesheet (initially disabled; enabled via JS when needed) -->
+<link rel="stylesheet" href="{{ '/assets/css/just-the-docs-dark.css' | relative_url }}" id="dark-mode-css" disabled>
+
+<style>
+  /* Toggle button styling */
+  #color-scheme-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: 1px solid var(--border-color, #e6e1e1);
+    border-radius: 6px;
+    padding: 4px 8px;
+    cursor: pointer;
+    color: var(--body-text-color, #5c5962);
+    transition: color 0.2s, border-color 0.2s;
+    line-height: 1;
+  }
+  #color-scheme-toggle:hover {
+    border-color: var(--link-color, #7253ed);
+    color: var(--link-color, #7253ed);
+  }
+  #color-scheme-toggle svg {
+    display: block;
+  }
+  /* Show/hide icons based on current mode (toggled via JS class on html) */
+  .icon-sun { display: block; }
+  .icon-moon { display: none; }
+  .dark-mode .icon-sun { display: none; }
+  .dark-mode .icon-moon { display: block; }
+</style>
+
+<script>
+  (function() {
+    var STORAGE_KEY = 'ask-docs-color-scheme';
+    var darkCss = document.getElementById('dark-mode-css');
+
+    function setColorScheme(scheme) {
+      if (scheme === 'dark') {
+        darkCss.removeAttribute('disabled');
+        document.documentElement.classList.add('dark-mode');
+      } else {
+        darkCss.setAttribute('disabled', '');
+        document.documentElement.classList.remove('dark-mode');
+      }
+    }
+
+    // Determine initial scheme: stored preference > system preference > light
+    var stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      setColorScheme(stored);
+    } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      setColorScheme('dark');
+    }
+
+    // Listen for system preference changes (only applies when no stored preference)
+    if (window.matchMedia) {
+      var media = window.matchMedia('(prefers-color-scheme: dark)');
+      media.addEventListener('change', function(e) {
+        if (!localStorage.getItem(STORAGE_KEY)) {
+          setColorScheme(e.matches ? 'dark' : 'light');
+        }
+      });
+    }
+
+    // Expose toggle function globally
+    window.toggleColorScheme = function() {
+      var isDark = document.documentElement.classList.contains('dark-mode');
+      var newScheme = isDark ? 'light' : 'dark';
+      setColorScheme(newScheme);
+      localStorage.setItem(STORAGE_KEY, newScheme);
+    };
+  })();
+</script>
