@@ -28,42 +28,20 @@
       }
     }
 
-    function createToggleButton() {
-      var auxNav = document.querySelector('.aux-nav-list');
-      if (!auxNav) return;
-
-      var li = document.createElement('li');
-      li.className = 'aux-nav-list-item';
-
-      var btn = document.createElement('button');
-      btn.id = 'color-scheme-toggle';
-      btn.className = 'site-button';
-      btn.setAttribute('aria-label', 'Toggle dark/light mode');
-      btn.title = 'Toggle dark/light mode';
-      btn.innerHTML =
-        '<svg viewBox="0 0 24 24" width="20" height="20" class="icon-sun" aria-hidden="true" focusable="false">' +
-        '<path fill="currentColor" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>' +
-        '</svg>' +
-        '<svg viewBox="0 0 24 24" width="20" height="20" class="icon-moon" aria-hidden="true" focusable="false">' +
-        '<path fill="currentColor" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>' +
-        '</svg>';
-
-      btn.onclick = function() {
-        var isDark = document.documentElement.classList.contains('dark-mode');
-        var newScheme = isDark ? 'light' : 'dark';
-        setColorScheme(newScheme);
-        localStorage.setItem(STORAGE_KEY, newScheme);
+    // Expose toggle globally for the onclick attribute in header_custom.html
+    window.toggleColorScheme = function() {
+      var btn = document.getElementById('color-scheme-toggle');
+      var isDark = document.documentElement.classList.contains('dark-mode');
+      var newScheme = isDark ? 'light' : 'dark';
+      setColorScheme(newScheme);
+      localStorage.setItem(STORAGE_KEY, newScheme);
+      if (btn) {
         btn.classList.add('toggling');
         setTimeout(function() { btn.classList.remove('toggling'); }, 400);
-      };
-
-      li.appendChild(btn);
-      auxNav.appendChild(li);
-    }
+      }
+    };
 
     function init() {
-      createToggleButton();
-
       // Determine initial scheme: stored preference > system preference > light
       var stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
