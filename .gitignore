@@ -2,3 +2,4 @@ _site/
 .bundle
 Gemfile.lock
 vendor/
+ask-web-search-mcp-*.gem
