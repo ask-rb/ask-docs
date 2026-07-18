@@ -54,6 +54,7 @@ These gems implement the `Ask::Tool` contract. Each tool is a standalone unit an
 | Gem | Purpose |
 |---|---|
 | **[ask-mcp](https://github.com/ask-rb/ask-mcp)** | A full Model Context Protocol client for Ruby. Connect to MCP servers via stdio (subprocess), SSE (Server-Sent Events), or Streamable HTTP. Discover tools, resources, and prompts from any MCP server — the same protocol used by Claude Code, Codex, Cursor, and GitHub Copilot. Supports OAuth 2.1 authentication. |
+| **[ask-web-search-mcp](https://github.com/ask-rb/ask-web-search-mcp)** | A minimal MCP server that exposes the `web_search` tool over stdio. Depends on `ask-web-search` and `ask-mcp`. Query a local SearXNG instance from any MCP-compatible client (ZCode, Claude Code, Codex). Configure the SearXNG URL with `SEARXNG_URL` (defaults to `http://localhost:8888`). |
 
 ## Instrumentation & Observability
 
@@ -119,8 +120,9 @@ ask-eval           ──► (no deps)
   │
   ├── ask-web-search   ──► ask-tools
   │
-  └── ask-mcp          ──► (no ask deps)
-```
+	  └── ask-mcp          ──► (no ask deps)
+	        └── ask-web-search-mcp ──► ask-mcp, ask-web-search
+	```
 
 ## Installation
 
