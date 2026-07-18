@@ -2,28 +2,30 @@
 <link rel="stylesheet" href="{{ '/assets/css/just-the-docs-dark.css' | relative_url }}" id="dark-mode-css" disabled>
 
 <style>
-  /* Toggle button styling */
+  /* Dark mode toggle button — clean icon button in the header */
   #color-scheme-toggle {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     background: none;
-    border: 1px solid var(--border-color, #e6e1e1);
-    border-radius: 6px;
-    padding: 4px 8px;
+    border: none;
+    padding: 0 0.6rem;
     cursor: pointer;
     color: var(--body-text-color, #5c5962);
-    transition: color 0.2s, border-color 0.2s;
+    transition: color 0.2s;
     line-height: 1;
   }
   #color-scheme-toggle:hover {
-    border-color: var(--link-color, #7253ed);
     color: var(--link-color, #7253ed);
   }
   #color-scheme-toggle svg {
     display: block;
+    transition: transform 0.35s ease;
   }
-  /* Show/hide icons based on current mode (toggled via JS class on html) */
+  #color-scheme-toggle.toggling svg {
+    transform: rotate(0.5turn);
+  }
+  /* Show/hide icons based on current mode */
   .icon-sun { display: block; }
   .icon-moon { display: none; }
   .dark-mode .icon-sun { display: none; }
@@ -65,10 +67,14 @@
 
     // Expose toggle function globally
     window.toggleColorScheme = function() {
+      var btn = document.getElementById('color-scheme-toggle');
       var isDark = document.documentElement.classList.contains('dark-mode');
       var newScheme = isDark ? 'light' : 'dark';
       setColorScheme(newScheme);
       localStorage.setItem(STORAGE_KEY, newScheme);
+      // Brief rotation animation
+      btn.classList.add('toggling');
+      setTimeout(function() { btn.classList.remove('toggling'); }, 400);
     };
   })();
 </script>
