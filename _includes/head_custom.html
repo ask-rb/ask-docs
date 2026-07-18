@@ -1,80 +1,105 @@
-<!-- Dark mode stylesheet (initially disabled; enabled via JS when needed) -->
-<link rel="stylesheet" href="{{ '/assets/css/just-the-docs-dark.css' | relative_url }}" id="dark-mode-css" disabled>
-
 <style>
-  /* Dark mode toggle button — clean icon button in the header */
-  #color-scheme-toggle {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background: none;
-    border: none;
-    padding: 0 0.6rem;
-    cursor: pointer;
-    color: var(--body-text-color, #5c5962);
-    transition: color 0.2s;
-    line-height: 1;
-  }
-  #color-scheme-toggle:hover {
-    color: var(--link-color, #7253ed);
-  }
+  /* Toggle icon visibility */
+  .icon-sun { display: inline; }
+  .icon-moon { display: none; }
+  .dark-mode .icon-sun { display: none; }
+  .dark-mode .icon-moon { display: inline; }
+
+  /* Rotation animation */
   #color-scheme-toggle svg {
-    display: block;
     transition: transform 0.35s ease;
   }
   #color-scheme-toggle.toggling svg {
     transform: rotate(0.5turn);
   }
-  /* Show/hide icons based on current mode */
-  .icon-sun { display: block; }
-  .icon-moon { display: none; }
-  .dark-mode .icon-sun { display: none; }
-  .dark-mode .icon-moon { display: block; }
 </style>
 
 <script>
   (function() {
     var STORAGE_KEY = 'ask-docs-color-scheme';
-    var darkCss = document.getElementById('dark-mode-css');
+    var darkCss = null;
+    var DARK_CSS_HREF = '{{ "/assets/css/just-the-docs-dark.css" | relative_url }}';
+
+    function createDarkStylesheet() {
+      darkCss = document.createElement('link');
+      darkCss.rel = 'stylesheet';
+      darkCss.href = DARK_CSS_HREF;
+      darkCss.id = 'dark-mode-css';
+      darkCss.disabled = true;
+      document.head.appendChild(darkCss);
+    }
 
     function setColorScheme(scheme) {
+      if (!darkCss) createDarkStylesheet();
       if (scheme === 'dark') {
-        darkCss.removeAttribute('disabled');
+        darkCss.disabled = false;
         document.documentElement.classList.add('dark-mode');
       } else {
-        darkCss.setAttribute('disabled', '');
+        darkCss.disabled = true;
         document.documentElement.classList.remove('dark-mode');
       }
     }
 
-    // Determine initial scheme: stored preference > system preference > light
-    var stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      setColorScheme(stored);
-    } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      setColorScheme('dark');
+    function createToggleButton() {
+      var auxNav = document.querySelector('.aux-nav-list');
+      if (!auxNav) return;
+
+      var li = document.createElement('li');
+      li.className = 'aux-nav-list-item';
+
+      var btn = document.createElement('button');
+      btn.id = 'color-scheme-toggle';
+      btn.className = 'site-button';
+      btn.setAttribute('aria-label', 'Toggle dark/light mode');
+      btn.title = 'Toggle dark/light mode';
+      btn.innerHTML =
+        '<svg viewBox="0 0 24 24" width="20" height="20" class="icon-sun" aria-hidden="true" focusable="false">' +
+        '<path fill="currentColor" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>' +
+        '</svg>' +
+        '<svg viewBox="0 0 24 24" width="20" height="20" class="icon-moon" aria-hidden="true" focusable="false">' +
+        '<path fill="currentColor" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>' +
+        '</svg>';
+
+      btn.onclick = function() {
+        var isDark = document.documentElement.classList.contains('dark-mode');
+        var newScheme = isDark ? 'light' : 'dark';
+        setColorScheme(newScheme);
+        localStorage.setItem(STORAGE_KEY, newScheme);
+        btn.classList.add('toggling');
+        setTimeout(function() { btn.classList.remove('toggling'); }, 400);
+      };
+
+      li.appendChild(btn);
+      auxNav.appendChild(li);
     }
 
-    // Listen for system preference changes (only applies when no stored preference)
-    if (window.matchMedia) {
-      var media = window.matchMedia('(prefers-color-scheme: dark)');
-      media.addEventListener('change', function(e) {
-        if (!localStorage.getItem(STORAGE_KEY)) {
-          setColorScheme(e.matches ? 'dark' : 'light');
-        }
-      });
+    function init() {
+      createDarkStylesheet();
+      createToggleButton();
+
+      // Determine initial scheme
+      var stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        setColorScheme(stored);
+      } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        setColorScheme('dark');
+      }
+
+      // Listen for system preference changes (only when no stored preference)
+      if (window.matchMedia) {
+        var media = window.matchMedia('(prefers-color-scheme: dark)');
+        media.addEventListener('change', function(e) {
+          if (!localStorage.getItem(STORAGE_KEY)) {
+            setColorScheme(e.matches ? 'dark' : 'light');
+          }
+        });
+      }
     }
 
-    // Expose toggle function globally
-    window.toggleColorScheme = function() {
-      var btn = document.getElementById('color-scheme-toggle');
-      var isDark = document.documentElement.classList.contains('dark-mode');
-      var newScheme = isDark ? 'light' : 'dark';
-      setColorScheme(newScheme);
-      localStorage.setItem(STORAGE_KEY, newScheme);
-      // Brief rotation animation
-      btn.classList.add('toggling');
-      setTimeout(function() { btn.classList.remove('toggling'); }, 400);
-    };
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
   })();
 </script>
