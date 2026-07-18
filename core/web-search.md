@@ -29,6 +29,28 @@ and an MCP server.
 This means **no API keys, no third-party search services, no rate limits**.
 Your searches stay on your machine.
 
+## Quick Start
+
+Get web search working end-to-end in 3 minutes:
+
+```sh
+# 1. Start SearXNG
+docker run -d --name searxng -p 8888:8080 searxng/searxng
+
+# 2. Install the MCP server
+gem install ask-web-search-mcp
+
+# 3. Verify it works standalone
+echo '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}' |
+  ask-web-search-mcp 2>/dev/null |
+  grep ask_web_search && echo "✅ Server is working"
+```
+
+Then add it to your editor — see [With ZCode](#with-zcode) or
+[With Claude Code](#with-claude-code) below. After restarting, the model
+will have an `ask_web_search` tool it can call whenever it needs current
+information.
+
 ## Prerequisites
 
 A running SearXNG instance. The default endpoint is `http://localhost:8888`.
@@ -179,13 +201,17 @@ ask-web-search-mcp
 ```
 
 The server reads JSON-RPC messages on stdin and writes responses to stdout.
-Test it:
+Test it — this sends a `tools/list` request and prints the tool names:
 
 ```sh
-printf '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18"}}
-{"jsonrpc":"2.0","id":2,"method":"notifications/initialized","params":{}}
-{"jsonrpc":"2.0","id":3,"method":"tools/list","params":{}}
-{"jsonrpc":"2.0","id":4,"method":"tools/call","params":{"name":"web_search","arguments":{"query":"latest AI news"}}}' | ask-web-search-mcp
+echo '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}' | ask-web-search-mcp
+```
+
+You should see `"name":"ask_web_search"` in the response. To run a real
+search:
+
+```sh
+echo '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"ask_web_search","arguments":{"query":"latest AI news"}}}' | ask-web-search-mcp
 ```
 
 ### With ZCode
@@ -242,6 +268,15 @@ export DEBUG=1               # enable MCP debug logging to stderr
 | MCP server not connecting | Not installed or not on PATH | `gem install ask-web-search-mcp` then `which ask-web-search-mcp` |
 | `LoadError: cannot load such file` | Missing dependency | `gem install ask-web-search ask-mcp` |
 | SearXNG returns HTML not JSON | `json` format not enabled | Add `formats: [html, json]` to `settings.yml` |
+| Tool not found: `ask_web_search` | Using server with old client code | The tool name is `ask_web_search` — use that, not `web_search` |
+| MCP servers not appearing in ZCode | Config in wrong file or format | Add `mcp.servers` to `~/.zcode/v2/config.json` (see [With ZCode](#with-zcode)) |
+
+## What's next
+
+- [MCP Client](/core/mcp) — connect your own Ruby app to any MCP server
+- [Tools & Execution](/core/tools) — how tools work in the ask-rb ecosystem
+- [The Agent Loop](/core/agent) — how the agent decides when to call
+  `WebSearch` and what it does with the results
 
 ## How it all fits together
 
