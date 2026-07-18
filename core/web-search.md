@@ -188,32 +188,26 @@ printf '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion
 {"jsonrpc":"2.0","id":4,"method":"tools/call","params":{"name":"web_search","arguments":{"query":"latest AI news"}}}' | ask-web-search-mcp
 ```
 
-### With ZCode (Desktop)
+### With ZCode
 
-1. Open **Settings → MCP Servers**
-2. Click **"New MCP Server"**
-3. Fill in the form:
-   - **Scope**: `User` (available in all workspaces)
-   - **Name**: `ask-web-search-mcp`
-   - **Transport**: `stdio`
-   - **Command**: `ask-web-search-mcp`
-   - **Args**: *(leave empty)*
-4. Click **Save**
-
-Or switch to **Full configuration mode** and paste:
+Add to your ZCode user configuration (`~/.zcode/v2/config.json` or `~/.zcode/cli/config.json`):
 
 ```json
 {
-  "ask-web-search-mcp": {
-    "type": "stdio",
-    "command": "ask-web-search-mcp",
-    "args": []
+  "mcp": {
+    "servers": {
+      "ask-web-search-mcp": {
+        "type": "stdio",
+        "command": "ask-web-search-mcp",
+        "args": []
+      }
+    }
   }
 }
 ```
 
-After saving, ZCode will connect to the server and the `ask_web_search`
-tool will be available to the model automatically.
+After restarting ZCode, the `ask_web_search` tool will be available
+to the model automatically — no special prompts needed.
 
 ### With Claude Code
 
