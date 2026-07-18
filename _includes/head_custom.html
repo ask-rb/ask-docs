@@ -28,7 +28,7 @@
       }
     }
 
-    // Expose toggle globally for the onclick attribute in header_custom.html
+    // Expose toggle globally for onclick in header_custom.html
     window.toggleColorScheme = function() {
       var btn = document.getElementById('color-scheme-toggle');
       var isDark = document.documentElement.classList.contains('dark-mode');
@@ -41,30 +41,14 @@
       }
     };
 
-    function init() {
-      // Determine initial scheme: stored preference > system preference > light
-      var stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        setColorScheme(stored);
-      } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        setColorScheme('dark');
-      }
-
-      // Listen for system preference changes (only when no stored preference)
-      if (window.matchMedia) {
-        var media = window.matchMedia('(prefers-color-scheme: dark)');
-        media.addEventListener('change', function(e) {
-          if (!localStorage.getItem(STORAGE_KEY)) {
-            setColorScheme(e.matches ? 'dark' : 'light');
-          }
-        });
-      }
-    }
-
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', init);
-    } else {
-      init();
+    // Listen for system preference changes (only when no stored preference)
+    if (window.matchMedia) {
+      var media = window.matchMedia('(prefers-color-scheme: dark)');
+      media.addEventListener('change', function(e) {
+        if (!localStorage.getItem(STORAGE_KEY)) {
+          setColorScheme(e.matches ? 'dark' : 'light');
+        }
+      });
     }
   })();
 </script>
