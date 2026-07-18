@@ -124,6 +124,22 @@ Immutable value object for model metadata.
 | `knowledge_cutoff` | Date, nil | Training data cutoff |
 | `created_at` | Date, nil | Release date |
 
+### Provider Override
+
+When using the catalog through `ask-agent`, you can override which provider serves a model by passing `provider:` to `Ask::Agent::Session` or `Ask::Agent::Chat`:
+
+```ruby
+# deepseek-v4-flash is cataloged under the "deepseek" provider,
+# but can be served through a different compatible provider:
+session = Ask::Agent::Session.new(
+  model: "deepseek-v4-flash",
+  provider: :opencode_go,
+  tools: [...]
+)
+```
+
+This bypasses the catalog's `provider` field and uses the specified provider instead. Useful when a model is available through multiple providers (e.g., self-hosted vs API).
+
 ### Error Types
 
 Structured errors with actionable metadata. `RateLimitError` carries category, type, and retry-after for intelligent handling:

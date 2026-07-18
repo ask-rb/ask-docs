@@ -93,8 +93,35 @@ These share OpenAI's wire format. Each is configured via a registry entry — no
 | Meta (Llama) | `LLAMA_API_KEY` | Chat, streaming, tools |
 | GitHub Models | `GITHUB_API_KEY` | Chat, streaming, tools, vision |
 | OpenCode | `OPENCODE_API_KEY` | Chat, streaming, tools |
-| OpenCode Go | `OPENCODE_GO_API_KEY` | Chat, streaming, tools |
+| OpenCode Go | `OPENCODE_API_KEY` or `OPENCODE_GO_API_KEY` | Chat, streaming, tools |
 | Mimo | `MIMO_API_KEY` | Chat, streaming |
+
+## Using a Model Through a Different Provider
+
+A model is registered under a specific provider in the catalog (e.g., `deepseek-v4-flash` under the `deepseek` provider). But you may want to use it through a different provider that serves the same model — for instance, `deepseek-v4-flash` served by `opencode_go`.
+
+Pass the `provider:` parameter to override which provider serves the model:
+
+```ruby
+session = Ask::Agent::Session.new(
+  model: "deepseek-v4-flash",
+  provider: :opencode_go,  # use opencode_go instead of the default deepseek provider
+  tools: [...]
+)
+```
+
+Or when using `Ask::Agent::Chat` directly:
+
+```ruby
+chat = Ask::Agent::Chat.new(
+  model: "deepseek-v4-flash",
+  provider: :opencode_go
+)
+```
+
+This works because the agent checks `provider:` first, then falls back to the catalog's provider. It also means you can use any OpenAI-compatible provider with any model name the provider supports, without adding model entries to the catalog.
+
+The `provider:` parameter is available on both `Ask::Agent::Session.new` and `Ask::Agent::Chat.new` — it passes through to the underlying provider resolution.
 
 ## Provider Registration
 
@@ -128,8 +155,8 @@ deepseek: { api_base: "https://api.deepseek.com", api_key_env: "DEEPSEEK_API_KEY
 openrouter: { api_base: "https://openrouter.ai/api/v1", api_key_env: "OPENROUTER_API_KEY",
               extra_headers: { "HTTP-Referer" => "...", "X-Title" => "ask-rb" } },
 
-opencode_go: { api_base: "https://opencode.ai/zen/go/v1", api_key_env: "OPENCODE_GO_API_KEY",
-               alternate_env: "OPENCODE_API_KEY" },  # fallback env var
+opencode_go: { api_base: "https://opencode.ai/zen/go/v1", api_key_env: "OPENCODE_API_KEY" },
+             # Also accepts OPENCODE_GO_API_KEY via slug convention
 ```
 
 ## Streaming

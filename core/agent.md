@@ -44,6 +44,18 @@ response = session.run("List the current directory")
 puts response
 ```
 
+If a model is registered under one provider but served by another — for example, `deepseek-v4-flash` served by `opencode_go` — pass the `provider:` override:
+
+```ruby
+session = Ask::Agent::Session.new(
+  model: "deepseek-v4-flash",
+  provider: :opencode_go,
+  tools: [Ask::Tools::Shell::Bash]
+)
+```
+
+The `provider:` parameter tells the agent which provider to use, regardless of which provider the model is registered under in the catalog.
+
 ## Cost & Token Tracking
 
 Every session tracks cumulative token usage and cost:

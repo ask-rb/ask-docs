@@ -53,6 +53,20 @@ ruby agent.rb
 
 You should see the agent running a bash command to check the Ruby version and reporting back.
 
+### Using a different provider
+
+Some models are registered under one provider but served by another. For example, `deepseek-v4-flash` is in the model catalog under the `deepseek` provider, but you might access it through `opencode_go`. Pass the `provider:` parameter to override:
+
+```ruby
+session = Ask::Agent::Session.new(
+  model: "deepseek-v4-flash",
+  provider: :opencode_go,
+  tools: [Ask::Tools::Shell::Bash, Ask::Tools::Shell::Read, Ask::Tools::Shell::Write]
+)
+```
+
+This works with any OpenAI-compatible provider — set `OPENCODE_API_KEY` (or `OPENCODE_GO_API_KEY`) in your environment and the agent resolves everything automatically.
+
 ## 4. Give it more tools
 
 ```ruby
