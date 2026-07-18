@@ -17,25 +17,13 @@
 <script>
   (function() {
     var STORAGE_KEY = 'ask-docs-color-scheme';
-    var darkCss = null;
-    var DARK_CSS_HREF = '{{ "/assets/css/just-the-docs-dark.css" | relative_url }}';
-
-    function createDarkStylesheet() {
-      darkCss = document.createElement('link');
-      darkCss.rel = 'stylesheet';
-      darkCss.href = DARK_CSS_HREF;
-      darkCss.id = 'dark-mode-css';
-      darkCss.disabled = true;
-      document.head.appendChild(darkCss);
-    }
 
     function setColorScheme(scheme) {
-      if (!darkCss) createDarkStylesheet();
       if (scheme === 'dark') {
-        darkCss.disabled = false;
+        jtd.setTheme('dark');
         document.documentElement.classList.add('dark-mode');
       } else {
-        darkCss.disabled = true;
+        jtd.setTheme('default');
         document.documentElement.classList.remove('dark-mode');
       }
     }
@@ -74,10 +62,9 @@
     }
 
     function init() {
-      createDarkStylesheet();
       createToggleButton();
 
-      // Determine initial scheme
+      // Determine initial scheme: stored preference > system preference > light
       var stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
         setColorScheme(stored);
