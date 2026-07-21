@@ -184,6 +184,44 @@ Ask::Agent.configure do |c|
 end
 ```
 
+### Middleware (LLM Call Pipeline)
+
+```ruby
+Ask::Agent.configure do |c|
+  c.middleware.use :retry_on_failure, max_retries: 5
+  c.middleware.use :log_calls, logger: Rails.logger
+  c.middleware.use :default_settings, temperature: 0.7
+end
+
+# Custom middleware
+class MyMiddleware < Ask::Agent::Middleware::Base
+  def around_request(provider, request)
+    # request is a Hash with :messages, :model, :tools, :temperature, :stream, :schema, :extra_params
+    Rails.logger.info "Calling #{request[:model]}"
+    result = yield
+    Rails.logger.info "Done"
+    result
+  end
+end
+```
+
+### Stream Transforms
+
+```ruby
+Ask::Agent.configure do |c|
+  c.stream_transforms.use :thinking_separator
+  c.stream_transforms.use :text_buffer, min_size: 100
+  c.stream_transforms.use :extract_json
+end
+
+# Custom transform
+class NoOp < Ask::Agent::StreamTransforms::Base
+  def call(chunk, &block)
+    yield chunk
+  end
+end
+```
+
 ## ask-rails
 
 Rails integration. [Source](https://github.com/ask-rb/ask-rails)

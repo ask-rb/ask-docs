@@ -113,6 +113,74 @@ session.on_event do |event|
 end
 ```
 
+## Middleware (LLM Call Pipeline)
+
+Middleware wraps every `provider.chat(...)` call with cross-cutting behavior — retry, logging, default params, and more. Configure globally; applies to all `Chat` and `Session` instances automatically.
+
+```ruby
+Ask::Agent.configure do |c|
+  c.middleware.use :retry_on_failure, max_retries: 5
+  c.middleware.use :log_calls, logger: Rails.logger
+  c.middleware.use :default_settings, temperature: 0.7
+end
+```
+
+### Built-in Middleware
+
+| Middleware | Key | What it does |
+|---|---|---|
+| **RetryOnFailure** | `:retry_on_failure` | Retries on `RateLimitError`, `ServerError`, `ServiceUnavailable` with exponential backoff + jitter. Does not retry on `Unauthorized`, `ModelNotFound`, or `ConfigurationError`. Respects `retry_after` from provider errors. |
+| **LogCalls** | `:log_calls` | Logs every LLM call: model, tool count, message count, duration, token usage. Custom logger support. |
+| **DefaultSettings** | `:default_settings` | Injects `temperature`, `max_tokens`, `top_p`, etc. into every provider call. User-supplied values take precedence. |
+
+### Custom Middleware
+
+```ruby
+class MyMiddleware < Ask::Agent::Middleware::Base
+  def around_request(provider, request)
+    Rails.logger.info "Calling #{request[:model]} with #{request[:messages].length} messages"
+    start = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+    result = yield
+    elapsed = Process.clock_gettime(Process::CLOCK_MONOTONIC) - start
+    Rails.logger.info "Completed in #{elapsed.round(3)}s"
+    result
+  end
+end
+
+Ask::Agent.configure { |c| c.middleware.use MyMiddleware }
+```
+
+## Stream Transforms
+
+Stream transforms process each raw `Ask::Chunk` through a chain before yielding `ChatChunks` to your block. Useful for extracting thinking tokens, buffering text, or parsing streaming JSON.
+
+```ruby
+Ask::Agent.configure do |c|
+  c.stream_transforms.use :thinking_separator
+  c.stream_transforms.use :text_buffer, min_size: 100
+end
+```
+
+### Built-in Transforms
+
+| Transform | Key | What it does |
+|---|---|---|
+| **ThinkingSeparator** | `:thinking_separator` | Splits chunks with both `thinking` and visible `content` into two separate chunks, so you can handle reasoning independently. |
+| **TextBuffer** | `:text_buffer` | Buffers rapid text deltas until they reach `min_size` characters. Reduces UI flicker and log noise. Auto-flushes before non-content chunks and at stream end. |
+| **ExtractJson** | `:extract_json` | Accumulates the response and attempts JSON parsing. Check `#extracted_json` and `#json?` after the stream completes. |
+
+### Custom Transform
+
+```ruby
+class FilterTransform < Ask::Agent::StreamTransforms::Base
+  def call(chunk, &block)
+    block.call(chunk) unless chunk.content == "drop_me"
+  end
+end
+
+Ask::Agent.configure { |c| c.stream_transforms.use FilterTransform }
+```
+
 ## Extensions
 
 - **PermissionGate** — Require approval for destructive tools
