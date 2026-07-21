@@ -113,6 +113,45 @@ session.on_event do |event|
 end
 ```
 
+## Provider-Executed Tools
+
+Some LLM providers offer built-in tools that run on their infrastructure — web search, file search, code execution. These tools don't need local execution; the provider handles them and returns results directly in the response.
+
+Pass `Ask::ProviderTool` objects alongside regular tools in the `Session` constructor:
+
+```ruby
+session = Ask::Agent::Session.new(
+  model: "gpt-4o",
+  tools: [
+    Bash, Read,
+    Ask::ProviderTool.web_search(search_context_size: "high"),
+    Ask::ProviderTool.file_search(vector_store_ids: ["vs_abc"])
+  ]
+)
+
+session.run("Search for recent security advisories and check our config")
+```
+
+The agent loop automatically detects provider-executed results and adds them to the conversation without attempting local execution. Regular user-defined tools continue to run locally as before.
+
+Available provider tools:
+
+| Factory method | Provider | What it does |
+|---|---|---|
+| `Ask::ProviderTool.web_search` | OpenAI | Search the internet for current information |
+| `Ask::ProviderTool.file_search` | OpenAI | Search through uploaded files in a vector store |
+| `Ask::ProviderTool.code_interpreter` | OpenAI | Execute Python code in a sandboxed environment |
+
+Custom provider tools can be created directly:
+
+```ruby
+Ask::ProviderTool.new(
+  id: "openai.web_search",
+  name: "web_search",
+  args: { search_context_size: "high" }
+)
+```
+
 ## Middleware (LLM Call Pipeline)
 
 Middleware wraps every `provider.chat(...)` call with cross-cutting behavior — retry, logging, default params, and more. Configure globally; applies to all `Chat` and `Session` instances automatically.
