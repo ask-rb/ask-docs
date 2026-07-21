@@ -305,6 +305,41 @@ askr schedule                # Start the scheduler
 askr new deploy_bot          # Scaffold a new agent
 ```
 
+## Skills
+
+Skills are markdown files with step-by-step methodology that agents can load on demand. They follow the `SKILL.md` convention (markdown with YAML frontmatter containing `name` and `description`).
+
+### Where Skills Live
+
+Skills are discovered from these locations (highest priority first):
+
+| Location | Scope | Description |
+|---|---|---|
+| `agents/<name>/skills/` | Per-agent | Skills only available to one agent |
+| `agents/shared/skills/` | Project-wide | Shared across all agents |
+| `app/agents/shared/skills/` | Rails project | Rails variant of shared skills |
+| `.agents/skills/` | Legacy | Backward compatibility path |
+| `~/.config/ask/skills/` | User | Personal skills across projects |
+| Installed gems | Global | Skills shipped with ask-* gems |
+| Built-in | Built-in | `skill.design`, `skill.compose` |
+
+```
+agents/
+├── health_check/
+│   ├── agent.rb
+│   ├── instructions.md
+│   └── skills/
+│       └── nginx_debug/SKILL.md    ← only for health_check
+├── daily_report/
+│   └── agent.rb
+└── shared/
+    ├── tools/
+    └── skills/
+        └── rails_debug/SKILL.md    ← for all agents
+```
+
+Skills follow a progressive disclosure pattern: **names and descriptions** are listed in the system prompt so the model knows they exist, and the **full instructions** are loaded only when the model calls the `load_skill` tool or the host calls `session.skill(name)`.
+
 ## Configuration
 
 ```ruby

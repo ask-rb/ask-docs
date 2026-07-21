@@ -302,6 +302,37 @@ Ask::Providers::OpenAI.capabilities
 Ask::Providers::Ollama.local?
 ```
 
+## ask-skills
+
+Skill discovery and management. [Source](https://github.com/ask-rb/ask-skills)
+
+```ruby
+# Discover skills from all configured sources
+registry = Ask::Skills.discover
+registry.names              # => ["rails_debug", "deploy_bot", ...]
+registry["rails_debug"]     # => Skill object
+
+# Discover with per-agent skills (highest priority)
+registry = Ask::Skills.discover(agent_dir: "agents/health_check")
+
+# Load an arbitrary markdown file as a skill
+skill = Ask::Skills.load_file("path/to/skill.md")
+
+# Skill data object
+skill.name         # => "rails_debug"
+skill.description  # => "Debugging Rails apps"
+skill.instructions # => full markdown body
+skill.source       # => "/path/to/SKILL.md"
+```
+
+Discovery sources (highest priority first):
+1. Per-agent: `agents/<name>/skills/` (when `agent_dir` given)
+2. Shared project: `agents/shared/skills/`, `app/agents/shared/skills/`
+3. Legacy project: `.agents/skills/` (backward compat)
+4. User config: `~/.config/ask/skills/`
+5. Installed gems
+6. Built-in skills (`skill.design`, `skill.compose`)
+
 ## ask-sandbox-providers
 
 Sandboxed execution. [Source](https://github.com/ask-rb/ask-sandbox-providers)
