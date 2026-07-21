@@ -334,12 +334,53 @@ registry = Ask::Skills.discover(agent_dir: "agents/health_check")
 # Load an arbitrary markdown file as a skill
 skill = Ask::Skills.load_file("path/to/skill.md")
 
-# Skill data object
-skill.name         # => "rails_debug"
-skill.description  # => "Debugging Rails apps"
-skill.instructions # => full markdown body
-skill.source       # => "/path/to/SKILL.md"
-```
+	# Skill data object
+	skill.name         # => "rails_debug"
+	skill.description  # => "Debugging Rails apps"
+	skill.instructions # => full markdown body
+	skill.source       # => "/path/to/SKILL.md"
+	skill.tags         # => ["rails", "database", "debugging"]
+	skill.references   # => ["references/migration_guide.md"]
+	skill.scripts      # => ["scripts/db_check.sh"]
+	skill.assets       # => ["assets/diagram.png"]
+	skill.siblings     # => {"references" => [...], "scripts" => [...]}
+	```
+
+	### Enhanced Frontmatter
+
+	```markdown
+	---
+	name: rails_debug
+	description: Debug Rails database issues
+	tags: rails, database, debugging
+	version: 2
+	author: Myrr Labs
+	---
+	```
+
+	### Sibling Files
+
+	Skills can bundle reference documents, scripts, and assets alongside `SKILL.md`:
+
+	```
+	rails_debug/
+	├── SKILL.md
+	├── references/       → skill.references
+	│   ├── migration_guide.md
+	│   └── apis.md
+	├── scripts/          → skill.scripts
+	│   └── db_check.sh
+	└── assets/           → skill.assets
+	    └── diagram.png
+	```
+
+	### CLI
+
+	```bash
+	askr skills list              # All skills with descriptions and tags
+	askr skills show rails_debug  # Full details + instructions + siblings
+	askr skills search deploy     # Search by name, description, or tags
+	```
 
 Discovery sources (highest priority first):
 1. Per-agent: `agents/<name>/skills/` (when `agent_dir` given)
