@@ -234,7 +234,23 @@ class NoOp < Ask::Agent::StreamTransforms::Base
   def call(chunk, &block)
     yield chunk
   end
+	end
+	```
+
+### Prompt Caching
+
+```ruby
+# Enabled by default. Disable if needed.
+Ask::Agent.configure do |c|
+  c.prompt_caching = false
 end
+
+# Per-session override
+session = Ask::Agent::Session.new(model: "claude-sonnet-4", prompt_caching: false)
+
+# Cache token metadata (available in response metadata)
+#   Anthropic: :cache_creation_input_tokens, :cache_read_input_tokens
+#   OpenAI:    :cached_tokens
 ```
 
 ### Scheduler

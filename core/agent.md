@@ -100,6 +100,24 @@ The `ask-monitoring` Rails engine hooks into these automatically for its dashboa
 
 When a provider returns `RateLimitError`, the agent retries up to 3 times with exponential backoff. If the provider includes a `Retry-After` header, that value is used instead. No configuration needed.
 
+## Prompt Caching
+
+Prompt caching saves up to 90% on input token costs for repeated conversation prefixes. It works directly through provider-native caching APIs — no proxy server needed.
+
+**Enabled by default.** All sessions automatically send cache-control hints to supporting providers:
+
+- **Anthropic** — Caches system prompt and last user message context. Response metadata includes `cache_creation_input_tokens` and `cache_read_input_tokens`.
+- **OpenAI** — Automatic for prompts exceeding ~1024 tokens. Response metadata includes `cached_tokens`.
+
+Providers that don't support caching (Google, Mistral, Ollama, etc.) safely ignore the parameter.
+
+```ruby
+# Disable if needed
+Ask::Agent.configure do |c|
+  c.prompt_caching = false
+end
+```
+
 ## Events
 
 ```ruby
@@ -342,10 +360,13 @@ Skills follow a progressive disclosure pattern: **names and descriptions** are l
 
 ## Configuration
 
-```ruby
-Ask::Agent.configure do |c|
-  c.default_model = "claude-sonnet-4"
-  c.default_max_turns = 50
-  c.parallel_tool_execution = true
-end
-```
+	```ruby
+	Ask::Agent.configure do |c|
+	  c.default_model = "claude-sonnet-4"
+	  c.default_max_turns = 50
+	  c.parallel_tool_execution = true
+	  c.prompt_caching = false    # disable provider-native prompt caching
+	  c.middleware.use :log_calls
+	  c.stream_transforms.use :thinking_separator
+	end
+	```
