@@ -33,7 +33,7 @@ Available constants for AI system prompts:
 |----------|-------|
 | `Ask::Slack::DESCRIPTION` | "Slack — messaging, channels, files, search, workspace management" |
 | `Ask::Slack::DOCS_URL` | <https://api.slack.com/methods> |
-| `Ask::Slack::OPENAPI_URL` | <https://api.slack.com/specs/openapi> |
+<!-- OPENAPI_URL removed: Slack no longer serves the OpenAPI spec at a stable URL -->
 | `Ask::Slack::AUTH_NAME` | `:slack_token` |
 | `Ask::Slack::AUTH_HOW` | Create a Slack app at <https://api.slack.com/apps> |
 | `Ask::Slack::GEM_NAME` | `slack-ruby-client` |

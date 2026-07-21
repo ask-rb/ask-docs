@@ -34,7 +34,6 @@ Available constants for AI system prompts:
 | `Ask::Notion::DESCRIPTION` | "Notion — pages, databases, blocks, comments, users, search" |
 | `Ask::Notion::DOCS_URL` | <https://developers.notion.com/> |
 | `Ask::Notion::API_REF_URL` | <https://developers.notion.com/reference> |
-| `Ask::Notion::OPENAPI_URL` | <https://developers.notion.com/.well-known/openapi.json> |
 | `Ask::Notion::AUTH_NAME` | `:notion_token` |
 | `Ask::Notion::AUTH_HOW` | Create an integration at <https://www.notion.so/my-integrations> |
 | `Ask::Notion::GEM_NAME` | `notion-ruby-client` |

@@ -8,7 +8,7 @@ nav_order: 7
 
 
 **SolidErrors error tracking context for AI agents.** Provides an ActiveRecord proxy for
-querying errors tracked by [SolidErrors](https://github.com/solid-rails/solid_errors)
+querying errors tracked by [SolidErrors](https://github.com/fractaledmind/solid_errors)
 — a database-backed error tracker that runs in your Rails app.
 
 No API tokens, no HTTP calls. SolidErrors stores errors in your Rails database, so
