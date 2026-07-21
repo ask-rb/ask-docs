@@ -7,7 +7,12 @@ nav_order: 5
 
 # Skills
 
-**On-demand methodology for agents.** Skills tell the agent *how* to approach a problem — they're instructions loaded into the system prompt when needed.
+**Progressive disclosure methodology for agents.** Skills come in two layers:
+- **Listing** — all skills are listed by name + description in the system prompt
+- **Loading** — the LLM calls the built-in `load_skill` tool to get full instructions on demand
+
+This follows the same progressive disclosure pattern as Anthropic's Agent Skills — the agent
+knows what's available and pulls in details only when relevant.
 
 ```ruby
 # Skills are NOT code — they're markdown files
@@ -42,14 +47,17 @@ Skills are auto-discovered from three sources:
 | Source | Location | Priority |
 |---|---|---|
 | Gems | `shared/ask/skills/` in each gem | Low |
-| Project | `.ask/skills/` in the project root | Medium |
-| User config | `~/.ask/skills/` | High |
+| Project | `.agents/skills/` in the project root | Medium |
+| User config | `~/.config/ask/skills/` | High |
 
-When the agent starts, all skills are listed in the system prompt with descriptions. The LLM decides which to apply based on the user's request.
+When the agent starts, all skills are **listed by name and description** in the system prompt
+so the LLM knows what's available. Every session also includes a built-in `load_skill` tool
+that the LLM can call to load a skill's full instructions on demand. Only the skill's name
+and description occupy prompt space until the LLM decides a skill is relevant.
 
 ## Creating a Skill
 
-Create a `.md` file in `.ask/skills/`:
+Create a markdown file in `.agents/skills/<skill-name>/SKILL.md`:
 
 ```markdown
 ---
@@ -67,7 +75,9 @@ description: Code review methodology for pull requests
 6. **Leave actionable feedback** — specific, kind, useful
 ```
 
-That's it. The agent will automatically discover and use this skill.
+That's it. The agent will discover it automatically and list it in the system prompt.
+When the LLM decides it's needed, it calls the built-in `load_skill("code-review")`
+tool to load the full instructions.
 
 ## Skills vs Tools
 
@@ -102,16 +112,24 @@ The ask-rb ecosystem ships 13+ skills across its gems. Each skill provides domai
 | `rails.route_trouble` | ask-rails | Debugging routing issues |
 | `shell.patterns` | ask-tools-shell | Shell tool composition patterns |
 
-## Skill Resolution
+## Skill Resolution (Progressive Disclosure)
 
 When the agent initializes:
 
-1. It collects all `.md` files from `SKILL_DIRS` (gem → project → user)
+1. It collects all `SKILL.md` files from discovery paths (gem → project → user)
 2. Lists them in the system prompt by name and description
-3. The LLM chooses which skills to activate based on the task
-4. Activated skills are loaded into the system prompt
+3. A built-in `load_skill` tool is automatically available to every session
+4. When the LLM encounters a task where a listed skill seems relevant, it calls
+   `load_skill(name:)` to load that skill's full instructions
+5. The skill content is returned as a tool result and the LLM applies it
 
-This is different from a static system prompt — skills are methodology that the agent applies contextually.
+This is progressive disclosure — skill names are always visible, but the full
+instructions are only pulled into context when the LLM decides they're needed.
+This keeps the system prompt lean while making all skills available on demand.
+
+The `load_skill` tool is always available in every `Ask::Agent::Session`, even
+when no user tools are configured. Skills are organized in subdirectories with
+a `SKILL.md` file inside each directory.
 
 ## Best Practices
 
