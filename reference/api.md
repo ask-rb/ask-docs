@@ -222,6 +222,23 @@ class NoOp < Ask::Agent::StreamTransforms::Base
 end
 ```
 
+### Scheduler
+
+```ruby
+Ask::Agent.configure do |c|
+  c.scheduler.every "5 minutes", name: "task-name" do
+    Ask::Agent::Session.new(model: "gpt-4o").run("Do something")
+  end
+  c.scheduler.cron "0 9 * * 1-5", name: "weekday-task"
+end
+
+Ask::Agent::Scheduler.start
+Ask::Agent::Scheduler.running?
+Ask::Agent::Scheduler.jobs
+Ask::Agent::Scheduler.job_by_name("task-name")
+Ask::Agent::Scheduler.stop
+```
+
 ## ask-rails
 
 Rails integration. [Source](https://github.com/ask-rb/ask-rails)

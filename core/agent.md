@@ -187,6 +187,36 @@ Ask::Agent.configure { |c| c.stream_transforms.use FilterTransform }
 - **RateLimiter** — Prevent runaway tool calls
 - **AuditLog** — Immutable, append-only tool call log
 
+## Scheduler (Recurring Agent Runs)
+
+Schedule agents to run on cron schedules or recurring intervals. Tasks run in background threads managed by `rufus-scheduler`.
+
+```ruby
+Ask::Agent.configure do |c|
+  c.scheduler.every "5 minutes", name: "health-check" do
+    Ask::Agent::Session.new(model: "gpt-4o").run("Check server health")
+  end
+
+  c.scheduler.cron "0 9 * * 1-5", name: "morning-report" do
+    session = Ask::Agent::Session.new(model: "gpt-4o")
+    session.run("Generate daily report and send to team")
+  end
+end
+
+# Start the scheduler (background thread)
+Ask::Agent::Scheduler.start
+
+# Manage at runtime
+Ask::Agent::Scheduler.running?          # => true
+Ask::Agent::Scheduler.jobs              # list of scheduled jobs
+Ask::Agent::Scheduler.job_by_name("health-check")
+
+# Graceful shutdown
+Ask::Agent::Scheduler.stop
+```
+
+Task names are optional but recommended — they let you find and manage jobs at runtime.
+
 ## Configuration
 
 ```ruby
