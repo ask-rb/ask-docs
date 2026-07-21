@@ -11,7 +11,7 @@ Bring AI into your Rails application. `ask-rails` wires the entire ask-rb ecosys
 
 | Page | What's covered |
 |---|---|
-| [Setup & Generators](/rails/setup) | Install, configure, and generate |
-| [Database Tools](/rails/database) | QueryDatabase, ReadModel, ReadLog, and more |
-| [Persistence](/rails/persistence) | ActiveRecord-backed agent sessions |
-| [Error Services](/rails/errors) | SolidErrors, Sentry, and Honeybadger integration |
+| [Setup & Generators](/ask-docs/rails/setup) | Install, configure, and generate |
+| [Database Tools](/ask-docs/rails/database) | QueryDatabase, ReadModel, ReadLog, and more |
+| [Persistence](/ask-docs/rails/persistence) | ActiveRecord-backed agent sessions |
+| [Error Services](/ask-docs/rails/errors) | SolidErrors, Sentry, and Honeybadger integration |

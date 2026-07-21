@@ -128,5 +128,5 @@ GITHUB_TOKEN=ghp_... bundle exec rake test
 
 ## Next Steps
 
-- [Build custom tools](/extending/custom-tools)
-- [Learn about credentials](/core/auth)
+- [Build custom tools](/ask-docs/extending/custom-tools)
+- [Learn about credentials](/ask-docs/core/auth)

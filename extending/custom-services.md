@@ -201,6 +201,6 @@ Follow the [ask-rb gem conventions](https://github.com/ask-rb) for naming, versi
 
 ## Next Steps
 
-- [Create custom skills for your gem](/extending/custom-skills)
-- [Build a custom tool](/extending/custom-tools)
-- [Learn about the service context pattern](/services/custom)
+- [Create custom skills for your gem](/ask-docs/extending/custom-skills)
+- [Build a custom tool](/ask-docs/extending/custom-tools)
+- [Learn about the service context pattern](/ask-docs/services/custom)

@@ -140,6 +140,6 @@ a `SKILL.md` file inside each directory.
 
 ## Next Steps
 
-- [Build a custom skill](/extending/custom-skills)
-- [Explore service contexts](/services)
-- [Learn about the agent loop](/core/agent)
+- [Build a custom skill](/ask-docs/extending/custom-skills)
+- [Explore service contexts](/ask-docs/services)
+- [Learn about the agent loop](/ask-docs/core/agent)

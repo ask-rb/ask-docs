@@ -273,9 +273,9 @@ export DEBUG=1               # enable MCP debug logging to stderr
 
 ## What's next
 
-- [MCP Client](/core/mcp) — connect your own Ruby app to any MCP server
-- [Tools & Execution](/core/tools) — how tools work in the ask-rb ecosystem
-- [The Agent Loop](/core/agent) — how the agent decides when to call
+- [MCP Client](/ask-docs/core/mcp) — connect your own Ruby app to any MCP server
+- [Tools & Execution](/ask-docs/core/tools) — how tools work in the ask-rb ecosystem
+- [The Agent Loop](/ask-docs/core/agent) — how the agent decides when to call
   `WebSearch` and what it does with the results
 
 ## How it all fits together

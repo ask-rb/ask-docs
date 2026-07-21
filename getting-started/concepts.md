@@ -157,7 +157,7 @@ ENV → ~/.ask/credentials.yml → Rails credentials → Database → OAuth
 
 ## Next Steps
 
-- [Build your first agent](/getting-started/first-agent) if you haven't yet
-- [Explore all core components](/core)
-- [Learn how service contexts work](/services)
-- [Build a custom tool](/extending/custom-tools)
+- [Build your first agent](/ask-docs/getting-started/first-agent) if you haven't yet
+- [Explore all core components](/ask-docs/core)
+- [Learn how service contexts work](/ask-docs/services)
+- [Build a custom tool](/ask-docs/extending/custom-tools)

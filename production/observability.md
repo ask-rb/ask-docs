@@ -118,6 +118,6 @@ The log captures tool calls, LLM requests, errors, and turn completions in a str
 
 ## Next Steps
 
-- [Set up the monitoring dashboard](/production/monitoring)
-- [Configure OpenTelemetry tracing](/production/opentelemetry)
-- [Evaluate LLM outputs](/production/evaluation)
+- [Set up the monitoring dashboard](/ask-docs/production/monitoring)
+- [Configure OpenTelemetry tracing](/ask-docs/production/opentelemetry)
+- [Evaluate LLM outputs](/ask-docs/production/evaluation)

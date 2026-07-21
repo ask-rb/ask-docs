@@ -129,6 +129,6 @@ end
 
 ## Next Steps
 
-- [Set up the monitoring dashboard](/production/monitoring)
-- [Evaluate LLM outputs](/production/evaluation)
-- [Learn about observability events](/production/observability)
+- [Set up the monitoring dashboard](/ask-docs/production/monitoring)
+- [Evaluate LLM outputs](/ask-docs/production/evaluation)
+- [Learn about observability events](/ask-docs/production/observability)

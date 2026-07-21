@@ -158,6 +158,6 @@ Ask::Tools.register(Weather)
 
 ## Next Steps
 
-- [Build a custom provider](/extending/custom-providers)
-- [Create a custom agent](/extending/custom-agents)
-- [Publish a custom service gem](/extending/custom-services)
+- [Build a custom provider](/ask-docs/extending/custom-providers)
+- [Create a custom agent](/ask-docs/extending/custom-agents)
+- [Publish a custom service gem](/ask-docs/extending/custom-services)

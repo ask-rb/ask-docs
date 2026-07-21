@@ -103,6 +103,6 @@ end
 
 ## Next Steps
 
-- [Use the database tools](/rails/database)
-- [Set up error monitoring](/rails/errors)
-- [Build custom agents](/extending/custom-agents)
+- [Use the database tools](/ask-docs/rails/database)
+- [Set up error monitoring](/ask-docs/rails/errors)
+- [Build custom agents](/ask-docs/extending/custom-agents)

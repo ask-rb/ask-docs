@@ -121,7 +121,7 @@ session.run("Now tell me about last week")
 
 ## What's next?
 
-- [Explore all Rails tools](/rails/database)
-- [Configure error monitoring](/rails/errors)
-- [Add custom tools](/extending/custom-tools)
-- [Learn the core concepts](/getting-started/concepts)
+- [Explore all Rails tools](/ask-docs/rails/database)
+- [Configure error monitoring](/ask-docs/rails/errors)
+- [Add custom tools](/ask-docs/extending/custom-tools)
+- [Learn the core concepts](/ask-docs/getting-started/concepts)

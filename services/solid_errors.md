@@ -158,5 +158,5 @@ bundle exec rake test  # 41 tests, 76 assertions
 
 ## Next Steps
 
-- [Set up Rails error monitoring](/rails/errors)
-- [Learn about observability](/production/observability)
+- [Set up Rails error monitoring](/ask-docs/rails/errors)
+- [Learn about observability](/ask-docs/production/observability)

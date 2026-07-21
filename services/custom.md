@@ -206,6 +206,6 @@ gem push ask-my_service-0.1.0.gem
 
 ## Next Steps
 
-- [Explore existing service gems](/services)
-- [Build a custom tool](/extending/custom-tools)
-- [Create custom skills](/extending/custom-skills)
+- [Explore existing service gems](/ask-docs/services)
+- [Build a custom tool](/ask-docs/extending/custom-tools)
+- [Create custom skills](/ask-docs/extending/custom-skills)

@@ -11,7 +11,7 @@ Run your agents in production with confidence. Monitor costs, trace requests, ev
 
 | Page | What's covered |
 |---|---|
-| [Observability & Events](/production/observability) | Instrumentation, events, cost tracking |
-| [Monitoring Dashboard](/production/monitoring) | Rails engine dashboard, metrics, alerts |
-| [OpenTelemetry Tracing](/production/opentelemetry) | Distributed tracing with Langfuse, Datadog, Honeycomb |
-| [Evaluating LLM Outputs](/production/evaluation) | Deterministic and LLM-as-judge assertions |
+| [Observability & Events](/ask-docs/production/observability) | Instrumentation, events, cost tracking |
+| [Monitoring Dashboard](/ask-docs/production/monitoring) | Rails engine dashboard, metrics, alerts |
+| [OpenTelemetry Tracing](/ask-docs/production/opentelemetry) | Distributed tracing with Langfuse, Datadog, Honeycomb |
+| [Evaluating LLM Outputs](/ask-docs/production/evaluation) | Deterministic and LLM-as-judge assertions |

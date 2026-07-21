@@ -138,6 +138,6 @@ All gems follow semantic versioning. Breaking changes increment the major versio
 
 ## Next Steps
 
-- [Browse the API reference](/reference/api)
-- [Learn about the design philosophy](/reference/design)
-- [Get started with your first agent](/getting-started/first-agent)
+- [Browse the API reference](/ask-docs/reference/api)
+- [Learn about the design philosophy](/ask-docs/reference/design)
+- [Get started with your first agent](/ask-docs/getting-started/first-agent)

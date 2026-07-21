@@ -131,6 +131,6 @@ With the Rails toolset, an agent can:
 
 ## Next Steps
 
-- [Configure session persistence](/rails/persistence)
-- [Set up error monitoring](/rails/errors)
-- [Build a custom tool](/extending/custom-tools)
+- [Configure session persistence](/ask-docs/rails/persistence)
+- [Set up error monitoring](/ask-docs/rails/errors)
+- [Build a custom tool](/ask-docs/extending/custom-tools)

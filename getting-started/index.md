@@ -11,6 +11,6 @@ New to ask-rb? Start here. Build your first agent in 5 minutes, add AI to an exi
 
 | Page | What you'll learn |
 |---|---|
-| [Your First Agent](/getting-started/first-agent) | Install, configure, and run an agent in under 5 minutes |
-| [AI in Your Rails App](/getting-started/rails-ai) | Add ask-rails to an existing Rails app |
-| [Core Concepts](/getting-started/concepts) | The mental model behind the ecosystem |
+| [Your First Agent](/ask-docs/getting-started/first-agent) | Install, configure, and run an agent in under 5 minutes |
+| [AI in Your Rails App](/ask-docs/getting-started/rails-ai) | Add ask-rails to an existing Rails app |
+| [Core Concepts](/ask-docs/getting-started/concepts) | The mental model behind the ecosystem |

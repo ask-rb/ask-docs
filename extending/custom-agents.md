@@ -200,6 +200,6 @@ end
 
 ## Next Steps
 
-- [Publish a custom service gem](/extending/custom-services)
-- [Create custom skills](/extending/custom-skills)
-- [Build a custom tool](/extending/custom-tools)
+- [Publish a custom service gem](/ask-docs/extending/custom-services)
+- [Create custom skills](/ask-docs/extending/custom-skills)
+- [Build a custom tool](/ask-docs/extending/custom-tools)

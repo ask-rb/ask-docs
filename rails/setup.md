@@ -99,6 +99,6 @@ ask-rails automatically discovers installed service gems. If you add `ask-github
 
 ## Next Steps
 
-- [Use the database tools](/rails/database)
-- [Configure session persistence](/rails/persistence)
-- [Set up error monitoring](/rails/errors)
+- [Use the database tools](/ask-docs/rails/database)
+- [Configure session persistence](/ask-docs/rails/persistence)
+- [Set up error monitoring](/ask-docs/rails/errors)

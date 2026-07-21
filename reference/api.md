@@ -535,6 +535,6 @@ assert_regex response, /pattern/
 
 ## Next Steps
 
-- [Browse the Gem Index](/reference/gems)
-- [Read the Design Philosophy](/reference/design)
-- [Get started with your first agent](/getting-started/first-agent)
+- [Browse the Gem Index](/ask-docs/reference/gems)
+- [Read the Design Philosophy](/ask-docs/reference/design)
+- [Get started with your first agent](/ask-docs/getting-started/first-agent)

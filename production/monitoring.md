@@ -96,6 +96,6 @@ end
 
 ## Next Steps
 
-- [Configure OpenTelemetry tracing](/production/opentelemetry)
-- [Evaluate LLM outputs](/production/evaluation)
-- [Learn about observability events](/production/observability)
+- [Configure OpenTelemetry tracing](/ask-docs/production/opentelemetry)
+- [Evaluate LLM outputs](/ask-docs/production/evaluation)
+- [Learn about observability events](/ask-docs/production/observability)

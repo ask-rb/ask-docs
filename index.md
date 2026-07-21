@@ -21,13 +21,13 @@ gem "ask-agent"
 
 | Section | What's covered |
 |---|---|
-| [Getting Started](/getting-started) | Your first agent, Rails integration, core concepts |
-| [Core Components](/core) | LLM providers, tools, sandboxes, agent loop, skills, schema, auth |
-| [Rails Integration](/rails) | Setup, database tools, persistence, error services |
-| [Service Contexts](/services) | GitHub, Slack, Notion, Linear, Sentry, Honeybadger |
-| [Production](/production) | Observability, monitoring, tracing, evaluation |
-| [Extending](/extending) | Custom tools, providers, agents, services, skills |
-| [Reference](/reference) | Gem index, API docs, design philosophy |
+| [Getting Started](/ask-docs/getting-started) | Your first agent, Rails integration, core concepts |
+| [Core Components](/ask-docs/core) | LLM providers, tools, sandboxes, agent loop, skills, schema, auth |
+| [Rails Integration](/ask-docs/rails) | Setup, database tools, persistence, error services |
+| [Service Contexts](/ask-docs/services) | GitHub, Slack, Notion, Linear, Sentry, Honeybadger |
+| [Production](/ask-docs/production) | Observability, monitoring, tracing, evaluation |
+| [Extending](/ask-docs/extending) | Custom tools, providers, agents, services, skills |
+| [Reference](/ask-docs/reference) | Gem index, API docs, design philosophy |
 
 ## Design philosophy
 
@@ -42,4 +42,4 @@ gem "ask-agent"
 
 ## Ready to build?
 
-Jump to [Getting Started](/getting-started/first-agent) and have an agent running in 5 minutes.
+Jump to [Getting Started](/ask-docs/getting-started/first-agent) and have an agent running in 5 minutes.

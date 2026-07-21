@@ -139,5 +139,5 @@ end
 
 ## Next Steps
 
-- [Build custom tools](/extending/custom-tools)
-- [Explore the agent loop](/core/agent)
+- [Build custom tools](/ask-docs/extending/custom-tools)
+- [Explore the agent loop](/ask-docs/core/agent)

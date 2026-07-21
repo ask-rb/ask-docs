@@ -150,6 +150,6 @@ end
 
 ## Next Steps
 
-- [Build a custom tool with parameters](/extending/custom-tools)
-- [Use structured output with any provider](/core/providers)
-- [Learn about tool execution](/core/tools)
+- [Build a custom tool with parameters](/ask-docs/extending/custom-tools)
+- [Use structured output with any provider](/ask-docs/core/providers)
+- [Learn about tool execution](/ask-docs/core/tools)

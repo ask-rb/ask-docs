@@ -113,7 +113,7 @@ You'll see the agent's response stream in real-time, with tool execution progres
 
 ## Next steps
 
-- [Add AI to your Rails app](/getting-started/rails-ai)
-- [Learn the core concepts](/getting-started/concepts)
-- [Explore all tools](/core/tools)
-- [Build custom tools](/extending/custom-tools)
+- [Add AI to your Rails app](/ask-docs/getting-started/rails-ai)
+- [Learn the core concepts](/ask-docs/getting-started/concepts)
+- [Explore all tools](/ask-docs/core/tools)
+- [Build custom tools](/ask-docs/extending/custom-tools)

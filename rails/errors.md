@@ -118,12 +118,12 @@ response = session.run(
 
 ## Next Steps
 
-- [Explore all error service gems](/services#error-tracking)
-- [Learn about observability](/production/observability)
-- [Evaluate LLM outputs](/production/evaluation)
+- [Explore all error service gems](/ask-docs/services#error-tracking)
+- [Learn about observability](/ask-docs/production/observability)
+- [Evaluate LLM outputs](/ask-docs/production/evaluation)
 
 ## Links
 
-- [Sentry service gem](/services/sentry) — Full API reference for Ask::Sentry
-- [Honeybadger service gem](/services/honeybadger) — Full API reference for Ask::Honeybadger
-- [SolidErrors service gem](/services/solid_errors) — Full API reference for Ask::SolidErrors
+- [Sentry service gem](/ask-docs/services/sentry) — Full API reference for Ask::Sentry
+- [Honeybadger service gem](/ask-docs/services/honeybadger) — Full API reference for Ask::Honeybadger
+- [SolidErrors service gem](/ask-docs/services/solid_errors) — Full API reference for Ask::SolidErrors

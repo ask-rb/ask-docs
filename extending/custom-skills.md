@@ -131,6 +131,6 @@ These are automatically available to any project using your gem.
 
 ## Next Steps
 
-- [Build a custom tool](/extending/custom-tools)
-- [Publish a custom service gem](/extending/custom-services)
-- [Learn about the skills system](/core/skills)
+- [Build a custom tool](/ask-docs/extending/custom-tools)
+- [Publish a custom service gem](/ask-docs/extending/custom-services)
+- [Learn about the skills system](/ask-docs/core/skills)

@@ -186,6 +186,6 @@ end
 
 ## Next Steps
 
-- [Build a custom agent](/extending/custom-agents)
-- [Publish a custom service gem](/extending/custom-services)
-- [Create custom skills](/extending/custom-skills)
+- [Build a custom agent](/ask-docs/extending/custom-agents)
+- [Publish a custom service gem](/ask-docs/extending/custom-services)
+- [Create custom skills](/ask-docs/extending/custom-skills)

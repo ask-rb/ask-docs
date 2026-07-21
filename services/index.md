@@ -11,11 +11,11 @@ Pre-built integrations for the services your agents need to interact with. Each 
 
 | Service | Gem | Purpose |
 |---|---|---|
-| [GitHub](/services/github) | ask-github | Issues, PRs, repos, search |
-| [Slack](/services/slack) | ask-slack | Messaging, channels, files |
-| [Notion](/services/notion) | ask-notion | Pages, databases, search |
-| [Linear](/services/linear) | ask-linear | Issue tracking, project management |
-| [Sentry](/services/sentry) | ask-sentry | Error tracking |
-| [Honeybadger](/services/honeybadger) | ask-honeybadger | Error tracking |
-| [SolidErrors](/services/solid_errors) | ask-solid_errors | Database-backed error tracking |
-| [Building a Service Gem](/services/custom) | — | Create your own service context |
+| [GitHub](/ask-docs/services/github) | ask-github | Issues, PRs, repos, search |
+| [Slack](/ask-docs/services/slack) | ask-slack | Messaging, channels, files |
+| [Notion](/ask-docs/services/notion) | ask-notion | Pages, databases, search |
+| [Linear](/ask-docs/services/linear) | ask-linear | Issue tracking, project management |
+| [Sentry](/ask-docs/services/sentry) | ask-sentry | Error tracking |
+| [Honeybadger](/ask-docs/services/honeybadger) | ask-honeybadger | Error tracking |
+| [SolidErrors](/ask-docs/services/solid_errors) | ask-solid_errors | Database-backed error tracking |
+| [Building a Service Gem](/ask-docs/services/custom) | — | Create your own service context |
