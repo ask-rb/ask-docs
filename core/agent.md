@@ -217,6 +217,55 @@ Ask::Agent::Scheduler.stop
 
 Task names are optional but recommended — they let you find and manage jobs at runtime.
 
+## Agent Definitions (Convention-Based)
+
+Define reusable agents in `agents/<name>/agent.rb` or `app/agents/<name>/agent.rb`. The directory name becomes the agent name. Instructions auto-load from a sibling `instructions.md`.
+
+```
+agents/
+├── health_check/
+│   ├── agent.rb           → Definition subclass
+│   └── instructions.md    → auto-loaded system prompt
+├── daily_report/
+│   ├── agent.rb
+│   └── instructions.md
+└── shared/
+    └── tools/             → shared across all agents
+```
+
+```ruby
+# agents/health_check/agent.rb
+class HealthCheckAgent < Ask::Agent::Definition
+  model "gpt-4o"
+  tools :bash, :read, :grep
+  schedule "every 5 minutes"
+end
+```
+
+Create sessions from definitions:
+
+```ruby
+agent = Ask::Agent.new("health_check")
+agent.run("Check server health")
+
+# List all discovered definitions
+Ask::Agent.definitions.each do |name, (klass, dir)|
+  puts "#{name}: #{klass.model}"
+end
+```
+
+### CLI
+
+The `askr` CLI is installed with the gem:
+
+```bash
+askr list                    # List all agents
+askr run health_check        # Run an agent
+askr run health_check "..."  # Run with a prompt
+askr schedule                # Start the scheduler
+askr new deploy_bot          # Scaffold a new agent
+```
+
 ## Configuration
 
 ```ruby

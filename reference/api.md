@@ -167,10 +167,25 @@ Ask::Tools.count
 
 Agent loop. [Source](https://github.com/ask-rb/ask-agent)
 
+### Agent Definitions
+
 ```ruby
-session = Ask::Agent::Session.new(model: "gpt-4o", tools: [MyTool])
-response = session.run("Hello")
-session.run("Follow up")
+# agents/health_check/agent.rb
+class HealthCheckAgent < Ask::Agent::Definition
+  model "gpt-4o"
+  tools :bash, :read, :grep
+  schedule "every 5 minutes"
+end
+
+# Usage
+agent = Ask::Agent.new("health_check")
+agent.run("Check health")
+
+Ask::Agent.definitions  # => { "health_check" => [HealthCheckAgent, "/path/to/agents/health_check"] }
+Ask::Agent.rediscover!
+```
+
+### Low-Level Session API
 
 session.on_event { |event| ... }
 session.id
