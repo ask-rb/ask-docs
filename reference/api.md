@@ -359,6 +359,30 @@ end
 
 Data types: `Ask::State::Lock` (`.id`, `.token`, `.expires_at`, `.expired?`), `Ask::State::QueueEntry` (`.id`, `.value`, `.enqueued_at`).
 
+## ask-provider-tool (in ask-core)
+
+Configuration for built-in tools that run on the provider's infrastructure.
+
+```ruby
+# Provider-executed tools (handled by OpenAI's servers)
+Ask::ProviderTool.web_search(search_context_size: "high")
+Ask::ProviderTool.file_search(vector_store_ids: ["vs_abc"], max_num_results: 10)
+Ask::ProviderTool.code_interpreter(file_ids: ["file_1"])
+
+# Custom provider tool
+Ask::ProviderTool.new(
+  id: "openai.web_search",
+  name: "web_search",
+  args: { search_context_size: "medium" }
+)
+
+# Use with sessions
+session = Ask::Agent::Session.new(
+  model: "gpt-4o",
+  tools: [Bash, Read, Ask::ProviderTool.web_search]
+)
+```
+
 ## ask-schema
 
 JSON Schema DSL. [Source](https://github.com/ask-rb/ask-schema)
