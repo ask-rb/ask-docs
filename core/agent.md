@@ -10,6 +10,10 @@ nav_order: 4
 
 Agent runtime for the ask-rb ecosystem. The core agent loop: think → call tools → execute → feed back → repeat.
 
+**Use ask-agent when** building external-facing AI agents, chatbots, or automated workflows. You bring your own tools, persistence, and UI.
+
+**Use ask-rails when** you want an admin AI co-pilot for your Rails app — it ships with Rails-aware tools (ReadFile, QueryDatabase, ReadModel, ReadLog) and an admin chat UI at `/ask`.
+
 Ported from `RubyLLM::Conductor` to `Ask::Agent` namespace.
 
 ## Installation

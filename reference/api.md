@@ -272,19 +272,38 @@ Ask::Agent::Scheduler.stop
 
 ## ask-rails
 
-Rails integration. [Source](https://github.com/ask-rb/ask-rails)
+Rails integration — admin agent co-pilot for your Rails app. [Source](https://github.com/ask-rb/ask-rails)
+
+**Use ask-rails for:** Internal admin agents that inspect code, query DB, read logs.
+**Use ask-agent for:** External/customer-facing agents with your own tools and UI.
 
 ```ruby
+# config/routes.rb
+authenticate :user, ->(u) { u.admin? } do
+  mount Ask::Rails::Engine, at: "/ask"
+end
+```
+
+```ruby
+# Programmatic access
 Ask::Rails.agent_session
 Ask::Rails.agent_session(user: current_user)
-Ask::Rails.resume(session_id)
-Ask::Rails.most_recent_session(user: current_user)
-Ask::Rails.user_sessions(user: current_user)
 
 Ask::Rails.configure do |c|
   c.default_model = "gpt-4o"
-  c.persistence_interval = 5
+  c.max_turns = 50
 end
+
+# Auth
+Ask::Rails::Auth.check = -> {
+  redirect_to main_app.login_path unless current_user&.admin?
+}
+
+# Engine routes (mounted at /ask)
+# GET  /ask                    → Admin chat UI
+# POST /ask/sessions           → Create session
+# POST /ask/sessions/:id/messages → Send message (SSE streamed)
+# GET  /ask/sessions/:id/messages → Message history
 ```
 
 ## ask-tools-shell
