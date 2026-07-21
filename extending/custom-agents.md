@@ -7,7 +7,77 @@ nav_order: 3
 
 # Custom Agents
 
-Extend `Ask::Agent::Session` with custom hooks, events, compaction strategies, and persistence backends.
+## Agent Definitions (File Convention)
+
+The easiest way to create a reusable agent is with `Ask::Agent::Definition`.
+Create an `agent.rb` file in `agents/<name>/` or `app/agents/<name>/`:
+
+```ruby
+# app/agents/health_check/agent.rb
+class HealthCheckAgent < Ask::Agent::Definition
+  model "gpt-4o"
+  tools :bash, :read, :grep
+  schedule "every 5 minutes"
+end
+```
+
+The directory name becomes the agent name. A sibling `instructions.md` is
+auto-loaded as the system prompt:
+
+```markdown
+# app/agents/health_check/instructions.md
+
+You are a health check agent. Check server status and report issues.
+```
+
+### DSL Options
+
+| Method | Description | Example |
+|---|---|---|
+| `model` | LLM model identifier | `model "gpt-4o"` |
+| `provider` | Provider override | `provider :opencode_go` |
+| `max_turns` | Max conversation turns | `max_turns 30` |
+| `parallel_tools` | Parallel tool execution | `parallel_tools false` |
+| `tools` | Tool symbols or classes | `tools :bash, :read` |
+| `schedule` | Cron/interval schedule | `schedule "every 5 minutes"` |
+| `option` | Arbitrary Session option | `option :temperature, 0.7` |
+
+### Using from Ruby
+
+```ruby
+agent = Ask::Agent.new("health_check")
+agent.run("Check server health")
+```
+
+`Ask::Agent.new` discovers the definition by scanning `agents/` and
+`app/agents/`, loads the instructions file, resolves tools, and creates
+a configured `Session`.
+
+### Tools in Agent Definitions
+
+Tools can live in the agent's own `tools/` directory:
+
+```
+app/agents/health_check/
+├── agent.rb
+├── instructions.md
+└── tools/
+    └── check_disk.rb
+```
+
+Reference them by symbol in the definition:
+
+```ruby
+class HealthCheckAgent < Ask::Agent::Definition
+  tools :check_disk
+end
+```
+
+Tools in `app/agents/<name>/tools/` are auto-discovered by the agent system.
+Tools defined in `app/tools/` (loaded by Rails' autoloader) can also be used
+by referencing the tool class directly or registering with `Ask::Tools.register`.
+
+## Extending Session
 
 ## When to Extend
 
