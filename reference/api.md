@@ -303,6 +303,47 @@ result.exit_code  # => 0
 result.success?   # => true
 ```
 
+## ask-state (in ask-core)
+
+Pluggable state backend for key-value storage, distributed locking, message queues, and ordered lists. [Source](https://github.com/ask-rb/ask-core)
+
+```ruby
+# In-memory (default)
+store = Ask::State::Memory.new
+
+# Key-value with TTL
+store.set("key", "value", ttl: 60)
+store.get("key")         # => "value"
+store.delete("key")
+
+store.set_if_not_exists("lock", "acquired")  # atomic create
+
+# Distributed locking
+lock = store.acquire_lock("resource", ttl: 10)
+store.release_lock("resource", lock) if lock
+
+# Message queues
+store.enqueue("queue-name", { task: "work" })
+entry = store.dequeue("queue-name")
+entry.value       # => { task: "work" }
+entry.id          # => UUID
+entry.enqueued_at # => Time
+
+# Ordered lists with optional max length
+store.list_append("sessions", "session-1", max_length: 100)
+store.list_range("sessions", 0, -1)
+store.list_remove("sessions", "session-1")
+
+# Custom backend
+class RedisAdapter < Ask::State::Adapter
+  def get(key) = redis.get(key)
+  def set(key, value, ttl: nil) = redis.set(key, value, ex: ttl)
+  # ... implement all methods
+end
+```
+
+Data types: `Ask::State::Lock` (`.id`, `.token`, `.expires_at`, `.expired?`), `Ask::State::QueueEntry` (`.id`, `.value`, `.enqueued_at`).
+
 ## ask-schema
 
 JSON Schema DSL. [Source](https://github.com/ask-rb/ask-schema)
