@@ -7,22 +7,27 @@ nav_order: 2
 
 # Database Tools
 
-Seven built-in tools that give your agent deep access to your Rails application.
+Nine built-in tools that give your agent deep access to your Rails application.
 
 ## Quick Start
 
 ```ruby
 session = Ask::Rails.agent_session
 
-# The agent can answer questions about your data
+# The agent can answer questions about your data and schema
 response = session.run("How many users signed up this week?")
+
+# Or ask about the full schema graph
+response = session.run("Map out all the models and their associations")
 ```
 
 Each tool is also usable independently:
 
 ```ruby
+Ask::Rails::Tools::SchemaGraph.new.call(detail: "all")
 Ask::Rails::Tools::QueryDatabase.new.call(sql: "SELECT * FROM users")
 Ask::Rails::Tools::ReadModel.new.call(name: "User")
+Ask::Rails::Tools::RouteInspector.new.call(controller: "users")
 Ask::Rails::Tools::ReadLog.new.call(lines: 50, level: "ERROR")
 ```
 

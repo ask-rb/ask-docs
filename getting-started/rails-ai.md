@@ -89,15 +89,17 @@ response = session.run("What models do we have?")
 puts response
 ```
 
-The agent comes pre-configured with Rails-aware tools:
+The agent comes pre-configured with nine Rails-aware tools:
 
+- **SchemaGraph** — full schema introspection: all models, tables, columns, associations, validations, indexes, and polymorphic relationships
+- **RouteInspector** — parsed route table with verb, path, controller, and action (filterable by controller or pattern)
 - **QueryDatabase** — run read-only SQL with auto-LIMIT (write statements rejected in all environments)
-- **ReadModel** — inspect ActiveRecord models, associations, validators, scopes
-- **ReadLog** — search and filter Rails log files
-- **ReadRoutes** — read the route file (`config/routes.rb`)
-- **RunCommand** — execute shell commands from the app root
+- **ReadModel** — inspect ActiveRecord models, columns, associations, validators, scopes
+- **ReadLog** — search and filter Rails log files with rotated archive support
+- **RunCommand** — execute shell commands from the app root (with configurable allowlist)
 - **SearchCodebase** — full-text grep search in your codebase
 - **ReadFile** — read any file relative to `Rails.root`
+- **ReadRoutes** — read the raw route file (`config/routes.rb`)
 
 ## 4. Mount the admin chat UI
 
