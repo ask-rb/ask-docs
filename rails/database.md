@@ -101,6 +101,58 @@ result = tool.call(command: "rails routes --grep user")
 # result is an Ask::Result with data: { output: "...", exit_status: 0 }
 ```
 
+## RouteInspector
+
+Returns the parsed Rails route table — every route with its HTTP verb, path, controller, and action.
+
+```ruby
+tool = Ask::Rails::Tools::RouteInspector.new
+
+# All routes
+tool.call  # => { routes: [...], count: 42 }
+
+# Routes for a specific controller
+tool.call(controller: "users")
+
+# Routes matching a path pattern
+tool.call(pattern: "admin")
+
+# With internal route details
+tool.call(verbose: true)
+```
+
+Unlike the old `ReadRoutes` (which returns the raw routes.rb file), `RouteInspector` returns structured data the agent can filter and reason about.
+
+## SchemaGraph
+
+Full application schema introspection in a single tool call. The agent gets a complete mental model of every model, table, column, association, and validation.
+
+```ruby
+tool = Ask::Rails::Tools::SchemaGraph.new
+
+# Everything — models, associations, tables, indexes
+tool.call(detail: "all")
+# => { summary: { model_count: 12, ... },
+#      models: [{ name: "User", table_name: "users", columns: [...], associations: {...}, validators: [...] }, ...],
+#      associations: [{ from: "User", to: "Order", type: :has_many, foreign_key: "user_id" }, ...],
+#      tables: { "users": { columns: [...], indexes: [...] }, ... } }
+
+# Just models and their columns
+tool.call(detail: "models")
+
+# Just the association graph (edges between models)
+tool.call(detail: "associations")
+
+# Just tables, columns, and indexes
+tool.call(detail: "tables")
+```
+
+**Agents can now answer questions like:**
+- "How is User connected to Order?"
+- "What models have polymorphic associations?"
+- "Which tables are missing indexes?"
+- "What validations exist on the Payment model?"
+
 ### Command allowlist
 
 Control which commands the agent can run. Configure in your initializer:
