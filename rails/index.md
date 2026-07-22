@@ -7,7 +7,14 @@ has_children: true
 
 # Rails Integration
 
-Bring AI into your Rails application. `ask-rails` wires the entire ask-rb ecosystem into your Rails app with a single gem.
+Give AI agents safe, controlled access to your Rails application.
+
+`ask-rails` wires the ask-rb ecosystem into your Rails app — mounting an
+admin AI agent that can inspect your database, read your code, search logs,
+and run shell commands. All behind your existing authentication.
+
+**This is for internal/admin/ops/development use.** For building customer-facing
+AI features, use `ask-agent` directly (it works in any Ruby app).
 
 | Page | What's covered |
 |---|---|

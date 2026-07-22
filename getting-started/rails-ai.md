@@ -1,13 +1,19 @@
 ---
 layout: default
-title: AI in Your Rails App
+title: Give Agents Access to Your Rails App
 parent: Getting Started
 nav_order: 2
 ---
 
-# AI in Your Rails App
+# Give Agents Access to Your Rails App
 
-Add an AI agent to your Rails application with a single gem. Works with Rails 7.1+.
+Use `ask-rails` when you want an AI agent to inspect your database, read your code,
+search logs, and run commands — for **internal/admin/ops/development use**.
+
+The agent is mounted inside your Rails app and authenticated behind your existing auth.
+This is **not for building customer-facing AI features** — use `ask-agent` directly for that.
+
+Works with Rails 7.1+.
 
 ## 1. Install
 
@@ -26,9 +32,9 @@ rails generate ask_rails:install
 
 The generator creates:
 
-- `config/initializers/ask.rb` — provider and agent configuration
+- `config/initializers/ask_rails.rb` — provider and agent configuration
 - `db/migrate/*_create_ask_sessions.rb` — session persistence migration
-- `app/tools/` — directory for custom tools
+- `app/tools/` — directory for custom tools (with `.keep`)
 
 Run the migration:
 
@@ -38,11 +44,12 @@ rails db:migrate
 
 ## 2. Configure a provider
 
-Open `config/initializers/ask.rb`:
+Open `config/initializers/ask_rails.rb`:
 
 ```ruby
-Ask::Rails.configure do |c|
-  c.default_model = "gpt-4o"
+Ask::Rails.configure do |config|
+  config.default_model = ENV.fetch("ASK_DEFAULT_MODEL", "gpt-4o")
+  config.max_turns = ENV.fetch("ASK_MAX_TURNS", 25).to_i
 end
 ```
 
@@ -57,6 +64,22 @@ openai:
   api_key: sk-your-key-here
 ```
 
+Or use environment variables:
+
+```bash
+export OPENAI_API_KEY="sk-your-key-here"
+```
+
+### Available configuration
+
+| Option | Default | Description |
+|---|---|---|
+| `default_model` | `"gpt-4o"` (or `ASK_DEFAULT_MODEL` env) | LLM model for agent sessions |
+| `max_turns` | `25` (or `ASK_MAX_TURNS` env) | Max think-call-execute cycles per session |
+| `tool_concurrency` | `5` | Number of tools the agent can run in parallel |
+| `system_prompt` | `nil` (built-in default) | Custom system prompt for the agent |
+| `persistence_adapter` | `nil` (in-memory) | A `Persistence` instance for saving sessions |
+
 ## 3. Use your agent
 
 ```ruby
@@ -68,27 +91,30 @@ puts response
 
 The agent comes pre-configured with Rails-aware tools:
 
-- **QueryDatabase** — run read-only SQL with auto-LIMIT and production guard
+- **QueryDatabase** — run read-only SQL with auto-LIMIT (write statements rejected in all environments)
 - **ReadModel** — inspect ActiveRecord models, associations, validators, scopes
 - **ReadLog** — search and filter Rails log files
-- **ReadRoutes** — examine the route table
+- **ReadRoutes** — read the route file (`config/routes.rb`)
 - **RunCommand** — execute shell commands from the app root
 - **SearchCodebase** — full-text grep search in your codebase
+- **ReadFile** — read any file relative to `Rails.root`
 
-## 4. Try it in a controller
+## 4. Mount the admin chat UI
+
+Add the engine mount and auth protection to `config/routes.rb`:
 
 ```ruby
-# app/controllers/agents_controller.rb
-class AgentsController < ApplicationController
-  def ask
-    session = Ask::Rails.agent_session
-    @response = session.run(params[:prompt])
-    render json: { response: @response }
-  rescue Ask::Agent::MaxTurnsExceeded => e
-    render json: { error: "Agent took too many turns" }, status: 422
+# config/routes.rb
+Rails.application.routes.draw do
+  # ... your routes ...
+
+  authenticate :user, ->(u) { u.admin? } do
+    mount Ask::Rails::Engine, at: "/ask"
   end
 end
 ```
+
+Then visit `/ask` in your browser.
 
 ## 5. Use database tools
 
@@ -104,20 +130,20 @@ response = session.run("What associations does the User model have?")
 # => Agent runs: ReadModel on User, returns columns, associations, validators
 ```
 
-QueryDatabase is **read-only in production** — write statements are rejected.
-
 ## 6. Persist sessions
 
-Sessions are automatically saved to the database when you provide a `user_id`:
+Sessions run in-memory by default. To persist them across requests, configure
+a persistence adapter:
 
 ```ruby
-session = Ask::Rails.agent_session(user: current_user)
-session.run("Analyze this week's errors")
-
-# Later
-session = Ask::Rails.resume(session.id)
-session.run("Now tell me about last week")
+# config/initializers/ask_rails.rb
+Ask::Rails.configure do |config|
+  config.persistence_adapter = Ask::Rails::Persistence.new
+end
 ```
+
+The persistence adapter stores sessions in a single `ask_sessions` table
+keyed by `session_id` with a JSONB `data` column.
 
 ## What's next?
 

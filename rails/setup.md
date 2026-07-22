@@ -28,20 +28,29 @@ The generator creates:
 
 | File | Purpose |
 |---|---|
-| `config/initializers/ask.rb` | Provider and agent configuration |
+| `config/initializers/ask_rails.rb` | Provider and agent configuration |
 | `db/migrate/*_create_ask_sessions.rb` | Session persistence table |
-| `app/tools/` | Directory for custom tools (empty) |
+| `app/tools/` | Directory for custom tools (with `.keep`) |
 
 ## Configuration
 
 ```ruby
-# config/initializers/ask.rb
-Ask::Rails.configure do |c|
-  c.default_model = "gpt-4o"
-  c.default_max_turns = 50
-  c.parallel_tool_execution = true
+# config/initializers/ask_rails.rb
+Ask::Rails.configure do |config|
+  config.default_model = ENV.fetch("ASK_DEFAULT_MODEL", "gpt-4o")
+  config.max_turns = ENV.fetch("ASK_MAX_TURNS", 25).to_i
 end
 ```
+
+### Available options
+
+| Option | Default | Description |
+|---|---|---|
+| `default_model` | `"gpt-4o"` (or `ASK_DEFAULT_MODEL` env) | LLM model for agent sessions |
+| `max_turns` | `25` (or `ASK_MAX_TURNS` env) | Max think-call-execute cycles per session |
+| `tool_concurrency` | `5` | Number of tools the agent can run in parallel |
+| `system_prompt` | `nil` (built-in default) | Custom system prompt for the agent |
+| `persistence_adapter` | `nil` (in-memory) | A `Persistence` instance for saving sessions |
 
 ### Provider configuration
 
@@ -65,9 +74,8 @@ export OPENAI_API_KEY="sk-your-key-here"
 ### Customizing providers
 
 ```ruby
-Ask::Rails.configure do |c|
-  # Use Anthropic instead of OpenAI
-  c.default_model = "claude-sonnet-4"
+Ask::Rails.configure do |config|
+  config.default_model = "claude-sonnet-4"
 end
 ```
 

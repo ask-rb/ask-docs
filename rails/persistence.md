@@ -7,96 +7,65 @@ nav_order: 3
 
 # Persistence
 
-Save, load, and resume agent sessions using ActiveRecord. By default, sessions run in-memory with no database needed. Add persistence when you need to continue conversations across requests.
+Save and resume agent sessions using ActiveRecord. By default, sessions run
+in-memory with no database needed. Wire up a persistence adapter when you want
+to continue conversations across requests.
 
 ## How It Works
 
-When you create a session with a user context, the session is automatically persisted:
+The persistence adapter stores sessions as rows in an `ask_sessions` table with
+a JSONB `data` column that holds the full conversation state.
 
 ```ruby
 # In-memory (default) — no database needed
 session = Ask::Rails.agent_session
 
-# Persisted — requires the migration
-session = Ask::Rails.agent_session(user: current_user)
-session.run("What models do we have?")
-# Session is saved to the database
-```
-
-## Session Lifecycle
-
-```ruby
-# Create — session is saved after first message
-session = Ask::Rails.agent_session(user: current_user)
-session.run("Hello")
-
-# Resume — load by session ID
-saved_id = session.id
-later = Ask::Rails.resume(saved_id)
-later.run("Tell me more")
-
-# The resumed session remembers the full conversation history
+# Persisted — requires migration + adapter config
+Ask::Rails.configure do |config|
+  config.persistence_adapter = Ask::Rails::Persistence.new
+end
+session = Ask::Rails.agent_session
 ```
 
 ## Database Schema
 
-The migration creates a single table:
+Run the generator migration to create the table:
+
+```bash
+rails generate ask_rails:install
+rails db:migrate
+```
 
 ```ruby
 create_table :ask_sessions do |t|
-  t.references :user, null: false, polymorphic: true
-  t.text :conversation_data  # Serialized conversation
+  t.string :session_id, null: false
   t.string :model
-  t.integer :turns, default: 0
-  t.datetime :last_used_at
+  t.jsonb :data, default: {}
   t.timestamps
 end
+
+add_index :ask_sessions, :session_id, unique: true
 ```
 
-## Configuration
+## Saving and Loading
 
 ```ruby
-Ask::Rails.configure do |c|
-  # Auto-save every N turns
-  c.persistence_interval = 5
+session = Ask::Rails.agent_session
+session.run("Hello")
 
-  # Maximum sessions per user
-  c.max_sessions_per_user = 100
-end
-```
+# The session ID is returned by the Session object
+saved_id = session.id
 
-## Manual Control
-
-```ruby
-session = Ask::Rails.agent_session(user: current_user, persist: false)
-session.run("Analysis step 1")
-session.save!  # Manual save
-
-session.run("Analysis step 2")
-session.save!
-```
-
-## Resuming Sessions
-
-```ruby
-# By session ID
-session = Ask::Rails.resume(session_id)
-
-# By user (most recent)
-session = Ask::Rails.most_recent_session(user: current_user)
-
-# List all sessions for a user
-Ask::Rails.user_sessions(user: current_user).each do |s|
-  puts "#{s.id}: #{s.turns} turns, last used #{s.last_used_at}"
-end
+# Load it later using the persistence adapter directly
+adapter = Ask::Rails.configuration.persistence_adapter
+data = adapter.load(saved_id)
 ```
 
 ## In-Memory vs Database
 
 | | In-Memory | Database |
 |---|---|---|
-| **Setup** | None (default) | Run migration |
-| **Performance** | Fastest | Fast with index |
+| **Setup** | None (default) | Run migration + configure adapter |
 | **Cross-request** | No | Yes |
 | **Resumability** | No | Yes |
 | **Inspectable** | No | Via Rails console |

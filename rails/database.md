@@ -38,9 +38,10 @@ tool.call(sql: "SELECT * FROM users", limit: 10)
 
 **Features:**
 - Auto-appends `LIMIT 50` if no limit clause is present
-- **Production guard** — only `SELECT` queries allowed in production
+- **Write guard** — `INSERT`, `UPDATE`, `DELETE`, `DROP`, `TRUNCATE`, `ALTER`, `CREATE`, `GRANT`, and `REVOKE` are rejected in all environments
+- **Production guard** — only `SELECT` queries allowed in production (non-SELECT read queries like `EXPLAIN` are also blocked)
 - Binary columns replaced with `[BINARY DATA]`
-- Returns structured data with column names and rows
+- Returns an `Ask::Result` with `data` containing column names and rows
 
 ## ReadModel
 
@@ -88,7 +89,7 @@ tool = Ask::Rails::Tools::ReadRoutes.new
 tool.call
 ```
 
-Returns all routes parsed from `config/routes.rb`.
+Returns the raw content of `config/routes.rb`. The agent receives the route DSL source, not a parsed route table.
 
 ## RunCommand
 
@@ -96,7 +97,8 @@ Run a shell command in the Rails application root directory.
 
 ```ruby
 tool = Ask::Rails::Tools::RunCommand.new
-tool.call(command: "rails routes --grep user")
+result = tool.call(command: "rails routes --grep user")
+# result is an Ask::Result with data: { output: "...", exit_status: 0 }
 ```
 
 ## SearchCodebase

@@ -35,14 +35,24 @@ Then use:
 errors = Ask::SolidErrors.recent(limit: 10)
 errors.map { |e| [e.id, e.exception_class, e.message.truncate(200)] }
 
-# Unresolved errors
+# Find a specific error
+Ask::SolidErrors.find(42)
+
+# Unresolved errors (needs attention)
 Ask::SolidErrors.unresolved
 
-# Filter by class
+# Resolved errors
+Ask::SolidErrors.resolved
+
+# Filter by class or severity
 Ask::SolidErrors.by_class("ActiveRecord::RecordNotFound")
+Ask::SolidErrors.by_severity("error")
 
 # Search messages
 Ask::SolidErrors.search("timeout")
+
+# Count occurrences
+Ask::SolidErrors.occurrence_count(error)
 ```
 
 **No authentication needed** — reads from your Rails database.
@@ -55,10 +65,6 @@ Ask::SolidErrors.search("timeout")
 gem "ask-sentry"
 ```
 
-```bash
-export SENTRY_TOKEN="your-sentry-auth-token"
-```
-
 Then use:
 
 ```ruby
@@ -69,7 +75,18 @@ Ask::Sentry.recent_errors(organization: "myorg", project: "myapp", limit: 10)
 Ask::Sentry.issue_events(12345, limit: 10)
 ```
 
+### Authentication
+
 Generate a token at [sentry.io/settings/account/api/auth-tokens/](https://sentry.io/settings/account/api/auth-tokens/).
+
+The Sentry client resolves credentials through the `ask-auth` chain —
+any of these will work:
+
+1. **Environment variable:** `SENTRY_TOKEN`
+2. **Credentials file:** `~/.ask/credentials.yml` with `sentry_token: <value>`
+3. **Rails credentials:** `rails credentials:edit` and add `sentry_token`
+4. **Database-backed tokens** (via `Ask::Auth`)
+5. **OAuth flow** (via `Ask::Auth`)
 
 ## Honeybadger
 
@@ -79,13 +96,12 @@ Generate a token at [sentry.io/settings/account/api/auth-tokens/](https://sentry
 gem "ask-honeybadger"
 ```
 
-```bash
-export HONEYBADGER_TOKEN="your-honeybadger-token"
-```
-
 Then use:
 
 ```ruby
+# List all projects
+Ask::Honeybadger.projects
+
 # Recent faults
 Ask::Honeybadger.recent_faults(project_id: "PROJECT_ID", limit: 10)
 
@@ -96,7 +112,18 @@ Ask::Honeybadger.fault_summary(project_id: "PROJECT_ID")
 Ask::Honeybadger.fault(project_id: "PROJECT_ID", fault_id: 42)
 ```
 
+### Authentication
+
 Get your token at [app.honeybadger.io/users/edit](https://app.honeybadger.io/users/edit).
+
+The Honeybadger client resolves credentials through the `ask-auth` chain —
+any of these will work:
+
+1. **Environment variable:** `HONEYBADGER_TOKEN`
+2. **Credentials file:** `~/.ask/credentials.yml` with `honeybadger_token: <value>`
+3. **Rails credentials:** `rails credentials:edit` and add `honeybadger_token`
+4. **Database-backed tokens** (via `Ask::Auth`)
+5. **OAuth flow** (via `Ask::Auth`)
 
 ## Example: Debug with Error Context
 
