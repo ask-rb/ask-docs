@@ -54,6 +54,47 @@ end
 | `persistence_adapter` | `nil` (in-memory) | A `Persistence` instance for saving sessions |
 | `current_user` | `nil` | A proc returning a hash of user context (id, email, etc.) attached to every audit log entry |
 
+### Per-Environment Permissions
+
+Control access modes and command allowlists per Rails environment:
+
+```ruby
+Ask::Rails.configure do |config|
+  # Production is read-only with strict command restrictions
+  config.environment :production do |env|
+    env.mode = :read_only
+    env.allowed_commands = [/^rails routes/, /^rails log/]
+    env.denied_commands = [/rm/, /dropdb/, /curl/]
+  end
+
+  # Staging asks before changes
+  config.environment :staging do |env|
+    env.mode = :ask_before_changes
+    env.allowed_commands = [/^rails /, /^git status/]
+  end
+
+  # Development stays unrestricted (default)
+  config.environment :development do |env|
+    env.mode = :full_access
+  end
+end
+```
+
+**Available modes:**
+
+| Mode | Effect |
+|---|---|
+| `:full_access` | All tools allowed, no approval needed |
+| `:read_only` | Write/edit/bash/destroy tools blocked |
+| `:ask_before_changes` | Write/edit/bash/destroy require approval |
+
+When a mode is set, `agent_session` automatically creates a `Permissions` extension
+that enforces the mode at the agent loop level. The command allowlist rules apply
+additionally to the `RunCommand` tool.
+
+If no environment config matches `Rails.env`, the global `allowed_commands` and
+`denied_commands` are used as fallback.
+
 ### Audit Log
 
 Every tool call is automatically recorded in the `ask_audit_logs` table with:
