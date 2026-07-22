@@ -30,6 +30,7 @@ The generator creates:
 |---|---|
 | `config/initializers/ask_rails.rb` | Provider and agent configuration |
 | `db/migrate/*_create_ask_sessions.rb` | Session persistence table |
+| `db/migrate/*_create_ask_audit_logs.rb` | Audit log table (tool call recording) |
 | `app/tools/` | Directory for custom tools (with `.keep`) |
 
 ## Configuration
@@ -51,6 +52,26 @@ end
 | `tool_concurrency` | `5` | Number of tools the agent can run in parallel |
 | `system_prompt` | `nil` (built-in default) | Custom system prompt for the agent |
 | `persistence_adapter` | `nil` (in-memory) | A `Persistence` instance for saving sessions |
+| `current_user` | `nil` | A proc returning a hash of user context (id, email, etc.) attached to every audit log entry |
+
+### Audit Log
+
+Every tool call is automatically recorded in the `ask_audit_logs` table with:
+- **Intent** — which tool was called and with what params (sensitive keys like `password`, `token`, `api_key` are redacted)
+- **Outcome** — success/error/rejected status and duration
+- **User context** — who initiated the call (if `current_user` is configured)
+
+The audit log is append-only and never stores full result data — only metadata (row counts, exit statuses, file sizes).
+
+Subscribe to audit events in your app:
+
+```ruby
+ActiveSupport::Notifications.subscribe("audit_log.ask_rails") do |event|
+  if event.payload[:tool_name] == "RunCommand" && event.payload[:status] == "error"
+    SlackNotifier.notify("Agent command failed: #{event.payload[:error_message]}")
+  end
+end
+```
 
 ### Provider configuration
 
