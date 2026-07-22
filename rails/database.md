@@ -101,6 +101,25 @@ result = tool.call(command: "rails routes --grep user")
 # result is an Ask::Result with data: { output: "...", exit_status: 0 }
 ```
 
+### Command allowlist
+
+Control which commands the agent can run. Configure in your initializer:
+
+```ruby
+Ask::Rails.configure do |config|
+  # Only allow these patterns
+  config.allowed_commands = [/^rails /, /^git status/, /^bundle exec rspec/]
+
+  # Explicitly deny these (takes precedence over allowed)
+  config.denied_commands = [/rm /, /dropdb/, /rake db:/]
+end
+```
+
+- `denied_commands` is checked first — any match blocks the command
+- Then `allowed_commands` is checked — if set, the command must match at least one pattern
+- If both are `nil` (default), all commands are allowed
+- Blocked commands return an error and are recorded in the audit log
+
 ## SearchCodebase
 
 Full-text code search using grep.
