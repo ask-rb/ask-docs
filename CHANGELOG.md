@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.2.0] — 2026-07-24
+
+### Added
+
+- **Evaluator documentation** — New section on `core/agent.md` covering the
+  `Ask::Agent::Evaluator` class: generator/evaluator separation, quick start,
+  three verdicts (accept/revise/block), custom rubrics, events, and configuration.
+- **Gem index update** — `reference/gems.md` updated to mention the Evaluator
+  in the ask-agent description.
+
 ## [0.1.0] — 2026-06-21
 
 ### Added

@@ -42,7 +42,7 @@ These gems implement the `Ask::Tool` contract. Each tool is a standalone unit an
 
 | Gem | Purpose |
 |---|---|
-| **[ask-agent](https://github.com/ask-rb/ask-agent)** | The core agent loop — think, call tools, execute, feed results back, repeat. Manages sessions (conversation state with an LLM), tool execution (resolving tool names to calls, passing results back as messages), conversation compaction (trimming history while preserving context), lifecycle hooks, and event emission. Ported from `RubyLLM::Conductor` into the `Ask::Agent` namespace. |
+| **[ask-agent](https://github.com/ask-rb/ask-agent)** | The core agent loop — think, call tools, execute, feed results back, repeat. Manages sessions (conversation state with an LLM), tool execution (resolving tool names to calls, passing results back as messages), conversation compaction (trimming history while preserving context), lifecycle hooks, event emission, and **independent response evaluation** through the `Evaluator` (a separate model judges output against a structured rubric). Ported from `RubyLLM::Conductor` into the `Ask::Agent` namespace. |
 
 ## Rails
 

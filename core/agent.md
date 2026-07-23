@@ -34,6 +34,7 @@ gem "ask-agent"
 | `Events` | Streaming events for monitoring |
 | `Telemetry` | File-backed telemetry for error tracking |
 | `Reflector` | Assistant response self-evaluation |
+| `Evaluator` | Independent response evaluation with structured rubric, separate model, isolated context |
 | `MetaAgent` | Self-improvement from telemetry analysis |
 
 ## Quick Start
@@ -99,6 +100,96 @@ end
 ```
 
 The `ask-monitoring` Rails engine hooks into these automatically for its dashboard.
+
+## Evaluator
+
+{: .new }
+> New in ask-agent 0.15.0
+
+Independent response evaluation with **generator/evaluator separation**. The evaluator uses a separate model (different from the session's model) and an isolated context to judge the agent's output — preventing the anti-pattern of a model grading its own work.
+
+This is different from `Reflector` (which has the same model evaluate its own output). The `Evaluator` uses an independent model and a structured rubric, so the agent that writes the code is never the one that checks it.
+
+### Quick Start
+
+```ruby
+session = Ask::Agent::Session.new(
+  model: "gpt-4o",
+  evaluator: { model: "claude-sonnet-4", goal: "Write an email validator" }
+)
+session.run("Write a function that validates email addresses")
+```
+
+### Verdicts
+
+| Verdict | What Happens |
+|---------|-------------|
+| `:accept` | Output passes — falls through to the reflector for backward compatibility |
+| `:revise` | Evaluator provides actionable feedback; session runs another turn with feedback injected into system context |
+| `:block` | Output is fundamentally wrong — session returns a blocked message and emits `EvaluationBlocked` |
+
+### Configuration
+
+```ruby
+# Set a global default evaluator model
+Ask::Agent.configure do |c|
+  c.default_evaluator_model = "claude-sonnet-4"
+end
+
+# Then enable with the default
+session = Ask::Agent::Session.new(model: "gpt-4o", evaluator: true)
+
+# Or pass nothing (default) — no evaluation, backward compatible
+session = Ask::Agent::Session.new(model: "gpt-4o")
+```
+
+### Custom Rubric
+
+The default rubric evaluates five dimensions (correctness, completeness, verification, scope, clarity). Pass a custom rubric for domain-specific evaluation:
+
+```ruby
+evaluator = Ask::Agent::Evaluator.new(
+  model: "claude-sonnet-4",
+  rubric: [
+    Ask::Agent::Evaluator::Dimension.new(
+      name: "performance",
+      description: "Is the implementation efficient?",
+      weight: 2
+    )
+  ]
+)
+
+result = evaluator.evaluate(
+  goal: "Write an email validator",
+  response: agent_output
+)
+
+result.accept?  # => true
+result.revise?  # => false
+result.block?   # => false
+result.scores   # => { performance: 2 }
+result.feedback # => "" or "Add unicode character handling"
+```
+
+### Events
+
+The evaluator emits its own events during evaluation:
+
+```ruby
+session.on_event do |event|
+  case event
+  when Ask::Agent::Events::EvaluationStart
+    puts "Evaluating against: #{event.dimensions.join(', ')}"
+  when Ask::Agent::Events::EvaluationDelta
+    print event.content
+  when Ask::Agent::Events::EvaluationEnd
+    puts "Decision: #{event.decision}"
+    puts "Scores: #{event.scores}"
+  when Ask::Agent::Events::EvaluationBlocked
+    puts "Blocked: #{event.feedback}"
+  end
+end
+```
 
 ## Rate-Limit Handling
 
