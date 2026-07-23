@@ -52,18 +52,42 @@ Add to your Gemfile:
 gem "ask-rails-mcp"
 ```
 
-Then mount the endpoint in `config/routes.rb`:
+### Option 1: stdio (local development — recommended)
+
+Run from your Rails app root:
+
+```bash
+cd my-rails-app
+ask-rails-mcp
+```
+
+This boots your Rails app and starts an MCP stdio server. Configure your agent:
+
+```json
+{
+  "mcp": {
+    "servers": {
+      "ask-rails-mcp": {
+        "type": "stdio",
+        "command": "ask-rails-mcp",
+        "args": []
+      }
+    }
+  }
+}
+```
+
+### Option 2: HTTP endpoint (remote/production)
+
+Mount in `config/routes.rb` behind your existing auth:
 
 ```ruby
 Rails.application.routes.draw do
-  # Protect behind your existing auth
   authenticate :user, ->(u) { u.admin? } do
     post "ask/mcp", to: "ask/rails/mcp#handle"
   end
 end
 ```
-
-That's it. The endpoint is at `POST /ask/mcp` and speaks JSON-RPC over HTTP.
 
 ## Connecting an Agent
 
