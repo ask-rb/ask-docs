@@ -49,17 +49,17 @@ add_index :ask_sessions, :session_id, unique: true
 
 ## Saving and Loading
 
-```ruby
-session = Ask::Rails.agent_session
-session.run("Hello")
-
-# The session ID is returned by the Session object
-saved_id = session.id
-
-# Load it later using the persistence adapter directly
-adapter = Ask::Rails.configuration.persistence_adapter
-data = adapter.load(saved_id)
-```
+		```ruby
+		adapter = Ask::Rails.configuration.persistence_adapter
+		
+		session = Ask::Rails.agent_session
+		session.run("Hello")
+		saved_id = session.id
+		
+		# Load it later using the Session.load class method
+		restored = Ask::Agent::Session.load(saved_id, adapter: adapter)
+		restored.run("Continue where I left off")
+		```
 
 ## In-Memory vs Database
 

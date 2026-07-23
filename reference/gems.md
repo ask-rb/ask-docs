@@ -20,6 +20,7 @@ These gems have zero dependencies on other ask-rb gems. They form the bedrock of
 | **[ask-schema](https://github.com/ask-rb/ask-schema)** | A Ruby DSL for building JSON Schema hashes without writing raw hashes. Declare object shapes with `param`, `required`, and type constraints the same way you would in a Rails strong parameters block. Designed for LLM function-calling schemas. |
 | **[ask-auth](https://github.com/ask-rb/ask-auth)** | A credential resolution chain that walks configured providers in order — environment variables, config files, Rails credentials, database-backed tokens, and OAuth flows — and returns the first match. Every service gem in the ecosystem calls `Ask::Auth.resolve(:service_token)` instead of reading env vars directly. |
 | **[ask-sandbox-providers](https://github.com/ask-rb/ask-sandbox-providers)** | Four sandbox backends for safely executing untrusted code: Local process with resource limits (rlimits), Docker containers with read-only rootfs and no network, remote containers via the Daytona API, and Cloudflare Workers sandbox. Swap backends with a single assignment — `Ask::Sandbox.provider = Ask::Sandbox::Docker.new(...)`. |
+| **[ask-state-providers](https://github.com/ask-rb/ask-state-providers)** | Four state backends for persisting agent sessions — SQLite, Redis, PostgreSQL, and MySQL. One `Ask::State::Adapter` contract, four databases, zero coupling to your infrastructure. Default is in-memory (no gem needed); add `ask-state-providers` and a database driver when you need durability, resumability, or distributed state. |
 
 ## LLM Providers
 
@@ -93,12 +94,13 @@ Service gems provide an authenticated client and contextual metadata so agents c
 ## Dependency Graph
 
 ```
-ask-core           ──► (no deps)
-ask-schema         ──► (no deps)
-ask-auth           ──► (no ask deps)
-ask-sandbox-providers ──► (no deps)
-ask-skills         ──► (no deps)
-ask-eval           ──► (no deps)
+	ask-core           ──► (no deps)
+	ask-schema         ──► (no deps)
+	ask-auth           ──► (no ask deps)
+	ask-sandbox-providers ──► (no deps)
+	ask-state-providers   ──► ask-core
+	ask-skills         ──► (no deps)
+	ask-eval           ──► (no deps)
   │
   ├── ask-llm-providers   ──► ask-core, ask-auth
   ├── ask-tools           ──► ask-schema

@@ -122,6 +122,91 @@ Ask::Agent.configure do |c|
 end
 ```
 
+## Persistence (State)
+
+By default sessions run entirely in memory. Pass a `state:` adapter to persist
+conversations across restarts — every turn is saved immediately, so a crash
+mid-conversation doesn't lose progress.
+
+### Quick Start
+
+```ruby
+require "ask-state-providers"
+
+store = Ask::State::Providers::SQLite.new  # or Redis, Postgres, MySQL
+
+session = Ask::Agent::Session.new(
+  model: "gpt-4o",
+  tools: [Ask::Tools::Shell::Bash],
+  state: store
+)
+
+session.run("Investigate the error")
+# Every turn is persisted automatically to the store
+```
+
+### Backends
+
+Any `Ask::State::Adapter` works. The `ask-state-providers` gem ships four:
+
+| Backend | Class | Best For |
+|---------|-------|----------|
+| **SQLite** | `Ask::State::Providers::SQLite` | CLI tools, single-user agents, local dev |
+| **Redis** | `Ask::State::Providers::Redis` | Distributed multi-process deployments |
+| **PostgreSQL** | `Ask::State::Providers::Postgres` | Rails apps with an existing DB pool |
+| **MySQL** | `Ask::State::Providers::MySQL` | Teams already running MySQL |
+
+```ruby
+# SQLite — zero config
+store = Ask::State::Providers::SQLite.new
+
+# Redis — for distributed setups
+store = Ask::State::Providers::Redis.new(url: ENV["REDIS_URL"])
+
+# PostgreSQL — reuse your existing connection
+store = Ask::State::Providers::Postgres.new(url: ENV["DATABASE_URL"])
+```
+
+### Save & Resume
+
+```ruby
+session = Ask::Agent::Session.new(model: "gpt-4o", state: store)
+session.run("Analyze the logs")
+session_id = session.id  # save this somewhere
+
+# Later, in a different process or after a restart:
+restored = Ask::Agent::Session.load(session_id, adapter: store)
+restored.run("What else should I check?")  # picks up where it left off
+```
+
+A session is persisted after every LLM turn and all its metadata (model, tools,
+turn count, token usage) is preserved across loads.
+
+### Backward Compatibility
+
+The old `persistence:` keyword still works but is deprecated:
+
+```ruby
+session = Ask::Agent::Session.new(model: "gpt-4o", persistence: store)
+```
+
+Prefer `state:` — it's shorter and matches the `Ask::State::Adapter` naming.
+
+### Custom Adapter
+
+Any object responding to `get(key)`, `set(key, value)`, and `delete(key)` works
+as a state adapter. This makes it trivial to persist to any backend:
+
+```ruby
+class RedisAdapter
+  def get(key)  = redis.get(key).then { |v| v ? JSON.parse(v) : nil }
+  def set(key, value, ttl: nil) = redis.set(key, JSON.generate(value), ex: ttl)
+  def delete(key) = redis.del(key)
+end
+
+session = Ask::Agent::Session.new(model: "gpt-4o", state: RedisAdapter.new)
+```
+
 ## Events
 
 ```ruby

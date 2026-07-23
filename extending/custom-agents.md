@@ -171,31 +171,34 @@ session = Ask::Agent::Session.new(
 )
 ```
 
-## Custom Persistence
+## Custom State Adapter
 
-Store sessions anywhere:
+Any object responding to `set(key, value)`, `get(key)`, and `delete(key)` works as a state adapter:
 
 ```ruby
-class RedisPersistence
-  def save(session)
-    $redis.set("session:#{session.id}", session.to_json)
-    $redis.expire("session:#{session.id}", 3600)
+class RedisStateAdapter
+  def set(key, value, ttl: nil)
+    $redis.set(key, JSON.generate(value))
+    $redis.expire(key, ttl) if ttl
   end
 
-  def load(session_id)
-    data = $redis.get("session:#{session_id}")
-    data ? Ask::Agent::Session.from_json(data) : nil
+  def get(key)
+    data = $redis.get(key)
+    data ? JSON.parse(data) : nil
   end
 
-  def delete(session_id)
-    $redis.del("session:#{session_id}")
+  def delete(key)
+    $redis.del(key)
   end
 end
 
 session = Ask::Agent::Session.new(
   model: "gpt-4o",
-  persistence: RedisPersistence.new
+  state: RedisStateAdapter.new
 )
+
+# Later, resume the session:
+restored = Ask::Agent::Session.load(session.id, adapter: RedisStateAdapter.new)
 ```
 
 ## Custom Agent Subclass
