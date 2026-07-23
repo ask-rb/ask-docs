@@ -52,7 +52,31 @@ end
 | `tool_concurrency` | `5` | Number of tools the agent can run in parallel |
 | `system_prompt` | `nil` (built-in default) | Custom system prompt for the agent |
 | `persistence_adapter` | `nil` (in-memory) | A `Persistence` instance for saving sessions |
-| `current_user` | `nil` | A proc returning a hash of user context (id, email, etc.) attached to every audit log entry |
+| `current_user` | `nil` | A proc returning a hash of user context attached to every audit log entry |
+| `max_session_age` | `nil` | Auto-delete sessions older than this many seconds (e.g. `7.days`) |
+| `max_sessions` | `nil` | Max sessions to keep (deletes oldest when exceeded) |
+
+### Session Cleanup
+
+```ruby
+Ask::Rails.configure do |config|
+  # Keep at most 1000 sessions, delete sessions older than 7 days
+  config.max_session_age = 7 * 24 * 3600
+  config.max_sessions = 1000
+end
+```
+
+Cleanup runs automatically when `agent_session` is called. You can also run it manually:
+
+```bash
+rails ask_rails:cleanup
+```
+
+Or from Ruby:
+
+```ruby
+Ask::Rails.cleanup!
+```
 
 ### Per-Environment Permissions
 
