@@ -15,6 +15,7 @@ gem "ask-core"
 gem "ask-llm-providers"
 gem "ask-tools"
 gem "ask-agent"
+gem "ask-rag"     # RAG pipeline (loaders, splitters, vector stores)
 ```
 
 ## What you'll find here
@@ -22,7 +23,7 @@ gem "ask-agent"
 | Section | What's covered |
 |---|---|
 | [Getting Started](/ask-docs/getting-started) | Your first agent, Rails integration, core concepts |
-| [Core Components](/ask-docs/core) | LLM providers, tools, sandboxes, agent loop, skills, schema, auth |
+| [Core Components](/ask-docs/core) | LLM providers, tools, sandboxes, agent loop, skills, schema, auth, RAG pipeline |
 | [Rails Integration](/ask-docs/rails) | Setup, database tools, persistence, error services |
 | [Service Contexts](/ask-docs/services) | GitHub, Slack, Notion, Linear, Sentry, Honeybadger |
 | [Production](/ask-docs/production) | Observability, monitoring, tracing, evaluation |

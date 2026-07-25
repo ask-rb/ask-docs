@@ -191,6 +191,45 @@ of `Ask::Result.ok`.
 
 ---
 
+## Ask::Tools::SubAgent — Sub-Agent Delegate Tool
+
+{: .new }
+> New in ask-tools 0.3.0
+
+A tool that delegates a task to a specialized sub-agent. When the coordinator
+LLM calls it, a fresh sub-agent session runs independently with its own model,
+tools, and instructions.
+
+```ruby
+require "ask-tools"
+
+search = Ask::Tools::SubAgent.new(
+  name: "web_search",
+  description: "Search the web for current information",
+  runner: ->(task) {
+    Ask::Agent::Session.new(model: "gpt-4o-mini", tools: [Search])
+      .run(task).to_s
+  }
+)
+
+search.call(task: "Latest Rails release")
+# => "Rails 8.0 was released on..."
+```
+
+The name and description can be set per-instance, so multiple sub-agents
+can coexist in the same tool list:
+
+```ruby
+search = Ask::Tools::SubAgent.new(name: "web_search",     runner: ...)
+review = Ask::Tools::SubAgent.new(name: "code_review",     runner: ...)
+analyze = Ask::Tools::SubAgent.new(name: "data_analysis",  runner: ...)
+```
+
+Use `Ask::Agent.sub_agent_tool` to create these from a session factory
+without writing the runner lambda manually (see [The Agent Loop](agent.md)).
+
+---
+
 ## ask-web-search
 
 **Web search tool powered by SearXNG.** Provides a single tool — `Ask::Tools::WebSearch` — that searches the web via a local SearXNG instance and returns formatted results for LLM consumption.

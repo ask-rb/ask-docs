@@ -18,13 +18,13 @@ a JSONB `data` column that holds the full conversation state.
 
 ```ruby
 # In-memory (default) — no database needed
-session = Ask::Rails.agent_session
+session = Ask::Rails::Harness.agent_session
 
 # Persisted — requires migration + adapter config
-Ask::Rails.configure do |config|
-  config.persistence_adapter = Ask::Rails::Persistence.new
+Ask::Rails::Harness.configure do |config|
+  config.persistence_adapter = Ask::Rails::Harness::Persistence.new
 end
-session = Ask::Rails.agent_session
+session = Ask::Rails::Harness.agent_session
 ```
 
 ## Database Schema
@@ -50,9 +50,9 @@ add_index :ask_sessions, :session_id, unique: true
 ## Saving and Loading
 
 		```ruby
-		adapter = Ask::Rails.configuration.persistence_adapter
-		
-		session = Ask::Rails.agent_session
+			adapter = Ask::Rails::Harness.configuration.persistence_adapter
+
+			session = Ask::Rails::Harness.agent_session
 		session.run("Hello")
 		saved_id = session.id
 		

@@ -166,6 +166,68 @@ end
 | `Ask::ContextLengthExceeded` | Context window exceeded |
 | `Ask::ProviderError` | Other provider API errors (carries `status_code`, `response_body`) |
 
+### Document
+
+`Ask::Document` is a frozen value object for text content with metadata. It flows through every stage of a RAG pipeline — loaded from files, split into chunks, embedded and stored, and returned by retrieval queries.
+
+```ruby
+doc = Ask::Document.new(
+  content: "Ruby was created by Matz in 1995.",
+  metadata: { source: "history.pdf", page: 3 }
+)
+doc.content   # => "Ruby was created by Matz in 1995."
+doc.metadata  # => { source: "history.pdf", page: 3 }
+doc.id        # => nil (optional)
+doc.to_h      # => { content: "...", metadata: { source: "history.pdf", page: 3 } }
+```
+
+Two documents are equal when their content and metadata match. The `id` field is ignored for equality comparisons.
+
+### Content (Multi-Modal)
+
+`Ask::Content` provides typed value objects for multi-modal message content. Messages can carry images, audio, video, and files alongside text.
+
+```ruby
+# Text
+Ask::Content::Text.new("What's in this image?")
+
+# Image from URL
+Ask::Content::Image.new(url: "https://example.com/photo.jpg", mime_type: "image/jpeg")
+
+# Image from base64 data
+Ask::Content::Image.new(base64: "...base64...", mime_type: "image/png")
+
+# Audio
+Ask::Content::Audio.new(url: "https://example.com/audio.mp3", mime_type: "audio/mpeg")
+
+# Video
+Ask::Content::Video.new(url: "https://example.com/video.mp4", mime_type: "video/mp4")
+
+# File (inline content)
+Ask::Content::File.new(data: "file content", mime_type: "text/plain", filename: "notes.txt")
+```
+
+Use content blocks in messages:
+
+```ruby
+msg = Ask::Message.new(role: :user, content: [
+  Ask::Content::Text.new("What's in this image?"),
+  Ask::Content::Image.new(url: "https://example.com/photo.jpg", mime_type: "image/jpeg")
+])
+
+msg.multimodal?      # => true
+msg.content_blocks   # => [Text("What's in this?"), Image(...)]
+msg.content          # => "What's in this image?" (backward compatible)
+
+# Or via conversation
+conv.user([
+  Ask::Content::Text.new("Describe this"),
+  Ask::Content::Image.new(base64: "data", mime_type: "image/png")
+])
+```
+
+Content blocks are frozen value objects with structural equality and `#to_h` serialization. Each provider (OpenAI, Anthropic, etc.) transforms them to its own wire format automatically.
+
 ### CostCalculator
 
 `Ask::LLM::CostCalculator` computes API costs from model pricing data. Supports text and audio tokens, cache read/write, reasoning tokens, and batch tier pricing:

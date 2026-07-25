@@ -2,16 +2,16 @@
 layout: default
 title: Give Agents Access to Your Rails App
 parent: Getting Started
-nav_order: 2
+nav_order: 4
 ---
 
 # Give Agents Access to Your Rails App
 
-Use `ask-rails` when you want an AI agent to inspect your database, read your code,
+Use `ask-rails-harness` when you want an AI agent to inspect your database, read your code,
 search logs, and run commands — for **internal/admin/ops/development use**.
 
 The agent is mounted inside your Rails app and authenticated behind your existing auth.
-This is **not for building customer-facing AI features** — use `ask-agent` directly for that.
+This is **not for building customer-facing AI features** — use `ask-rails` or `ask-agent` directly for that.
 
 Works with Rails 7.1+.
 
@@ -20,19 +20,19 @@ Works with Rails 7.1+.
 Add to your Gemfile:
 
 ```ruby
-gem "ask-rails"
+gem "ask-rails-harness"
 ```
 
 Run:
 
 ```bash
 bundle install
-rails generate ask_rails:install
+rails generate ask_rails_harness:install
 ```
 
 The generator creates:
 
-- `config/initializers/ask_rails.rb` — provider and agent configuration
+- `config/initializers/ask_rails_harness.rb` — provider and agent configuration
 - `db/migrate/*_create_ask_sessions.rb` — session persistence migration
 - `app/tools/` — directory for custom tools (with `.keep`)
 
@@ -44,10 +44,10 @@ rails db:migrate
 
 ## 2. Configure a provider
 
-Open `config/initializers/ask_rails.rb`:
+Open `config/initializers/ask_rails_harness.rb`:
 
 ```ruby
-Ask::Rails.configure do |config|
+Ask::Rails::Harness.configure do |config|
   config.default_model = ENV.fetch("ASK_DEFAULT_MODEL", "gpt-4o")
   config.max_turns = ENV.fetch("ASK_MAX_TURNS", 25).to_i
 end
@@ -84,7 +84,7 @@ export OPENAI_API_KEY="sk-your-key-here"
 
 ```ruby
 # In a controller, job, or console
-session = Ask::Rails.agent_session
+session = Ask::Rails::Harness.agent_session
 response = session.run("What models do we have?")
 puts response
 ```
@@ -111,7 +111,7 @@ Rails.application.routes.draw do
   # ... your routes ...
 
   authenticate :user, ->(u) { u.admin? } do
-    mount Ask::Rails::Engine, at: "/ask"
+    mount Ask::Rails::Harness::Engine, at: "/ask"
   end
 end
 ```
@@ -121,7 +121,7 @@ Then visit `/ask` in your browser.
 ## 5. Use database tools
 
 ```ruby
-session = Ask::Rails.agent_session
+session = Ask::Rails::Harness.agent_session
 
 # The agent can answer questions about your data
 response = session.run("How many users signed up this week?")
@@ -138,9 +138,9 @@ Sessions run in-memory by default. To persist them across requests, configure
 a persistence adapter:
 
 ```ruby
-# config/initializers/ask_rails.rb
-Ask::Rails.configure do |config|
-  config.persistence_adapter = Ask::Rails::Persistence.new
+# config/initializers/ask_rails_harness.rb
+Ask::Rails::Harness.configure do |config|
+  config.persistence_adapter = Ask::Rails::Harness::Persistence.new
 end
 ```
 

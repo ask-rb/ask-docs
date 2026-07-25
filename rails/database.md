@@ -12,7 +12,7 @@ Nine built-in tools that give your agent deep access to your Rails application.
 ## Quick Start
 
 ```ruby
-session = Ask::Rails.agent_session
+session = Ask::Rails::Harness.agent_session
 
 # The agent can answer questions about your data and schema
 response = session.run("How many users signed up this week?")
@@ -24,11 +24,11 @@ response = session.run("Map out all the models and their associations")
 Each tool is also usable independently:
 
 ```ruby
-Ask::Rails::Tools::SchemaGraph.new.call(detail: "all")
-Ask::Rails::Tools::QueryDatabase.new.call(sql: "SELECT * FROM users")
-Ask::Rails::Tools::ReadModel.new.call(name: "User")
-Ask::Rails::Tools::RouteInspector.new.call(controller: "users")
-Ask::Rails::Tools::ReadLog.new.call(lines: 50, level: "ERROR")
+Ask::Rails::Harness::Tools::SchemaGraph.new.call(detail: "all")
+Ask::Rails::Harness::Tools::QueryDatabase.new.call(sql: "SELECT * FROM users")
+Ask::Rails::Harness::Tools::ReadModel.new.call(name: "User")
+Ask::Rails::Harness::Tools::RouteInspector.new.call(controller: "users")
+Ask::Rails::Harness::Tools::ReadLog.new.call(lines: 50, level: "ERROR")
 ```
 
 ## QueryDatabase
@@ -36,7 +36,7 @@ Ask::Rails::Tools::ReadLog.new.call(lines: 50, level: "ERROR")
 Run read-only SQL against your application database.
 
 ```ruby
-tool = Ask::Rails::Tools::QueryDatabase.new
+tool = Ask::Rails::Harness::Tools::QueryDatabase.new
 tool.call(sql: "SELECT * FROM users", limit: 10)
 # => { columns: ["id", "email", ...], rows: [...], count: 10, truncated: false }
 ```
@@ -53,7 +53,7 @@ tool.call(sql: "SELECT * FROM users", limit: 10)
 Introspect an ActiveRecord model — columns, associations, validators, and scopes.
 
 ```ruby
-tool = Ask::Rails::Tools::ReadModel.new
+tool = Ask::Rails::Harness::Tools::ReadModel.new
 tool.call(name: "User")
 # => { name: "User", table_name: "users", primary_key: "id",
 #      columns: [...], associations: {...}, validators: [...], scopes: [...] }
@@ -74,7 +74,7 @@ tool.call(name: "User")
 Read application log files, starting from the most recent entries.
 
 ```ruby
-tool = Ask::Rails::Tools::ReadLog.new
+tool = Ask::Rails::Harness::Tools::ReadLog.new
 tool.call(lines: 50, level: "ERROR", search: "timeout")
 # => { lines: [...], total_lines: 1203, matched_lines: 5, path: "log/production.log" }
 ```
@@ -90,7 +90,7 @@ tool.call(lines: 50, level: "ERROR", search: "timeout")
 Read the complete route table.
 
 ```ruby
-tool = Ask::Rails::Tools::ReadRoutes.new
+tool = Ask::Rails::Harness::Tools::ReadRoutes.new
 tool.call
 ```
 
@@ -101,7 +101,7 @@ Returns the raw content of `config/routes.rb`. The agent receives the route DSL 
 Run a shell command in the Rails application root directory.
 
 ```ruby
-tool = Ask::Rails::Tools::RunCommand.new
+tool = Ask::Rails::Harness::Tools::RunCommand.new
 result = tool.call(command: "rails routes --grep user")
 # result is an Ask::Result with data: { output: "...", exit_status: 0 }
 ```
@@ -111,7 +111,7 @@ result = tool.call(command: "rails routes --grep user")
 Returns the parsed Rails route table — every route with its HTTP verb, path, controller, and action.
 
 ```ruby
-tool = Ask::Rails::Tools::RouteInspector.new
+tool = Ask::Rails::Harness::Tools::RouteInspector.new
 
 # All routes
 tool.call  # => { routes: [...], count: 42 }
@@ -133,7 +133,7 @@ Unlike the old `ReadRoutes` (which returns the raw routes.rb file), `RouteInspec
 Full application schema introspection in a single tool call. The agent gets a complete mental model of every model, table, column, association, and validation.
 
 ```ruby
-tool = Ask::Rails::Tools::SchemaGraph.new
+tool = Ask::Rails::Harness::Tools::SchemaGraph.new
 
 # Everything — models, associations, tables, indexes
 tool.call(detail: "all")
@@ -163,7 +163,7 @@ tool.call(detail: "tables")
 Control which commands the agent can run. Configure in your initializer:
 
 ```ruby
-Ask::Rails.configure do |config|
+Ask::Rails::Harness.configure do |config|
   # Only allow these patterns
   config.allowed_commands = [/^rails /, /^git status/, /^bundle exec rspec/]
 
@@ -182,7 +182,7 @@ end
 Full-text code search using grep.
 
 ```ruby
-tool = Ask::Rails::Tools::SearchCodebase.new
+tool = Ask::Rails::Harness::Tools::SearchCodebase.new
 tool.call(pattern: "class User", path: "app/models")
 ```
 
@@ -191,7 +191,7 @@ tool.call(pattern: "class User", path: "app/models")
 Read any file from the Rails application.
 
 ```ruby
-tool = Ask::Rails::Tools::ReadFile.new
+tool = Ask::Rails::Harness::Tools::ReadFile.new
 tool.call(path: "app/models/user.rb")
 # => { path: "app/models/user.rb", content: "...", size: 1234 }
 ```

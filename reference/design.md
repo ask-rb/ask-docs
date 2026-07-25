@@ -67,7 +67,8 @@ The architecture, philosophy, and decisions behind `ask-rb`.
 | Simple chatbot | `ask-core` + provider | No | No |
 | One-shot tool call | `ask-core` + `ask-tools` + provider | No | No |
 | Coding assistant | `ask-core` + `ask-tools` + `ask-agent` + providers | Yes | Optional |
-| Rails agent | `ask-core` + `ask-tools` + `ask-agent` + `ask-rails` | Yes | Yes (AR) |
+| Rails app (user-facing AI) | `ask-core` + `ask-tools` + `ask-agent` + `ask-rails` | Yes | Optional |
+| Rails admin copilot | `ask-core` + `ask-tools` + `ask-agent` + `ask-rails-harness` | Yes | Yes (AR) |
 
 ## Lessons learned
 

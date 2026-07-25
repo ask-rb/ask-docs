@@ -128,7 +128,7 @@ any of these will work:
 ## Example: Debug with Error Context
 
 ```ruby
-session = Ask::Rails.agent_session
+session = Ask::Rails::Harness.agent_session
 
 # The agent can check errors and debug
 response = session.run(

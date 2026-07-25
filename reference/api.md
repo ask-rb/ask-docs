@@ -272,30 +272,73 @@ Ask::Agent::Scheduler.stop
 
 ## ask-rails
 
-Rails integration — admin agent co-pilot for your Rails app. [Source](https://github.com/ask-rb/ask-rails)
+Rails integration for building AI-powered applications. [Source](https://github.com/ask-rb/ask-rails)
 
-**Use ask-rails for:** Internal admin agents that inspect code, query DB, read logs.
-**Use ask-agent for:** External/customer-facing agents with your own tools and UI.
+**Use ask-rails for:** Adding AI capabilities to your Rails app for your users.
+
+```ruby
+# Terminal
+rails generate ask:install
+
+# config/initializers/ask.rb
+Ask::Agent.configure do |config|
+  config.default_model = ENV.fetch("ASK_DEFAULT_MODEL", "gpt-4o")
+end
+```
+
+```ruby
+# app/agents/support_bot.rb
+class Agents::SupportBot < ApplicationAgent
+  model "gpt-4o"
+  system_prompt "You help users with support questions."
+end
+
+# Anywhere in your app
+agent = Ask::Agent.new("support_bot")
+agent.run("How do I reset my password?")
+
+# One-off conversations
+session = Ask::Agent::Session.new(model: "gpt-4o")
+session.run("Summarize this article") do |chunk|
+  puts chunk.content if chunk.content
+end
+```
+
+**Dependencies:** `ask-agent` (pulls in `ask-core`, `ask-llm-providers`, `ask-tools`, `ask-skills`).
+
+## ask-rails-harness
+
+Admin AI copilot for Rails apps. [Source](https://github.com/ask-rb/ask-rails-harness)
+
+**Use ask-rails-harness for:** Internal admin agents that inspect code, query DB, read logs.
+
+```ruby
+# Gemfile
+gem "ask-rails-harness"
+
+# Terminal
+rails generate ask_rails_harness:install
+```
 
 ```ruby
 # config/routes.rb
 authenticate :user, ->(u) { u.admin? } do
-  mount Ask::Rails::Engine, at: "/ask"
+  mount Ask::Rails::Harness::Engine, at: "/ask"
 end
 ```
 
 ```ruby
 # Programmatic access
-Ask::Rails.agent_session
-Ask::Rails.agent_session(user: current_user)
+Ask::Rails::Harness.agent_session
+Ask::Rails::Harness.agent_session(user: current_user)
 
-Ask::Rails.configure do |c|
+Ask::Rails::Harness.configure do |c|
   c.default_model = "gpt-4o"
   c.max_turns = 50
 end
 
 # Auth
-Ask::Rails::Auth.check = -> {
+Ask::Rails::Harness::Auth.check = -> {
   redirect_to main_app.login_path unless current_user&.admin?
 }
 
@@ -305,6 +348,8 @@ Ask::Rails::Auth.check = -> {
 # POST /ask/sessions/:id/messages → Send message (SSE streamed)
 # GET  /ask/sessions/:id/messages → Message history
 ```
+
+**Dependencies:** `ask-agent`, `ask-tools-shell`, `ask-auth`, `rails >= 7.1`.
 
 ## ask-tools-shell
 

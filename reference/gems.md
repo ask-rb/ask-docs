@@ -16,7 +16,7 @@ These gems have zero dependencies on other ask-rb gems. They form the bedrock of
 
 | Gem | Purpose |
 |---|---|
-| **[ask-core](https://github.com/ask-rb/ask-core)** | Defines the core abstractions every LLM application needs — conversation message containers that normalize roles, a streaming primitives for token-by-token responses, a provider interface that all LLM backends implement, and a model catalog that maps model names to their providers. Ships structured error types so errors bubble up cleanly. |
+| **[ask-core](https://github.com/ask-rb/ask-core)** | Defines the core abstractions every LLM application needs — conversation message containers that normalize roles, multi-modal content types (Text, Image, Audio, Video, File) for rich messages, streaming primitives for token-by-token responses, a provider interface that all LLM backends implement, a document value object for RAG pipelines, and a model catalog that maps model names to their providers. Ships structured error types so errors bubble up cleanly. |
 | **[ask-schema](https://github.com/ask-rb/ask-schema)** | A Ruby DSL for building JSON Schema hashes without writing raw hashes. Declare object shapes with `param`, `required`, and type constraints the same way you would in a Rails strong parameters block. Designed for LLM function-calling schemas. |
 | **[ask-auth](https://github.com/ask-rb/ask-auth)** | A credential resolution chain that walks configured providers in order — environment variables, config files, Rails credentials, database-backed tokens, and OAuth flows — and returns the first match. Every service gem in the ecosystem calls `Ask::Auth.resolve(:service_token)` instead of reading env vars directly. |
 | **[ask-sandbox-providers](https://github.com/ask-rb/ask-sandbox-providers)** | Four sandbox backends for safely executing untrusted code: Local process with resource limits (rlimits), Docker containers with read-only rootfs and no network, remote containers via the Daytona API, and Cloudflare Workers sandbox. Swap backends with a single assignment — `Ask::Sandbox.provider = Ask::Sandbox::Docker.new(...)`. |
@@ -48,7 +48,8 @@ These gems implement the `Ask::Tool` contract. Each tool is a standalone unit an
 
 | Gem | Purpose |
 |---|---|
-| **[ask-rails](https://github.com/ask-rb/ask-rails)** | Rails integration that wires the full ask-rb stack into your application. Ships a Railtie for auto-loading gems, ActiveRecord-backed session persistence, database query and schema inspection tools, a generator for the initializer and migration, and automatic discovery of installed service gems so agents know what integrations are available. |
+| **[ask-rails](https://github.com/ask-rb/ask-rails)** | Rails integration for building AI-powered applications. Provides generators (`rails generate ask:install`), file conventions (`app/agents/`), a railtie that wires `Ask::Agent.logger` to `Rails.logger`, and a base class (`ApplicationAgent`) for defining agents that compose with `ask-agent`, `ask-tools`, and the rest of the ask-rb ecosystem. |
+| **[ask-rails-harness](https://github.com/ask-rb/ask-rails-harness)** | Admin AI copilot for Rails apps. Mounts as a Rails Engine at `/ask` with 9 Rails-aware tools (SchemaGraph, QueryDatabase, ReadModel, RouteInspector, ReadLog, ReadFile, RunCommand, SearchCodebase, ReadRoutes), ActiveRecord session persistence, audit logging, environment permissions, and automatic service gem discovery. For internal/admin/development use. |
 
 ## MCP
 
@@ -85,6 +86,12 @@ Service gems provide an authenticated client and contextual metadata so agents c
 |---|---|
 | **[ask-skills](https://github.com/ask-rb/ask-skills)** | A skill discovery and loading system for agents. Searches project directories, user config paths, and installed gems for markdown skill files. Skills are listed in the agent's system prompt by name and description, then loaded on-demand when the agent decides it needs domain guidance. Ships built-in skills for codebase exploration and debugging methodology. |
 
+## RAG
+
+| Gem | Purpose |
+|---|---|
+| **[ask-rag](https://github.com/ask-rb/ask-rag)** | A RAG pipeline for the ask-rb ecosystem. Load documents from files (Text, Markdown, CSV, JSON, HTML, PDF, Directory), split them into chunks (RecursiveCharacter, Markdown), store embeddings in vector stores (InMemory, PGVector), and retrieve relevant context via similarity search. Supports metadata filtering, MMR (diversified results), and a high-level `Query.query` for one-shot retrieve → prompt → answer. Works standalone or with ask-agent through a search tool. Optional deps: `nokogiri` (HTML), `pdf-reader` (PDF), `pgvector` (PostgreSQL). |
+
 ## Evaluation
 
 | Gem | Purpose |
@@ -118,13 +125,15 @@ Service gems provide an authenticated client and contextual metadata so agents c
   │
   ├── ask-tools-shell  ──► ask-tools, ask-sandbox-providers
   │     └── ask-agent  ──► ask-core, ask-llm-providers, ask-tools, ask-skills
-  │           └── ask-rails  ──► ask-agent, ask-tools-shell, ask-auth
+  │           ├── ask-rails  ──► ask-agent
+  │           └── ask-rails-harness  ──► ask-agent, ask-tools-shell, ask-auth
   │
-  ├── ask-web-search   ──► ask-tools
-  │
-	  └── ask-mcp          ──► (no ask deps)
-	        └── ask-web-search-mcp ──► ask-mcp, ask-web-search
-	```
+	  ├── ask-web-search   ──► ask-tools
+	  ├── ask-rag          ──► ask-core
+	  │
+		  └── ask-mcp          ──► (no ask deps)
+		        └── ask-web-search-mcp ──► ask-mcp, ask-web-search
+		```
 
 ## Installation
 
@@ -132,8 +141,11 @@ Service gems provide an authenticated client and contextual metadata so agents c
 # Single gem
 gem "ask-agent"
 
-# Or the full suite
-gem "ask-rails"  # pulls in agent, tools, shell, auth
+# For Rails apps — user-facing AI features
+gem "ask-rails"
+
+# For Rails apps — admin copilot (pulls in agent, tools, shell, auth)
+gem "ask-rails-harness"
 ```
 
 All gems follow semantic versioning. Breaking changes increment the major version.

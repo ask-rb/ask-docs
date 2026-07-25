@@ -107,9 +107,9 @@ The ask-rb ecosystem ships 13+ skills across its gems. Each skill provides domai
 | `honeybadger.use_honeybadger` | ask-honeybadger | Navigating the Honeybadger Data API |
 | `solid_errors.use_solid_errors` | ask-solid_errors | Querying errors, occurrences, and backtraces |
 | `providers.model_select` | ask-llm-providers | Selecting the right LLM model |
-| `rails.db_debug` | ask-rails | Debugging database performance issues |
-| `rails.deploy_pipeline` | ask-rails | Pre-deployment checklist |
-| `rails.route_trouble` | ask-rails | Debugging routing issues |
+| `rails.db_debug` | ask-rails-harness | Debugging database performance issues |
+| `rails.deploy_pipeline` | ask-rails-harness | Pre-deployment checklist |
+| `rails.route_trouble` | ask-rails-harness | Debugging routing issues |
 | `shell.patterns` | ask-tools-shell | Shell tool composition patterns |
 
 ## Skill Resolution (Progressive Disclosure)

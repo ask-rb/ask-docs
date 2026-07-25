@@ -12,7 +12,9 @@ Agent runtime for the ask-rb ecosystem. The core agent loop: think → call tool
 
 **Use ask-agent when** you want to add AI capabilities to your app for your users — chatbots, automated workflows, coding assistants. Bring your own tools, persistence, and UI. Works in any Ruby app.
 
-**Use ask-rails when** you want to give AI agents access to your Rails app — internal admin tools, ops dashboards, dev assistants. Ships with Rails-aware tools (database, filesystem, logs) and an admin chat UI at `/ask`. Rails 7.1+ only.
+**Use ask-rails-harness when** you want to give AI agents access to your Rails app — internal admin tools, ops dashboards, dev assistants. Ships with Rails-aware tools (database, filesystem, logs) and an admin chat UI at `/ask`. Rails 7.1+ only.
+
+**Use ask-rails when** you want to add AI capabilities to your Rails app for your users. Provides generators, file conventions, and a railtie for building agents with the ask-rb ecosystem. Rails 7.1+ only.
 
 Ported from `RubyLLM::Conductor` to `Ask::Agent` namespace.
 
@@ -309,6 +311,96 @@ session.on_event do |event|
     puts "Running #{event.name}..."
   end
 end
+```
+
+## Sub-Agent Delegation
+
+{: .new }
+> New in ask-agent 0.19.0
+
+Delegate sub-tasks to specialized sub-agents using `Ask::Agent::SubAgent`.
+The coordinator agent sees it as a regular tool — when called, a fresh sub-agent
+session runs independently with its own model, tools, and instructions.
+
+`Ask::Agent::SubAgent` satisfies the tool duck type directly (`name`,
+`description`, `params_schema`, `call`) — pass it in the tools array
+just like any other tool. No wrapping or factory needed.
+
+### From a filesystem definition
+
+If you already have an agent defined in `agents/<name>/agent.rb`, reference
+it by name:
+
+```ruby
+# agents/web_search/agent.rb defines model, tools, instructions
+search = Ask::Agent::SubAgent.new("web_search")
+
+coordinator = Ask::Agent::Session.new(
+  model: "gpt-4o",
+  tools: [search, Ask::Tools::Shell::Bash]
+)
+```
+
+This is the same definition convention used by `Ask::Agent.new("name")`.
+
+### Inline configuration
+
+```ruby
+search = Ask::Agent::SubAgent.new(
+  name: "web_search",
+  description: "Search the web for current information",
+  model: "gpt-4o-mini",                              # cheaper model for search
+  tools: [Ask::Tools::WebSearch],
+  system_prompt: "You are a research assistant."
+)
+
+review = Ask::Agent::SubAgent.new(
+  name: "code_review",
+  description: "Review code for bugs, style issues, and security problems",
+  model: "claude-sonnet-4",                           # better at code review
+  tools: [Ask::Tools::Shell::Read, Ask::Tools::Shell::Grep],
+  system_prompt: "You are a senior code reviewer. Be thorough."
+)
+
+coordinator = Ask::Agent::Session.new(
+  model: "gpt-4o",
+  tools: [search, review, Ask::Tools::Shell::Bash]
+)
+
+coordinator.run("Find the latest Rails release and check our Gemfile")
+```
+
+### With a custom provider
+
+```ruby
+review = Ask::Agent::SubAgent.new(
+  name: "code_review",
+  model: "claude-sonnet-4",
+  provider: :anthropic,
+  tools: [Ask::Tools::Shell::Read, Ask::Tools::Shell::Grep],
+  system_prompt: "You are a senior code reviewer."
+)
+```
+
+### What happens at runtime
+
+1. The coordinator LLM decides to call `web_search` with `task: "Latest Rails version"`
+2. A fresh sub-agent session starts with `gpt-4o-mini` + `WebSearchTool`
+3. The sub-agent searches, processes results, and returns a concise answer
+4. The coordinator receives this as a normal tool response and continues
+
+### Error isolation
+
+If a sub-agent fails (provider outage, rate limit, max turns exceeded), the error
+returns as a regular tool error message. The coordinator can decide to retry,
+rephrase, or skip — the main conversation isn't disrupted.
+
+```ruby
+# Multiple sub-agents, each with distinct identity
+tools = [
+  Ask::Agent::SubAgent.new(name: "data_analysis", model: "gpt-4o", tools: [Analyzer]),
+  Ask::Agent::SubAgent.new(name: "fact_check",    model: "gpt-4o-mini", tools: [WebSearch])
+]
 ```
 
 ## Provider-Executed Tools

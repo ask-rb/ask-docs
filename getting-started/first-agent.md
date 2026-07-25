@@ -113,7 +113,8 @@ You'll see the agent's response stream in real-time, with tool execution progres
 
 ## Next steps
 
-- [Give Agents Access to Your Rails App](/ask-docs/getting-started/rails-ai) — if you're using Rails, ask-rails wires the agent into your app with database tools and an admin UI
+- [Add AI to Your Rails App](/ask-docs/getting-started/rails-app) — build user-facing AI features in your Rails app using ask-rails
+- [Give Agents Access to Your Rails App](/ask-docs/getting-started/rails-ai) — set up the admin copilot for internal debugging and ops
 - [Learn the core concepts](/ask-docs/getting-started/concepts)
 - [Explore all tools](/ask-docs/core/tools)
 - [Build custom tools](/ask-docs/extending/custom-tools)

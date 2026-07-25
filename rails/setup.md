@@ -7,28 +7,28 @@ nav_order: 1
 
 # Setup & Generators
 
-Add AI capabilities to your Rails application.
+Set up the admin AI copilot for your Rails app.
 
 ## Installation
 
 Add to your Gemfile:
 
 ```ruby
-gem "ask-rails"
+gem "ask-rails-harness"
 ```
 
 Run:
 
 ```bash
 bundle install
-rails generate ask_rails:install
+rails generate ask_rails_harness:install
 ```
 
 The generator creates:
 
 | File | Purpose |
 |---|---|
-| `config/initializers/ask_rails.rb` | Provider and agent configuration |
+| `config/initializers/ask_rails_harness.rb` | Provider and agent configuration |
 | `db/migrate/*_create_ask_sessions.rb` | Session persistence table |
 | `db/migrate/*_create_ask_audit_logs.rb` | Audit log table (tool call recording) |
 | `app/tools/` | Directory for custom tools (with `.keep`) |
@@ -36,8 +36,8 @@ The generator creates:
 ## Configuration
 
 ```ruby
-# config/initializers/ask_rails.rb
-Ask::Rails.configure do |config|
+# config/initializers/ask_rails_harness.rb
+Ask::Rails::Harness.configure do |config|
   config.default_model = ENV.fetch("ASK_DEFAULT_MODEL", "gpt-4o")
   config.max_turns = ENV.fetch("ASK_MAX_TURNS", 25).to_i
 end
@@ -59,7 +59,7 @@ end
 ### Session Cleanup
 
 ```ruby
-Ask::Rails.configure do |config|
+Ask::Rails::Harness.configure do |config|
   # Keep at most 1000 sessions, delete sessions older than 7 days
   config.max_session_age = 7 * 24 * 3600
   config.max_sessions = 1000
@@ -69,13 +69,13 @@ end
 Cleanup runs automatically when `agent_session` is called. You can also run it manually:
 
 ```bash
-rails ask_rails:cleanup
+rails ask_rails_harness:cleanup
 ```
 
 Or from Ruby:
 
 ```ruby
-Ask::Rails.cleanup!
+Ask::Rails::Harness.cleanup!
 ```
 
 ### Per-Environment Permissions
@@ -83,7 +83,7 @@ Ask::Rails.cleanup!
 Control access modes and command allowlists per Rails environment:
 
 ```ruby
-Ask::Rails.configure do |config|
+Ask::Rails::Harness.configure do |config|
   # Production is read-only with strict command restrictions
   config.environment :production do |env|
     env.mode = :read_only
@@ -131,7 +131,7 @@ The audit log is append-only and never stores full result data — only metadata
 Subscribe to audit events in your app:
 
 ```ruby
-ActiveSupport::Notifications.subscribe("audit_log.ask_rails") do |event|
+ActiveSupport::Notifications.subscribe("audit_log.ask_rails_harness") do |event|
   if event.payload[:tool_name] == "RunCommand" && event.payload[:status] == "error"
     SlackNotifier.notify("Agent command failed: #{event.payload[:error_message]}")
   end
@@ -160,7 +160,7 @@ export OPENAI_API_KEY="sk-your-key-here"
 ### Customizing providers
 
 ```ruby
-Ask::Rails.configure do |config|
+Ask::Rails::Harness.configure do |config|
   config.default_model = "claude-sonnet-4"
 end
 ```
@@ -168,7 +168,7 @@ end
 ## Quick Start
 
 ```ruby
-session = Ask::Rails.agent_session
+session = Ask::Rails::Harness.agent_session
 response = session.run("What models do we have?")
 ```
 
@@ -176,12 +176,12 @@ The session comes pre-configured with the default model and all Rails-aware tool
 
 ## Components
 
-When you install ask-rails, these components are activated:
+When you install ask-rails-harness, these components are activated:
 
 | Component | Purpose |
 |---|---|
 | **Railtie** | Configures providers, discovers tools and service gems on boot |
-| **Session Factory** | `Ask::Rails.agent_session` creates a pre-configured agent session |
+| **Session Factory** | `Ask::Rails::Harness.agent_session` creates a pre-configured agent session |
 | **Service Discovery** | Auto-discovers installed `ask-*` service gems |
 | **Rails Tools** | Database, filesystem, and code navigation tools |
 | **Persistence** | ActiveRecord adapter for session save/load/resume |
@@ -189,7 +189,7 @@ When you install ask-rails, these components are activated:
 
 ## Service Discovery
 
-ask-rails automatically discovers installed service gems. If you add `ask-github` to your Gemfile, the agent knows how to interact with GitHub without additional configuration.
+ask-rails-harness automatically discovers installed service gems. If you add `ask-github` to your Gemfile, the agent knows how to interact with GitHub without additional configuration.
 
 ## Next Steps
 
