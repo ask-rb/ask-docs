@@ -20,3 +20,4 @@ The building blocks of the ask-rb ecosystem. Each component is a standalone gem 
 | [Credential Resolution](/ask-docs/core/auth) | Environment, file, Rails credentials, OAuth |
 | [MCP Client](/ask-docs/core/mcp) | Model Context Protocol client for Ruby |
 | [Web Search](/ask-docs/core/web-search) | Local SearXNG-backed web search — tool library and MCP server |
+| [RAG Pipeline](/ask-docs/core/rag) | Document loaders, text splitters, vector stores, MMR — full RAG pipeline |
