@@ -237,6 +237,17 @@ class NoOp < Ask::Agent::StreamTransforms::Base
 	end
 	```
 
+### Ask.chat (convenience)
+
+```ruby
+# Quick one-shot chat — no Session setup needed
+Ask.chat("Hello!")
+Ask.chat("Tell me about X", model: "gpt-4o")
+
+# With streaming
+Ask.chat("Stream this") { |chunk| puts chunk.content if chunk.content }
+```
+
 ### Prompt Caching
 
 ```ruby

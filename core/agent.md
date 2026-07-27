@@ -103,6 +103,62 @@ end
 
 The `ask-monitoring` Rails engine hooks into these automatically for its dashboard.
 
+## Audit Log
+
+{: .new }
+
+The agent can log all lifecycle events (tool calls, errors, token usage, turns) to a configurable audit log. This is useful for debugging, compliance, and visibility into what your agents are doing.
+
+### Configuration
+
+```ruby
+# Global — all sessions use this adapter
+Ask::Agent.configure do |c|
+  c.audit_log = { adapter: :active_record }
+end
+
+# Per-session override
+session = Ask::Agent::Session.new(
+  model: "gpt-4o",
+  audit_log: { adapter: :file, path: "tmp/my_agent_audit.jsonl" }
+)
+```
+
+### Built-in Adapters
+
+| Adapter | Description |
+|---|---|
+| `:active_record` | Writes to an `ask_audit_logs` table. Auto-creates the table on first write. For Rails: run `rails generate ask_rails:install` for a proper migration. |
+| `:file` | Appends JSON lines to a file. Good for development. |
+| Custom | Any object implementing `#write(entry)` — see `Ask::Agent::Extensions::AuditLog::Adapter`. |
+
+### Logged Events
+
+| Event | Stored Data |
+|---|---|
+| `session_start` | — |
+| `session_end` | turn_count, tool_calls_made, input_tokens, output_tokens, cost |
+| `turn_end` | turn_number, tool_results_count, tokens, cost |
+| `tool_execution_start` | name, args (sensitive fields redacted) |
+| `tool_execution_end` | name, id, duration_ms, is_error, result |
+| `error` | message, recoverable |
+| `max_turns_exceeded` | max_turns |
+| `loop_detected` | tool_name, repeated_count |
+| `compaction_end` | tokens_before, tokens_after |
+| `evaluation_blocked` | feedback, scores |
+
+Sensitive arguments (`password`, `token`, `api_key`, `sql`, `command`) are redacted automatically.
+
+### Migration
+
+If you're using Rails, generate the audit log migration:
+
+```bash
+rails generate ask_rails:install
+```
+
+This creates `db/migrate/create_ask_audit_logs.rb` with the correct table schema.
+
 ## Evaluator
 
 {: .new }

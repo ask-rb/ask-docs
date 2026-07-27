@@ -40,13 +40,14 @@ Subclass `Ask::Tool` to define a tool that an LLM can call.
 | Method | Description |
 |--------|-------------|
 | `description(text)` | Sets/retrieves the tool's description. Alias: `desc` |
+| `name(text)` | Override the auto-derived tool name. Call with no argument returns the class path |
 | `param(name, type:, desc:, required:)` | Declares a parameter. `type` must be a valid JSON Schema type |
 
 ### Instance Methods
 
 | Method | Returns | Description |
 |--------|---------|-------------|
-| `name` | `String` | Auto-derived from class name: CamelCase → snake_case, strips `_tool` |
+| `name` | `String` | Returns custom name if set via `name ""` DSL, otherwise auto-derived from class name (CamelCase → snake_case, strips `_tool`) |
 | `description` | `String?` | The tool's description |
 | `parameters` | `Hash{Symbol => Parameter}` | Declared parameter definitions |
 | `call(args = {})` | `Ask::Result` | Normalizes args, validates, delegates to `execute` |
