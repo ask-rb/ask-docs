@@ -12,23 +12,30 @@ Framework-agnostic Web Components for building AI chat interfaces. Built with [L
 ## Installation
 
 ```bash
-npm install ask-ui-kit
+npm install @ask-rb/ask-ui-kit
 ```
 
 ### Rails (importmap)
 
 ```bash
-bin/importmap pin ask-ui-kit
+bin/importmap pin @ask-rb/ask-ui-kit
+```
+
+If JSPM doesn't support scoped packages:
+
+```ruby
+# config/importmap.rb
+pin "@ask-rb/ask-ui-kit", to: "https://unpkg.com/@ask-rb/ask-ui-kit@0.1.0/dist/index.js"
 ```
 
 ```erb
-<%= javascript_import_module_tag "ask-ui-kit" %>
+<%= javascript_import_module_tag "@ask-rb/ask-ui-kit" %>
 ```
 
 ### Svelte
 
 ```bash
-npm install ask-ui-kit
+npm install @ask-rb/ask-ui-kit
 ```
 
 ```svelte
