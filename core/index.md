@@ -12,10 +12,11 @@ The building blocks of the ask-rb ecosystem. Each component is a standalone gem 
 | Component | Purpose |
 |---|---|
 | [LLM Providers](/ask-docs/core/providers) | OpenAI, Anthropic, Google, Ollama, Bedrock, Mistral, Cloudflare |
-| [UI Kit](/ask-docs/core/ui-kit) | Framework-agnostic Web Components for AI chat — Lit, Shadow DOM |
+| [UI Kit](/ask-docs/core/ui-kit) | 16 Web Components for AI chat — Lit, Shadow DOM |
 | [Tools & Execution](/ask-docs/core/tools) | Tool framework, shell tools, result types |
 | [Sandbox Providers](/ask-docs/core/sandbox) | Isolated code execution — local, Docker, Daytona, Cloudflare |
 | [The Agent Loop](/ask-docs/core/agent) | Session lifecycle, think-call-execute, compaction |
+| [Workflows & Graphs](/ask-docs/core/graph) | Multi-step durable workflows with checkpointing, sub-graphs, approval, timeouts, retry |
 | [Skills](/ask-docs/core/skills) | On-demand methodology for agents |
 | [Schema & Structured Output](/ask-docs/core/schema) | JSON Schema DSL for tool params and structured output |
 | [Credential Resolution](/ask-docs/core/auth) | Environment, file, Rails credentials, OAuth |
