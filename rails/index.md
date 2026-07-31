@@ -20,6 +20,7 @@ Both gems build on `ask-agent`, which provides the core agent loop. You can use 
 | Page | What's covered |
 |---|---|
 | [Getting Started Guide](/ask-docs/getting-started/rails-app) | Install, define agents, add tools, stream responses |
+| [Actions](/ask-docs/rails/actions) | Operations callable from any channel — web, Slack, voice |
 
 ## ask-rails-harness (admin copilot)
 

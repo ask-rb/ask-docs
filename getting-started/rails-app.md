@@ -35,6 +35,7 @@ The generator creates:
 |---|---|
 | `config/initializers/ask.rb` | Agent + workflow configuration |
 | `app/agents/application_agent.rb` | Base class for your agents |
+| `app/actions/application_action.rb` | Base class for your actions |
 | `app/workflows/application_workflow.rb` | Base class for your workflows (only when ask-graph is installed) |
 | `db/migrate/*_create_ask_state.rb` | Shared key-value table — workflow checkpoints, backed by `Ask::Rails::State` |
 | `db/migrate/*_create_ask_audit_logs.rb` | Agent session audit log |
@@ -45,6 +46,7 @@ Scaffold new components as you build:
 
 ```bash
 rails generate ask:agent support_bot          # app/agents/support_bot.rb
+rails generate ask:action chats create        # app/actions/chats/create.rb
 rails generate ask:workflow notify_customer   # app/workflows/notify_customer/ (requires ask-graph)
 ```
 
