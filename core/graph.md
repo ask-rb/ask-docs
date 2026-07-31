@@ -225,12 +225,12 @@ Set a timeout on any step. If the step takes longer than the given seconds, it r
 step FetchApi, timeout: 10, retry: 2
 ```
 
-Set a default timeout for all steps in a workflow:
+Set a default timeout for all steps in a workflow with `step_timeout`:
 
 ```ruby
 module ApiWorkflow
   class Workflow < Ask::Graph
-    timeout 30
+    step_timeout 30
     step FastOp           # uses 30s
     step SlowOp, timeout: 120  # overrides
   end
@@ -240,10 +240,37 @@ end
 Set a global default for every workflow:
 
 ```ruby
-Ask::Graph.timeout 30
+Ask::Graph.default_step_timeout 30
 ```
 
-Resolution order: step `timeout:` → workflow `timeout` → `Ask::Graph.timeout`. Set `timeout nil` on a child workflow to explicitly clear the parent's default.
+Resolution order: step `timeout:` → workflow `step_timeout` → `Ask::Graph.default_step_timeout`. Set `step_timeout nil` on a child workflow to explicitly clear the parent's default.
+
+## Workflow Timeout
+
+A step timeout caps how long one step may run. A **workflow timeout** caps how long the entire workflow may run. If the total runtime exceeds the limit, the workflow aborts with `Ask::Graph::WorkflowTimeout` — even when no individual step exceeded its own timeout.
+
+```ruby
+module ApiWorkflow
+  class Workflow < Ask::Graph
+    workflow_timeout 60   # the whole workflow must finish within 60s
+
+    step_timeout 30       # each step still capped at 30s
+    step FetchData
+    step ProcessData
+    step StoreData
+  end
+end
+```
+
+Use this when a workflow has a business-level SLA — "this process must complete within a minute" — regardless of how many steps it contains or how long each one takes.
+
+Set a global default for every workflow:
+
+```ruby
+Ask::Graph.default_workflow_timeout 60
+```
+
+Resolution order: workflow `workflow_timeout` → `Ask::Graph.default_workflow_timeout`.
 
 ## Retry
 
@@ -403,8 +430,10 @@ Child.declarations.size   # => 2
 | Option | Where | Purpose |
 |---|---|---|
 | `timeout` | step option | Max seconds per step |
-| `timeout` | class method | Default timeout for all steps in this workflow |
-| `Ask::Graph.timeout` | global | Default timeout for every workflow |
+| `step_timeout` | class method | Default timeout for all steps in this workflow |
+| `Ask::Graph.default_step_timeout` | global | Default step timeout for every workflow |
+| `workflow_timeout` | class method | Total runtime cap for the entire workflow |
+| `Ask::Graph.default_workflow_timeout` | global | Default total runtime cap for every workflow |
 | `retry` | step option | Number of retries on failure |
 | `storage` | class method | Checkpoint backend for this workflow |
 | `Ask::Graph.storage` | global | Default checkpoint backend for all workflows |
