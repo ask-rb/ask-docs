@@ -19,6 +19,7 @@ Add to your Gemfile:
 
 ```ruby
 gem "ask-rails"
+gem "ask-graph"   # optional — add only if you use workflows
 ```
 
 Run:
@@ -30,9 +31,22 @@ rails generate ask:install
 
 The generator creates:
 
-- `config/initializers/ask.rb` — agent configuration
-- `app/agents/application_agent.rb` — base class for your agents
-- `app/agents/` — directory for agent definitions
+| File | Purpose |
+|---|---|
+| `config/initializers/ask.rb` | Agent + workflow configuration |
+| `app/agents/application_agent.rb` | Base class for your agents |
+| `app/workflows/application_workflow.rb` | Base class for your workflows (only when ask-graph is installed) |
+| `db/migrate/*_create_ask_state.rb` | Shared key-value table — workflow checkpoints, backed by `Ask::Rails::State` |
+| `db/migrate/*_create_ask_audit_logs.rb` | Agent session audit log |
+
+The state table works with any database adapter (PostgreSQL, MySQL, SQLite). If you don't use ask-graph, install with `rails generate ask:install --skip-graph`.
+
+Scaffold new components as you build:
+
+```bash
+rails generate ask:agent support_bot          # app/agents/support_bot.rb
+rails generate ask:workflow notify_customer   # app/workflows/notify_customer/ (requires ask-graph)
+```
 
 No API keys are written by the generator. Keys are resolved at runtime by `Ask::Auth` — see step 2.
 
@@ -117,7 +131,50 @@ session = Ask::Agent::Session.new(
 response = session.run("Summarize this article")
 ```
 
-## 5. Add tools that know your app
+## 5. Define a workflow
+
+Workflows are multi-step, crash-safe processes — order fulfillment, document pipelines, approval flows. Scaffold one:
+
+```bash
+rails generate ask:workflow order_fulfillment
+```
+
+This creates `app/workflows/order_fulfillment/workflow.rb` and a `steps/` directory:
+
+```ruby
+# app/workflows/order_fulfillment/workflow.rb
+module OrderFulfillment
+  class Workflow < ApplicationWorkflow
+    step ValidatePayment
+    step NotifyCustomer
+    step ShipOrder
+  end
+end
+```
+
+Steps are plain Ruby classes with a `call(context)` method:
+
+```ruby
+# app/workflows/order_fulfillment/steps/validate_payment.rb
+module OrderFulfillment
+  class ValidatePayment
+    def call(context)
+      context.payment = PaymentService.charge(context.input[:order])
+    end
+  end
+end
+```
+
+Run it:
+
+```ruby
+result = OrderFulfillment::Workflow.call(order: order)
+result.payment
+```
+
+Every step is checkpointed to the `ask_state` table, so a crashed workflow resumes from the last completed step — not the start.
+
+## 6. Add tools that know your app
 
 The real power comes from writing tools that interact with your app's models and services:
 
@@ -149,7 +206,7 @@ class Agents::SupportBot < ApplicationAgent
 end
 ```
 
-## 6. Use streaming for a better UX
+## 7. Use streaming for a better UX
 
 Pass a block to stream responses token-by-token:
 
@@ -170,5 +227,6 @@ For a complete Rails streaming setup, see `Ask::Agent::Streaming` in the [API re
 
 - [Define custom tools](/ask-docs/extending/custom-tools)
 - [Learn the core concepts](/ask-docs/getting-started/concepts)
+- [Build workflows & graphs](/ask-docs/core/graph) — conditions, parallel steps, approval, timeouts
 - [Use the admin copilot](/ask-docs/rails/setup) for internal debugging and ops
 - [Browse the API reference](/ask-docs/reference/api)
