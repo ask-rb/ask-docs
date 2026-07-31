@@ -45,7 +45,7 @@ The state table works with any database adapter (PostgreSQL, MySQL, SQLite). If 
 Scaffold new components as you build:
 
 ```bash
-rails generate ask:agent support_bot          # app/agents/support_bot.rb
+rails generate ask:agent support_bot          # app/agents/support_bot/{agent.rb,instructions.md,tools/}
 rails generate ask:action chats create        # app/actions/chats/create.rb
 rails generate ask:workflow notify_customer   # app/workflows/notify_customer/ (requires ask-graph)
 ```
@@ -85,67 +85,89 @@ The provider is auto-detected from the model name. `"gpt-4o"` resolves to OpenAI
 
 ## 3. Define an agent
 
-Create an agent definition in `app/agents/`:
+Agents follow the ask-agent directory convention — one directory per
+agent under `app/agents/`:
+
+```
+app/agents/support_bot/
+├── agent.rb           # module SupportBot; class Agent < ApplicationAgent
+├── instructions.md    # auto-loaded as the system prompt
+└── tools/             # per-agent tools (referenced with `tools :name`)
+```
 
 ```ruby
-# app/agents/support_bot.rb
-class Agents::SupportBot < ApplicationAgent
-  model "gpt-4o"
-  system_prompt "You are a helpful support agent who answers questions about our products."
+# app/agents/support_bot/agent.rb
+module SupportBot
+  class Agent < ApplicationAgent
+    model "gpt-4o"
+    # tools :search_knowledge_base
+  end
 end
 ```
 
 `ApplicationAgent` inherits from `Ask::Agent::Definition`, which gives you:
 
 - `model` — the LLM to use (any model from `ask-llm-providers`)
-- `system_prompt` — instructions for the agent
-- `tool` — declare tools the agent can use
+- `provider` — optional provider override when the model name doesn't
+  uniquely identify one
+- `max_turns` — maximum agent loop turns (default 25)
+- `tools` — declare tools the agent can use (plural)
 
-Add tools to give your agent capabilities:
+The directory name is the agent name. A sibling `instructions.md` is
+auto-loaded as the system prompt:
+
+```markdown
+# app/agents/support_bot/instructions.md
+
+You are a helpful support agent who answers questions about our products.
+```
+
+Add per-agent tools in `app/agents/support_bot/tools/`:
 
 ```ruby
-# app/agents/support_bot.rb
-class Agents::SupportBot < ApplicationAgent
-  model "gpt-4o"
-  system_prompt "You help users with support questions."
+# app/agents/support_bot/tools/search_knowledge_base.rb
+class SearchKnowledgeBaseTool < Ask::Tool
+  description "Search the knowledge base for relevant information"
 
-  tool :bash
-  tool :read
-  tool :grep
+  def execute(query:)
+    # ...
+  end
 end
 ```
 
+Tools shared across all agents go in `app/agents/shared/tools/`.
+
 ## 4. Run your agent
 
-```ruby
-agent = Ask::Agent.new("support_bot")
-response = agent.run("How do I reset my password?")
-puts response
-```
+  ```ruby
+  agent = Ask::Agent.new("support_bot")
+  response = agent.run("How do I reset my password?")
+  puts response
+  ```
 
-For one-off conversations without a definition file:
+  For one-off conversations without a definition file:
 
-```ruby
-session = Ask::Agent::Session.new(
+  ```ruby
+  session = Ask::Agent::Session.new(
   model: "gpt-4o",
   system_prompt: "You are a helpful assistant."
-)
-response = session.run("Summarize this article")
-```
+  )
+  response = session.run("Summarize this article")
+  ```
 
-## 5. Define a workflow
+  ## 5. Define a workflow
 
-Workflows are multi-step, crash-safe processes — order fulfillment, document pipelines, approval flows. Scaffold one:
+  Workflows are multi-step, crash-safe processes — order fulfillment, document pipelines, approval flows. Scaffold one:
 
-```bash
-rails generate ask:workflow order_fulfillment
-```
+  ```bash
+  rails generate ask:workflow order_fulfillment
+  ```
 
-This creates `app/workflows/order_fulfillment/workflow.rb` and a `steps/` directory:
+  This creates `app/workflows/order_fulfillment/workflow.rb` and a `steps/` directory:
 
-```ruby
-# app/workflows/order_fulfillment/workflow.rb
-module OrderFulfillment
+  ```ruby
+  # app/workflows/order_fulfillment/workflow.rb
+  module OrderFulfillment
   class Workflow < ApplicationWorkflow
     step ValidatePayment
     step NotifyCustomer
@@ -181,8 +203,8 @@ Every step is checkpointed to the `ask_state` table, so a crashed workflow resum
 The real power comes from writing tools that interact with your app's models and services:
 
 ```ruby
-# app/tools/search_products.rb
-class Tools::SearchProducts < Ask::Tool
+# app/agents/support_bot/tools/search_products.rb
+class SearchProductsTool < Ask::Tool
   description "Search products by name or description"
 
   param :query, type: :string, desc: "Search term", required: true
@@ -200,22 +222,23 @@ end
 Then register it with your agent:
 
 ```ruby
-class Agents::SupportBot < ApplicationAgent
-  model "gpt-4o"
-  system_prompt "You help users find products."
-
-  tool :search_products
+# app/agents/support_bot/agent.rb
+module SupportBot
+  class Agent < ApplicationAgent
+    model "gpt-4o"
+    tools :search_products
+  end
 end
 ```
 
-## 7. Use streaming for a better UX
+  ## 7. Use streaming for a better UX
 
-Pass a block to stream responses token-by-token:
+  Pass a block to stream responses token-by-token:
 
-```ruby
-session = Ask::Agent::Session.new(model: "gpt-4o")
+  ```ruby
+  session = Ask::Agent::Session.new(model: "gpt-4o")
 
-session.run("Tell me about our products") do |chunk|
+  session.run("Tell me about our products") do |chunk|
   if chunk.content
     # Send to browser via ActionCable, Turbo Stream, or SSE
     ActionCable.server.broadcast("chat", { content: chunk.content })

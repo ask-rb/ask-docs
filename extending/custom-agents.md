@@ -14,10 +14,12 @@ Create an `agent.rb` file in `agents/<name>/` or `app/agents/<name>/`:
 
 ```ruby
 # app/agents/health_check/agent.rb
-class HealthCheckAgent < Ask::Agent::Definition
-  model "gpt-4o"
-  tools :bash, :read, :grep
-  schedule "every 5 minutes"
+module HealthCheck
+  class Agent < Ask::Agent::Definition
+    model "gpt-4o"
+    tools :bash, :read, :grep
+    schedule "every 5 minutes"
+  end
 end
 ```
 
@@ -68,8 +70,10 @@ app/agents/health_check/
 Reference them by symbol in the definition:
 
 ```ruby
-class HealthCheckAgent < Ask::Agent::Definition
-  tools :check_disk
+module HealthCheck
+  class Agent < Ask::Agent::Definition
+    tools :check_disk
+  end
 end
 ```
 
