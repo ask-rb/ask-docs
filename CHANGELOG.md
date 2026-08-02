@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.7.0] — 2026-08-03
+
+### Added
+
+- **Recorder integration for live LLM examples.** Blocks marked `# recorded`
+  are taped with ask-eval's Recorder into `examples/recordings/` during
+  `rake docs:generate` (with a key) and replayed during `rake docs:verify`,
+  so live-LLM examples are now verified with no key and no network. The
+  runner hooks every registered provider class, which covers both sessions
+  and direct `provider.chat` calls. The first-agent and providers examples
+  use this; their outputs are now deterministic.
+
 ## [0.6.0] — 2026-08-02
 
 ### Added

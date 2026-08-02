@@ -52,9 +52,13 @@ Conventions:
 - A block containing a `# not-verified` line is skipped (Rails-bound
   snippets, live web search, examples whose output is intentionally
   illustrative).
-- Keyed examples (agents, providers) skip automatically when the key is
-  missing. Copy `.env.example` to `.env` (gitignored) and fill in keys to
-  run them locally.
+- A block containing a `# recorded` line makes live LLM calls and is taped
+  with ask-eval's Recorder into `examples/recordings/`. Generate (with a
+  key) records; verify replays, so the block is checked with no key and no
+  network.
+- Keyed examples skip automatically when the key is missing. Copy
+  `.env.example` to `.env` (gitignored) and fill in keys to run them
+  locally.
 
 ## License
 

@@ -21,6 +21,11 @@
 # - A block containing a line matching `# not-verified` is skipped. Use it
 #   for examples that can't run standalone (Rails-bound tools, live web
 #   search) or whose output is intentionally illustrative.
+# - A block containing a line matching `# recorded` makes live LLM calls and
+#   is taped with ask-eval's Recorder. `rake docs:generate` (with a key)
+#   records the provider interactions into examples/recordings/; `rake
+#   docs:verify` replays them, so the block is verified without a key and
+#   without hitting the network.
 # - A block that requires a missing API key (ENV.fetch("X") with no default,
 #   where X is not set) is skipped. Keys live in .env (gitignored); without
 #   them the keyless examples still run and verify in CI.
@@ -38,8 +43,10 @@ require "stringio"
 module DocsExamples
   ROOT = File.expand_path("..", __dir__)
   GEMS_ROOT = ENV.fetch("ASK_GEMS_ROOT") { File.expand_path("..", ROOT) }
+  RECORDINGS_DIR = File.join(ROOT, "examples", "recordings")
 
   NOT_VERIFIED = /\A\s*#\s*not-verified\s*\z/
+  RECORDED = /\A\s*#\s*recorded\s*\z/
   REQUIRED_KEY = /ENV\.fetch\(\s*["']([A-Z0-9_]+)["']\s*\)/
   TRAILING_SLOT = /^(.*?)\s*#\s*=>\s*(.*)$/
   BARE_SLOT = /\A\s*#\s*=>/
@@ -67,6 +74,58 @@ module DocsExamples
     end
   end
 
+  # --------------------------------------------------- recorder integration
+
+  class << self
+    # The Recorder active for the block currently being executed, or nil.
+    attr_accessor :current_recorder
+  end
+
+  # Hooks Ask::Provider#chat (the base class every provider inherits), so it
+  # covers both sessions (Chat -> build_provider -> provider.chat) and direct
+  # provider.chat calls. Only active while DocsExamples.current_recorder is
+  # set; the runner process is the only place the hook lives.
+  module ProviderRecorderHook
+    def chat(*args, **kwargs, &block)
+      recorder = DocsExamples.current_recorder
+      return super unless recorder
+
+      if recorder.replaying?
+        recorder.replay_as_message
+      else
+        result = super
+        recorder.record_call(args: args, kwargs: kwargs, result_data: recorder.send(:serialize, result))
+        result
+      end
+    end
+  end
+
+  @hook_installed = false
+
+  def self.install_recorder_hook!
+    return if @hook_installed
+
+    require "ask"              # ask-core: Ask::Provider
+    require "ask-llm-providers" # registers all 33 providers
+    require "ask-eval"          # Ask::Eval::Recorder
+    # Prepend to the base (custom providers that don't override chat) and to
+    # every registered provider class: OpenAI, Anthropic, and the compat
+    # subclasses all override chat, so a base-only hook would never fire.
+    Ask::Provider.prepend(ProviderRecorderHook)
+    Ask::Provider.providers.values.each { |klass| klass.prepend(ProviderRecorderHook) }
+    @hook_installed = true
+  end
+
+  def self.recorder_for(block, mode)
+    install_recorder_hook!
+    name = "#{File.basename(block.file, ".md")}-#{block.fence_line}"
+    Ask::Eval::Recorder.new(
+      test_name: name,
+      mode: mode == :generate ? :record : :replay,
+      recordings_dir: RECORDINGS_DIR
+    )
+  end
+
   # ------------------------------------------------------------- block model
 
   Block = Struct.new(:file, :fence_line, :code_lines) do
@@ -80,6 +139,10 @@ module DocsExamples
 
     def not_verified?
       code_lines.any? { |l| l.match?(NOT_VERIFIED) }
+    end
+
+    def recorded?
+      code_lines.any? { |l| l.match?(RECORDED) }
     end
 
     def missing_key
@@ -244,12 +307,28 @@ module DocsExamples
         next
       end
 
+      recorder = nil
+      if block.recorded?
+        recorder = recorder_for(block, mode)
+        if mode == :verify && !File.exist?(recorder.recording_path)
+          stats[:errors] << "#{relative(block.file)}:#{block.fence_line} missing recording " \
+                            "(#{recorder.recording_path.delete_prefix("#{ROOT}/")}); " \
+                            "run `rake docs:generate` with the key to create it"
+          next
+        end
+      end
+
       begin
+        DocsExamples.current_recorder = recorder
         replacements = run_block(block)
       rescue StandardError, ScriptError => e
         stats[:errors] << "#{relative(block.file)}:#{block.fence_line} #{e.class}: #{e.message.lines.first.strip}"
         next
+      ensure
+        DocsExamples.current_recorder = nil
       end
+
+      recorder&.save if mode == :generate
 
       stats[:run] += 1
       stats[:slots] += replacements.size

@@ -18,15 +18,15 @@ gem "ask-llm-providers"
 ```ruby
 require "ask-llm-providers"
 
-# not-verified
-# Live provider call: output varies per run. Requires OPENCODE_GO_API_KEY.
+# recorded
+# Live provider call, taped with ask-eval's Recorder. Requires OPENCODE_GO_API_KEY.
 provider = Ask::Provider.resolve(:opencode_go).new
 response = provider.chat(
   [{ role: "user", content: "Say OK in one word." }],
   model: "deepseek-v4-flash"
 )
 response.content
-# => "OK."
+# => "OK"
 ```
 
 Every provider in the gem registers itself with `Ask::Provider`, so you can look one up by slug instead of hardcoding a class. The OpenAI-compatible providers read their key from the matching `*_API_KEY` env var; the canonical providers (OpenAI, Anthropic, ...) resolve theirs through `Ask::Auth`.

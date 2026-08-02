@@ -44,8 +44,8 @@ Create a file called `agent.rb`:
 require "ask-agent"
 require "ask-tools-shell"
 
-# not-verified
-# Live agent run: output varies per call. Requires OPENCODE_GO_API_KEY.
+# recorded
+# Live agent run, taped with ask-eval's Recorder. Requires OPENCODE_GO_API_KEY.
 session = Ask::Agent::Session.new(
   model: "deepseek-v4-flash",
   provider: :opencode_go,

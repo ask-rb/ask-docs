@@ -1,0 +1,2028 @@
+{
+  "test": "first-agent-43",
+  "recorded_at": "2026-08-02T23:33:03Z",
+  "interactions": [
+    {
+      "messages": [
+        {
+          "role": "user",
+          "content": "Run `ruby -v` and answer with only the version string."
+        }
+      ],
+      "model": "deepseek-v4-flash",
+      "result": {
+        "type": "stream",
+        "accumulated_text": "",
+        "chunks": [
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": ""
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": "call_00_ET_94T8l2NNPAOvV7Xm07tR3762",
+                "name": "bash",
+                "arguments": "",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "{",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "\"",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "command",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "\"",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": ": ",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "\"",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "rub",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "y",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": " -",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "v",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "\"",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "}",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": "",
+            "tool_calls": null,
+            "finish_reason": "tool_calls",
+            "thinking": null
+          }
+        ]
+      }
+    },
+    {
+      "messages": [
+        {
+          "role": "user",
+          "content": "Run `ruby -v` and answer with only the version string."
+        }
+      ],
+      "model": "deepseek-v4-flash",
+      "result": {
+        "type": "stream",
+        "accumulated_text": "",
+        "chunks": [
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": ""
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": "call_00_ET_94T8l2NNPAOvV7Xm07tR3762",
+                "name": "bash",
+                "arguments": "",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "{",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "\"",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "command",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "\"",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": ": ",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "\"",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "rub",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "y",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": " -",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "v",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "\"",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "}",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": "",
+            "tool_calls": null,
+            "finish_reason": "tool_calls",
+            "thinking": null
+          }
+        ]
+      }
+    },
+    {
+      "messages": [
+        {
+          "role": "user",
+          "content": "Run `ruby -v` and answer with only the version string."
+        },
+        {
+          "role": "assistant",
+          "content": ""
+        },
+        {
+          "role": "tool",
+          "content": "Tool bash error: {result: #<Ask::Result ok=false error=\"Bash raised Ask::Sandbox::ProviderUnavailable: Cloudflare sandbox proxy Worker not found at https://sandbox-proxy.my-worker.workers.dev. Is the Worker deployed?\">, is_error: true}"
+        },
+        {
+          "role": "user",
+          "content": ""
+        }
+      ],
+      "model": "deepseek-v4-flash",
+      "result": {
+        "type": "stream",
+        "accumulated_text": "",
+        "chunks": [
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": ""
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": "The"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " bash"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " tool"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " failed"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " due"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " to"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " a"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " sand"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": "box"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " provider"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " issue"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": "."
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " Let"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " me"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " try"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " again"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " to"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " see"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " if"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " it"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": "'s"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " transient"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": "."
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": "call_00_gUiep7POMQiwjAhfjpGx4508",
+                "name": "bash",
+                "arguments": "",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "{",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "\"",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "command",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "\"",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": ": ",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "\"",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "rub",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "y",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": " -",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "v",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "\"",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "}",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": "",
+            "tool_calls": null,
+            "finish_reason": "tool_calls",
+            "thinking": null
+          }
+        ]
+      }
+    },
+    {
+      "messages": [
+        {
+          "role": "user",
+          "content": "Run `ruby -v` and answer with only the version string."
+        },
+        {
+          "role": "assistant",
+          "content": ""
+        },
+        {
+          "role": "tool",
+          "content": "Tool bash error: {result: #<Ask::Result ok=false error=\"Bash raised Ask::Sandbox::ProviderUnavailable: Cloudflare sandbox proxy Worker not found at https://sandbox-proxy.my-worker.workers.dev. Is the Worker deployed?\">, is_error: true}"
+        },
+        {
+          "role": "user",
+          "content": ""
+        }
+      ],
+      "model": "deepseek-v4-flash",
+      "result": {
+        "type": "stream",
+        "accumulated_text": "",
+        "chunks": [
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": ""
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": "The"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " bash"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " tool"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " failed"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " due"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " to"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " a"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " sand"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": "box"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " provider"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " issue"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": "."
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " Let"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " me"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " try"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " again"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " to"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " see"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " if"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " it"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": "'s"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " transient"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": "."
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": "call_00_gUiep7POMQiwjAhfjpGx4508",
+                "name": "bash",
+                "arguments": "",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "{",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "\"",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "command",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "\"",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": ": ",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "\"",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "rub",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "y",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": " -",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "v",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "\"",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "}",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": "",
+            "tool_calls": null,
+            "finish_reason": "tool_calls",
+            "thinking": null
+          }
+        ]
+      }
+    },
+    {
+      "messages": [
+        {
+          "role": "user",
+          "content": "Run `ruby -v` and answer with only the version string."
+        },
+        {
+          "role": "assistant",
+          "content": ""
+        },
+        {
+          "role": "tool",
+          "content": "Tool bash error: {result: #<Ask::Result ok=false error=\"Bash raised Ask::Sandbox::ProviderUnavailable: Cloudflare sandbox proxy Worker not found at https://sandbox-proxy.my-worker.workers.dev. Is the Worker deployed?\">, is_error: true}"
+        },
+        {
+          "role": "user",
+          "content": ""
+        },
+        {
+          "role": "assistant",
+          "content": ""
+        },
+        {
+          "role": "tool",
+          "content": "Tool bash error: {result: #<Ask::Result ok=false error=\"Bash raised Ask::Sandbox::ProviderUnavailable: Cloudflare sandbox proxy Worker not found at https://sandbox-proxy.my-worker.workers.dev. Is the Worker deployed?\">, is_error: true}"
+        },
+        {
+          "role": "user",
+          "content": ""
+        }
+      ],
+      "model": "deepseek-v4-flash",
+      "result": {
+        "type": "stream",
+        "accumulated_text": "",
+        "chunks": [
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": ""
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": "The"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " sand"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": "box"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " is"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " unavailable"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": "."
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " Let"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " me"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " try"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " once"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " more"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " or"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " check"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " if"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " there"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": "'s"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " another"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " way"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": "."
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " The"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " bash"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " tool"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " is"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " failing"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " due"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " to"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " a"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " provider"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " issue"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": "."
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " Let"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " me"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " try"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " again"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": "."
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": "call_00_uQvwXhKzaDQA9guSzJM41654",
+                "name": "bash",
+                "arguments": "",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "{",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "\"",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "command",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "\"",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": ": ",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "\"",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "rub",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "y",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": " -",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "v",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": ";",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": " echo",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": " done",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "\"",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "}",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": "",
+            "tool_calls": null,
+            "finish_reason": "tool_calls",
+            "thinking": null
+          }
+        ]
+      }
+    },
+    {
+      "messages": [
+        {
+          "role": "user",
+          "content": "Run `ruby -v` and answer with only the version string."
+        },
+        {
+          "role": "assistant",
+          "content": ""
+        },
+        {
+          "role": "tool",
+          "content": "Tool bash error: {result: #<Ask::Result ok=false error=\"Bash raised Ask::Sandbox::ProviderUnavailable: Cloudflare sandbox proxy Worker not found at https://sandbox-proxy.my-worker.workers.dev. Is the Worker deployed?\">, is_error: true}"
+        },
+        {
+          "role": "user",
+          "content": ""
+        },
+        {
+          "role": "assistant",
+          "content": ""
+        },
+        {
+          "role": "tool",
+          "content": "Tool bash error: {result: #<Ask::Result ok=false error=\"Bash raised Ask::Sandbox::ProviderUnavailable: Cloudflare sandbox proxy Worker not found at https://sandbox-proxy.my-worker.workers.dev. Is the Worker deployed?\">, is_error: true}"
+        },
+        {
+          "role": "user",
+          "content": ""
+        }
+      ],
+      "model": "deepseek-v4-flash",
+      "result": {
+        "type": "stream",
+        "accumulated_text": "",
+        "chunks": [
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": ""
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": "The"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " sand"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": "box"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " is"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " unavailable"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": "."
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " Let"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " me"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " try"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " once"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " more"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " or"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " check"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " if"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " there"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": "'s"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " another"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " way"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": "."
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " The"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " bash"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " tool"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " is"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " failing"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " due"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " to"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " a"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " provider"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " issue"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": "."
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " Let"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " me"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " try"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " again"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": "."
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": "call_00_uQvwXhKzaDQA9guSzJM41654",
+                "name": "bash",
+                "arguments": "",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "{",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "\"",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "command",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "\"",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": ": ",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "\"",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "rub",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "y",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": " -",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "v",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": ";",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": " echo",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": " done",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "\"",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "}",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": "",
+            "tool_calls": null,
+            "finish_reason": "tool_calls",
+            "thinking": null
+          }
+        ]
+      }
+    }
+  ]
+}
