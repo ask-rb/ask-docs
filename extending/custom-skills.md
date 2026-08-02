@@ -26,7 +26,7 @@ A skill is most valuable when it teaches the agent *how* to approach a domain-sp
 
 ## Quick Start
 
-Create `.agents/skills/debugging/SKILL.md` in your project:
+Create `agents/shared/skills/debugging/SKILL.md` in your project:
 
 ```markdown
 ---
@@ -93,20 +93,19 @@ Vague, passive, and doesn't leverage the LLM's ability to follow structured inst
 ## Skill Organization
 
 ```
-.agents/
-└── skills/
-    ├── debugging/
-    │   └── SKILL.md              # General debugging
-    ├── rails-conventions/
-    │   └── SKILL.md              # Rails project patterns
-    ├── database-migrations/
-    │   ├── SKILL.md              # Migration best practices
-    │   └── references/
-    │       └── migration-guide.md  # Bundled reference docs
-    └── code-review/
-        ├── SKILL.md              # PR review checklist
-        └── scripts/
-            └── check-diff.sh     # Bundled scripts
+agents/shared/skills/
+├── debugging/
+│   └── SKILL.md              # General debugging
+├── rails-conventions/
+│   └── SKILL.md              # Rails project patterns
+├── database-migrations/
+│   ├── SKILL.md              # Migration best practices
+│   └── references/
+│       └── migration-guide.md  # Bundled reference docs
+└── code-review/
+    ├── SKILL.md              # PR review checklist
+    └── scripts/
+        └── check-diff.sh     # Bundled scripts
 ```
 
 Directories named after the skill, each with a `SKILL.md` inside. `references/`, `scripts/`, and `assets/` subdirectories are bundled as sibling files — the skill object exposes them as `skill.references`, `skill.scripts`, and `skill.assets`.
@@ -117,8 +116,9 @@ Skills are auto-discovered from, in priority order:
 
 | Location | Priority | Purpose |
 |---|---|---|
-| Project `.agents/skills/` | Highest | Project-specific methodology |
-| User `~/.config/ask/skills/` | High | Personal methodology |
+| Per-agent `agents/<name>/skills/` | Highest | Skills for one agent only |
+| Shared project `agents/shared/skills/` | High | Project-specific methodology |
+| User `~/.config/ask/skills/` | Medium | Personal methodology |
 | Gems (`ask/skills/*/SKILL.md`) | Low | Gem-authored methodology |
 | Built-in (`skill.design`, `skill.compose`) | Lowest | Ask-skills defaults |
 

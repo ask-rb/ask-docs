@@ -54,19 +54,18 @@ Skills are methodology. **Tools are capability.** An agent with `Bash`, `Read`, 
 
 ## Where Skills Come From
 
-Skills are auto-discovered from four sources, in priority order:
+Skills are auto-discovered from these sources, in priority order:
 
 | Source | Location | Priority |
 |---|---|---|
-| Project | `.agents/skills/` in the project root | Highest |
-| User config | `~/.config/ask/skills/` | High |
+| Per-agent | `agents/<name>/skills/` (or `app/agents/<name>/skills/` in Rails) | Highest |
+| Shared project | `agents/shared/skills/`, `app/agents/shared/skills/` | High |
+| User config | `~/.config/ask/skills/` | Medium |
 | Gems | `ask/skills/*/SKILL.md` in installed gems | Low |
 | Built-in | `skill.design`, `skill.compose` (ask-skills) | Lowest |
 
 The project always wins when the same skill name exists in several places.
-On top of these, ask-agent also discovers per-agent skills in
-`agents/<name>/skills/` and shared skills in `agents/shared/skills/`
-(see [The Agent Loop](/ask-docs/core/agent#skills)).
+Within the project, per-agent skills beat shared ones.
 
 When the agent starts, all skills are **listed by name and description** in the system prompt
 so the LLM knows what's available. Every session also includes a built-in `load_skill` tool
@@ -75,7 +74,8 @@ and description occupy prompt space until the LLM decides a skill is relevant.
 
 ## Creating a Skill
 
-Create a markdown file in `.agents/skills/<skill-name>/SKILL.md`:
+Create a markdown file in `agents/shared/skills/<skill-name>/SKILL.md` (or a
+per-agent `agents/<name>/skills/<skill-name>/SKILL.md`):
 
 ```markdown
 ---
@@ -134,7 +134,7 @@ The ask-rb ecosystem ships 13+ skills across its gems. Each skill provides domai
 
 When the agent initializes:
 
-1. It collects all `SKILL.md` files from discovery paths (gem → project → user)
+1. It collects all `SKILL.md` files from discovery paths (per-agent → shared project → user → gems → built-in)
 2. Lists them in the system prompt by name and description
 3. A built-in `load_skill` tool is automatically available to every session
 4. When the LLM encounters a task where a listed skill seems relevant, it calls

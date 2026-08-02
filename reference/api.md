@@ -486,10 +486,9 @@ Shell and filesystem tools. [Source](https://github.com/ask-rb/ask-tools-shell)
   Discovery sources (highest priority first):
   1. Per-agent: `agents/<name>/skills/` (when `agent_dir` given)
   2. Shared project: `agents/shared/skills/`, `app/agents/shared/skills/`
-  3. Legacy project: `.agents/skills/` (backward compat)
-  4. User config: `~/.config/ask/skills/`
-  5. Installed gems
-  6. Built-in skills (`skill.design`, `skill.compose`)
+  3. User config: `~/.config/ask/skills/`
+  4. Installed gems
+  5. Built-in skills (`skill.design`, `skill.compose`)
 
   ## ask-sandbox-providers
 

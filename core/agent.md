@@ -738,7 +738,6 @@ Skills are discovered from these locations (highest priority first):
 | `agents/<name>/skills/` | Per-agent | Skills only available to one agent |
 | `agents/shared/skills/` | Project-wide | Shared across all agents |
 | `app/agents/shared/skills/` | Rails project | Rails variant of shared skills |
-| `.agents/skills/` | Legacy | Backward compatibility path |
 | `~/.config/ask/skills/` | User | Personal skills across projects |
 | Installed gems | Global | Skills shipped with ask-* gems |
 | Built-in | Built-in | `skill.design`, `skill.compose` |

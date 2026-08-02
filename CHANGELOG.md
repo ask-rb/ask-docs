@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.4.0] — 2026-08-02
+
+### Changed
+
+- **Legacy `.agents/skills/` path removed** (ask-skills 0.5.0). Project skills
+  now live in `agents/shared/skills/` (or `app/agents/shared/skills/` in
+  Rails). Updated the skills pages, the agent skills table, and the API
+  reference discovery list to match.
+
 ## [0.3.0] — 2026-08-02
 
 ### Changed
