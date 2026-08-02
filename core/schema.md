@@ -18,41 +18,51 @@ gem "ask-schema"
 ```ruby
 require "ask-schema"
 
-schema = Ask::Schema.define do
-  string :name, desc: "The person's name"
-  integer :age, desc: "Their age"
-  enum :role, %w[admin user guest], desc: "Access level"
+schema = Ask::Schema.create do
+  string :name, description: "The person's name"
+  integer :age, description: "Their age"
+  string :role, description: "Access level", enum: %w[admin user guest]
 end
 
-schema.to_json_schema
+schema.new("person").to_json_schema
 # => {
-#   type: "object",
-#   properties: {
-#     name: { type: "string", description: "The person's name" },
-#     age: { type: "integer", description: "Their age" },
-#     role: { type: "string", enum: ["admin", "user", "guest"] }
-#   },
-#   required: ["name", "age", "role"]
+#   name: "person",
+#   schema: {
+#     type: "object",
+#     properties: {
+#       name: { type: "string", description: "The person's name" },
+#       age: { type: "integer", description: "Their age" },
+#       role: { type: "string", enum: ["admin", "user", "guest"] }
+#     },
+#     required: ["name", "age", "role"],
+#     additionalProperties: false,
+#     strict: true
+#   }
 # }
 ```
+
+`Ask::Schema.create` returns a schema class. You instantiate it with a name (`schema.new("person")`) and call `to_json_schema` or `to_json` on the instance.
 
 ## Basic Types
 
 ```ruby
-Ask::Schema.define do
+Ask::Schema.create do
   string  :name                          # string
   integer :count                         # integer
-  number  :price                         # number (float)
+  number  :price, minimum: 0             # number (float)
   boolean :active                        # boolean
-  enum    :status, %w[pending active]    # string with enum
-  array   :tags, type: :string           # array of strings
+  string  :status, enum: %w[pending active]  # string with enum
+  array   :tags, of: :string             # array of strings
+  null    :deleted_at                    # nullable
 end
 ```
+
+Each type accepts the usual JSON Schema constraints as keywords: `minimum`, `maximum`, `pattern`, `format`, `min_length`, `max_length`, `min_items`, `max_items`, and so on.
 
 ## Nested Schemas
 
 ```ruby
-Ask::Schema.define do
+Ask::Schema.create do
   string :title
 
   object :author do
@@ -60,28 +70,87 @@ Ask::Schema.define do
     string :email
   end
 
-  array :comments, type: :object do
+  array :comments, of: :object do
     string :text
     string :author
   end
 end
 ```
 
-## Optional Fields
+## Optional and Nullable Fields
 
-By default, all fields are required. Make a field optional:
+By default, all fields are required. Make a field optional with `required: false`:
 
 ```ruby
-Ask::Schema.define do
+Ask::Schema.create do
   string :name
   string :nickname, required: false
   integer :age, required: false
 end
 ```
 
+Or allow null explicitly with `optional`:
+
+```ruby
+Ask::Schema.create do
+  optional :nickname do
+    string
+  end
+end
+# anyOf: [{ type: "string" }, { type: "null" }]
+```
+
+## Reusable Definitions
+
+`define` creates a named sub-schema; reference it with `of:` — the output gets proper `$defs` and `$ref`:
+
+```ruby
+class User < Ask::Schema
+  define(:address) do
+    string :street
+    string :city
+    string :zip
+  end
+
+  string :name
+  object :home_address, of: :address
+  object :work_address, of: :address
+end
+```
+
+## Conditionals
+
+Use `given` for if/then/else-style branches. Values coerce automatically: scalars become `const`, arrays become `enum`, regexps become `pattern`:
+
+```ruby
+schema = Ask::Schema.create do
+  integer :age
+  string :country
+
+  given(age: 18, country: "US") do
+    requires :license_number
+    validates :license_number, type: :string, pattern: /^[A-Z]{2}\d{6}$/
+    otherwise do
+      requires :country_name
+    end
+  end
+end
+```
+
+`dependent` requires fields whenever another field is present:
+
+```ruby
+Ask::Schema.create do
+  string :shipping_address
+  dependent :shipping_address do
+    requires :name, :street, :city
+  end
+end
+```
+
 ## Using with Tools
 
-The schema DSL powers tool parameter definitions:
+The schema DSL powers tool parameter definitions in `ask-tools`:
 
 ```ruby
 class SearchTool < Ask::Tool
@@ -103,48 +172,38 @@ Each `param` declaration generates a JSON Schema entry in `params_schema`.
 Pass a schema to get structured JSON back from the LLM:
 
 ```ruby
-schema = Ask::Schema.define do
+schema = Ask::Schema.create do
   string :name
   integer :age
-  array  :hobbies, type: :string
+  array  :hobbies, of: :string
 end
 
 response = provider.chat(
   [{ role: "user", content: "Tell me about John, 28, who likes hiking and photography" }],
   model: "gpt-4o",
-  schema: schema
+  schema: schema.new("person")
 )
 
 JSON.parse(response.content)
 # => { "name" => "John", "age" => 28, "hobbies" => ["hiking", "photography"] }
 ```
 
-## Conditional Schemas
+Providers serialize the schema instance via `to_json_schema` into their own structured-output format.
 
-Use `oneOf` for conditional fields:
+## Validation
+
+Schemas validate themselves at definition time. Circular references are detected and rejected:
 
 ```ruby
-Ask::Schema.define do
-  string :type, enum: ["user", "admin"]
-
-  # Branch based on type
-  object :details do
-    oneOf do
-      schema do
-        string :department  # for admins
-      end
-      schema do
-        string :subscription_tier  # for users
-      end
-    end
-  end
-end
+schema = Ask::Schema.create { string :name }
+schema.valid?     # => true
+schema.validate!  # => nil, or raises Ask::Schema::ValidationError
 ```
 
 ## Implementation
 
 - **Zero dependencies** — pure Ruby, no JSON Schema gems required
-- **Immutable definitions** — schemas are frozen after construction
+- **Strict by default** — `strict true` and `additional_properties false` are the defaults; override per-class
 - **Thread-safe** — stateless definition blocks
 - **Standalone** — works without any other ask-rb gem
 

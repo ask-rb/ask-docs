@@ -8,12 +8,18 @@ nav_order: 6
 
 # ask-mcp
 
-**Model Context Protocol (MCP) client for Ruby.** Connect to MCP servers via
-stdio, SSE, or Streamable HTTP transports. Discover tools, resources, and
-prompts. Supports the full MCP protocol with OAuth 2.1 authentication.
+**Model Context Protocol (MCP) client and server for Ruby.** Connect to MCP
+servers via stdio, SSE, or Streamable HTTP transports. Discover tools,
+resources, and prompts. Or run the other way: expose your own tools as an MCP
+server over stdio. Supports the full MCP protocol with OAuth 2.1
+authentication.
 
 MCP is the industry standard for LLM tool discovery — the same protocol used by
 Claude Code, Codex, Cursor, and GitHub Copilot.
+
+```ruby
+gem "ask-mcp"
+```
 
 ```ruby
 gem "ask-mcp"
@@ -47,7 +53,7 @@ ask-mcp supports three transports:
 |---|---|---|
 | stdio | `Ask::MCP::Transport::Stdio` | Local processes (CLI tools, local MCP servers) |
 | SSE | `Ask::MCP::Transport::SSE` | Remote servers with Server-Sent Events |
-| Streamable HTTP | `Ask::MCP::Transport::StreamableHTTP` | Remote HTTP servers |
+| Streamable HTTP | `Ask::MCP::Transport::StreamableHttp` | Remote HTTP servers |
 
 ```ruby
 # Factory methods for common cases
@@ -149,13 +155,34 @@ wrapped = Ask::MCP::Adapters::AskTool.wrap(client.tools)
 wrapped.each { |name, adapter| agent.register_tool(adapter.to_ask_tool) }
 ```
 
+## Expose your own tools as a server
+
+Ask::MCP also runs the other way. `Ask::MCP::Adapters::ToolServer` wraps any
+collection of duck-typed tools (name, description, call) into MCP definitions,
+and `Server.start_stdio` serves them over stdio to any MCP client:
+
+```ruby
+require "ask/mcp"
+require "ask-tools-shell"
+
+Ask::MCP::Server.start_stdio(
+  name: "my-tools",
+  tools: Ask::Tools::Shell::TOOLS.map(&:new)
+)
+```
+
+Any MCP client — Claude Code, Cursor, ZCode, your own `Ask::MCP::Client` — can
+now discover and call those tools. This is exactly how
+[ask-web-search-mcp](/ask-docs/core/web-search) and
+[ask-rails-harness-mcp](/ask-docs/rails/mcp) are built.
+
 ## Architecture
 
 ```
 ask-mcp/
 ├── lib/ask/mcp.rb                         # Entry point, factory methods
 ├── lib/ask/mcp/client.rb                  # MCP client
-├── lib/ask/mcp/server.rb                  # MCP server representation
+├── lib/ask/mcp/server.rb                  # MCP server (start_stdio)
 ├── lib/ask/mcp/tool.rb                    # Tool model
 ├── lib/ask/mcp/resource.rb                # Resource model
 ├── lib/ask/mcp/prompt.rb                  # Prompt model
@@ -169,5 +196,6 @@ ask-mcp/
 │   ├── oauth.rb                           # OAuth 2.1
 │   └── token.rb                           # Token auth
 └── lib/ask/mcp/adapters/
-    └── ask_tool.rb                        # → Ask::Tool adapter
+    ├── ask_tool.rb                        # MCP tool → Ask::Tool
+    └── tool_server.rb                     # Ask tools → MCP server
 ```

@@ -13,6 +13,8 @@ Key classes and methods across the ask-rb ecosystem. For full documentation, see
 
 The foundation gem. [Source](https://github.com/ask-rb/ask-core)
 
+`gem "ask-core"` — zero dependencies, every ask-rb app depends on it.
+
 ### Ask::Provider
 
 ```ruby
@@ -135,6 +137,8 @@ Ask::InvalidCredential
 
 Credential resolution. [Source](https://github.com/ask-rb/ask-auth)
 
+`gem "ask-auth"` — pulled in by every service gem and by ask-llm-providers.
+
 ```ruby
 Ask::Auth.resolve(:github_token)
 Ask::Auth.resolve(:github_token, user: current_user)
@@ -147,6 +151,8 @@ end
 ## ask-tools
 
 Tool framework. [Source](https://github.com/ask-rb/ask-tools)
+
+`gem "ask-tools"` — no executable tools inside; add `ask-tools-shell` for shell and filesystem tools.
 
 ```ruby
 class MyTool < Ask::Tool
@@ -167,6 +173,8 @@ Ask::Tools.count
 
 Agent loop. [Source](https://github.com/ask-rb/ask-agent)
 
+`gem "ask-agent"` — pulls in ask-core, ask-llm-providers, ask-tools, ask-skills, ask-state-providers, and ask-instrumentation.
+
 ### Agent Definitions
 
 ```ruby
@@ -183,16 +191,19 @@ end
 agent = Ask::Agent.new("health_check")
 agent.run("Check health")
 
-Ask::Agent.definitions  # => { "health_check" => [HealthCheckAgent, "/path/to/agents/health_check"] }
+Ask::Agent.definitions  # => { "health_check" => [HealthCheck::Agent, "/path/to/agents/health_check"] }
 Ask::Agent.rediscover!
 ```
 
 ### Low-Level Session API
 
+```ruby
 session.on_event { |event| ... }
 session.id
 session.total_cost
-session.turns
+session.turn_count
+session.total_input_tokens
+session.total_output_tokens
 
 Ask::Agent.configure do |c|
   c.default_model = "claude-sonnet-4"
@@ -287,6 +298,8 @@ Ask::Agent::Scheduler.stop
 
 Rails integration for building AI-powered applications. [Source](https://github.com/ask-rb/ask-rails)
 
+`gem "ask-rails"` — requires Rails 7.1+ and ask-agent.
+
 **Use ask-rails for:** Adding AI capabilities to your Rails app for your users.
 
 ```ruby
@@ -324,6 +337,8 @@ agent.run("How do I reset my password?")
   ## ask-rails-harness
 
   Admin AI copilot for Rails apps. [Source](https://github.com/ask-rb/ask-rails-harness)
+
+  `gem "ask-rails-harness"` — requires Rails 7.1+; pulls in ask-agent, ask-tools, ask-tools-shell, and ask-auth.
 
   **Use ask-rails-harness for:** Internal admin agents that inspect code, query DB, read logs.
 
@@ -366,9 +381,11 @@ agent.run("How do I reset my password?")
 
   **Dependencies:** `ask-agent`, `ask-tools-shell`, `ask-auth`, `rails >= 7.1`.
 
-  ## ask-tools-shell
+## ask-tools-shell
 
-  Shell and filesystem tools. [Source](https://github.com/ask-rb/ask-tools-shell)
+Shell and filesystem tools. [Source](https://github.com/ask-rb/ask-tools-shell)
+
+`gem "ask-tools-shell"` — depends on ask-tools and ask-sandbox-providers.
 
   ```ruby
   Ask::Tools::Shell::Bash.new.call(command: "ls")
@@ -378,11 +395,14 @@ agent.run("How do I reset my password?")
   Ask::Tools::Shell::Glob.new.call(pattern: "**/*.rb")
   Ask::Tools::Shell::Grep.new.call(pattern: "class")
   Ask::Tools::Shell::Code.new.call(code: "puts RUBY_VERSION")
+  Ask::Tools::Shell::ApplyPatch.new.call(patchText: "--- a/file\n+++ b/file\n@@ ...")
   ```
 
   ## ask-llm-providers
 
   LLM providers. [Source](https://github.com/ask-rb/ask-llm-providers)
+
+  `gem "ask-llm-providers"` — all 33 providers in one gem; also loads the model catalog into `Ask::ModelCatalog`.
 
   ```ruby
   Ask::Providers::OpenAI.new(api_key: "sk-...")
@@ -400,6 +420,8 @@ agent.run("How do I reset my password?")
   ## ask-skills
 
   Skill discovery and management. [Source](https://github.com/ask-rb/ask-skills)
+
+  `gem "ask-skills"` — a dependency of ask-agent, so agent users get it automatically.
 
   ```ruby
   # Discover skills from all configured sources
@@ -473,6 +495,8 @@ agent.run("How do I reset my password?")
 
   Sandboxed execution. [Source](https://github.com/ask-rb/ask-sandbox-providers)
 
+  `gem "ask-sandbox-providers"` — used by the Bash and Code tools in ask-tools-shell.
+
   ```ruby
   Ask::Sandbox.provider = :docker
   Ask::Sandbox.provider = Ask::Sandbox::Docker.new(image: "ruby:3.4-alpine")
@@ -485,12 +509,14 @@ agent.run("How do I reset my password?")
   result.success?   # => true
   ```
 
-  ## ask-state (in ask-core)
+  ## ask-state-providers
 
-  Pluggable state backend for key-value storage, distributed locking, message queues, and ordered lists. [Source](https://github.com/ask-rb/ask-core)
+  Pluggable state backends for key-value storage, session persistence, distributed locking, message queues, and ordered lists. [Source](https://github.com/ask-rb/ask-state-providers)
+
+  `gem "ask-state-providers"` — a dependency of ask-agent and ask-graph for session persistence and workflow checkpoints.
 
   ```ruby
-  # In-memory (default)
+  # In-memory (default, lives in ask-state-providers since v0.3.0)
   store = Ask::State::Memory.new
 
   # Key-value with TTL
@@ -516,19 +542,19 @@ agent.run("How do I reset my password?")
   store.list_range("sessions", 0, -1)
   store.list_remove("sessions", "session-1")
 
-  # Custom backend
-  class RedisAdapter < Ask::State::Adapter
-  def get(key) = redis.get(key)
-  def set(key, value, ttl: nil) = redis.set(key, value, ex: ttl)
-  # ... implement all methods
-  end
+  # Persistent backends
+  Ask::State::Providers::SQLite.new              # file-backed (default: sessions.db)
+  Ask::State::Providers::SQLite.new(path: "state.sqlite")
+  Ask::State::Providers::Redis.new(url: ENV["REDIS_URL"])
+  Ask::State::Providers::Postgres.new(url: ENV["DATABASE_URL"])
+  Ask::State::Providers::MySQL.new(url: ENV["MYSQL_URL"])
   ```
 
   Data types: `Ask::State::Lock` (`.id`, `.token`, `.expires_at`, `.expired?`), `Ask::State::QueueEntry` (`.id`, `.value`, `.enqueued_at`).
 
   ## ask-provider-tool (in ask-core)
 
-  Configuration for built-in tools that run on the provider's infrastructure.
+  Configuration for built-in tools that run on the provider's infrastructure. Part of `ask-core`.
 
   ```ruby
   # Provider-executed tools (handled by OpenAI's servers)
@@ -554,22 +580,26 @@ agent.run("How do I reset my password?")
 
   JSON Schema DSL. [Source](https://github.com/ask-rb/ask-schema)
 
-  ```ruby
-  schema = Ask::Schema.define do
-  string :name
-  integer :count
-  array :tags, type: :string
-  object :meta do
-    string :version
-  end
-end
+  `gem "ask-schema"` — a dependency of ask-tools, which uses it for tool parameter schemas.
 
-schema.to_json_schema
-```
+  ```ruby
+  schema = Ask::Schema.create do
+    string :name
+    integer :count
+    array :tags, of: :string
+    object :meta do
+      string :version
+    end
+  end
+
+  schema.new("example").to_json_schema
+  ```
 
 ## ask-mcp
 
 MCP client and server. [Source](https://github.com/ask-rb/ask-mcp)
+
+`gem "ask-mcp"` — needed by ask-web-search-mcp and ask-rails-harness-mcp, which both build on it.
 
 ```ruby
 client = Ask::MCP.from_stdio("npx", ["-y", "server-package"])
@@ -582,6 +612,8 @@ client.stop
 ## ask-eval
 
 LLM evaluation. [Source](https://github.com/ask-rb/ask-eval)
+
+`gem "ask-eval"` — Minitest plugin auto-loads with `require "ask/eval/minitest"`.
 
 ```ruby
 assert_faithful response, context: docs

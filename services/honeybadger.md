@@ -121,7 +121,7 @@ Ask::Honeybadger::GEM_NAME     # => "honeybadger-ruby"
 
 ```bash
 bundle install
-bundle exec rake test    # 20 tests, 43 assertions
+bundle exec rake test
 ```
 
 ## Dependencies

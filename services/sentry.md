@@ -113,7 +113,7 @@ Ask::Sentry::GEM_NAME     # => "faraday"
 
 ```bash
 bundle install
-bundle exec rake test    # 32 tests, 65 assertions
+bundle exec rake test
 ```
 
 ## Dependencies

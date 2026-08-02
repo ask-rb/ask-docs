@@ -7,15 +7,15 @@ nav_order: 1
 
 # Observability & Events
 
-Instrument your agents with event-driven observability. Track costs, monitor performance, and debug behavior — all through a simple publish/subscribe pattern.
+Two layers give you visibility into your agents: an in-process event stream from the agent loop, and `ActiveSupport::Notifications` events from `ask-instrumentation` that any tool can subscribe to.
 
 ```ruby
 gem "ask-instrumentation"
 ```
 
-## Events System
+## Agent events
 
-Every agent lifecycle event publishes structured data:
+Every session publishes lifecycle events as it runs. Subscribe with `on_event`, or filter by event class with `on`:
 
 ```ruby
 session = Ask::Agent::Session.new(model: "gpt-4o")
@@ -23,98 +23,109 @@ session = Ask::Agent::Session.new(model: "gpt-4o")
 session.on_event do |event|
   case event
   when Ask::Agent::Events::TextDelta
-    print event.content  # Stream response to user
+    print event.content                 # stream text to the user
+  when Ask::Agent::Events::ThinkingDelta
+    print event.content                 # reasoning tokens, if the model emits them
   when Ask::Agent::Events::ToolExecutionStart
     puts "\n[Running #{event.name}...]"
-  when Ask::Agent::Events::ToolExecutionComplete
+  when Ask::Agent::Events::ToolExecutionEnd
     puts "\n[#{event.name} finished in #{event.duration_ms}ms]"
-  when Ask::Agent::Events::LlmCallStart
-    puts "[LLM call starting — model: #{event.model}]"
-  when Ask::Agent::Events::LlmCallComplete
-    puts "[LLM call done — #{event.input_tokens} in, #{event.output_tokens} out]"
+  when Ask::Agent::Events::Error
+    puts "Error: #{event.error}"
   end
 end
+
+session.run("What's the current date?")
 ```
 
-## Available Events
+## Available events
 
 | Event | Fired When | Data |
 |---|---|---|
-| `TextDelta` | A chunk of text is streamed | `content` |
-| `ToolExecutionStart` | A tool begins executing | `name`, `arguments` |
-| `ToolExecutionComplete` | A tool finishes | `name`, `duration_ms`, `result` |
-| `LlmCallStart` | An LLM request begins | `model`, `messages` |
-| `LlmCallComplete` | An LLM request ends | `model`, `input_tokens`, `output_tokens`, `cost` |
-| `TurnComplete` | A full agent turn finishes | `turn_number`, `tool_calls_count` |
-| `SessionComplete` | The session ends | `turns`, `total_cost`, `duration_ms` |
-| `Error` | An error occurs | `error`, `context` |
+| `SessionStart` | The session begins | — |
+| `SessionEnd` | The session finishes | `result`, `turn_count`, `tool_calls_made`, `input_tokens`, `output_tokens`, `cost` |
+| `TurnStart` / `TurnEnd` | Each agent turn | `turn_number`, `tool_results`, tokens, `cost` |
+| `MessageStart` / `MessageEnd` | Each LLM call within a turn | `tool_calls` |
+| `TextDelta` | A text chunk streams | `content` |
+| `ThinkingDelta` | A reasoning chunk streams | `content` |
+| `ToolCallDelta` | Tool call arguments stream | `name`, `arguments`, `id` |
+| `ToolExecutionStart` / `ToolExecutionUpdate` / `ToolExecutionEnd` | A tool runs | `name`, `id`, `arguments`, `partial_result`, `result`, `is_error`, `duration_ms` |
+| `CompactionStart` / `CompactionEnd` | Context is compacted | `tokens_before`, `tokens_after`, `summary` |
+| `LoopDetected` | The agent repeats itself | `tool_name`, `repeated_count` |
+| `MaxTurnsExceeded` | The turn limit is hit | `max_turns` |
+| `EvaluationStart` / `EvaluationDelta` / `EvaluationEnd` / `EvaluationBlocked` | The evaluator runs | `dimensions`, `decision`, `feedback`, `scores` |
+| `ReflectionStart` / `ReflectionDelta` / `ReflectionEnd` | The reflector runs | `reflection_number`, `decision`, `feedback` |
+| `Error` | An error occurs | `error`, `recoverable` |
 
-## Global Subscriptions
+## Cost and token tracking
 
-Subscribe to events across all sessions:
+Sessions accumulate usage as they run. These are real numbers from the provider responses, not estimates:
 
 ```ruby
-Ask::Agent.on_event do |event|
-  case event
-  when Ask::Agent::Events::LlmCallComplete
-    TrackCost.call(event.model, event.input_tokens, event.output_tokens)
-  when Ask::Agent::Events::Error
-    ErrorTracker.notify(event.error, context: event.context)
-  end
+session.run("Write a poem")
+session.total_input_tokens   # => 150
+session.total_output_tokens  # => 320
+session.total_cost           # => 0.0015
+```
+
+The same numbers ride on `TurnEnd` and `SessionEnd` events, so you can log or charge per turn:
+
+```ruby
+session.on(Ask::Agent::Events::TurnEnd) do |event|
+  Rails.logger.info "Turn #{event.turn_number}: #{event.input_tokens} in / #{event.output_tokens} out / $#{event.cost}"
 end
 ```
 
-## Cost Tracking
+## Instrumentation events
+
+`ask-instrumentation` wraps `ActiveSupport::Notifications` and emits one event per LLM operation, named `{operation}.ask`:
+
+| Event | Fired When |
+|---|---|
+| `chat.ask` | A chat completion finishes |
+| `chat.stream.ask` | A streaming chat completes |
+| `tool.ask` | A tool executes |
+| `tool_call.ask` / `tool_result.ask` | Tool call and result round-trip |
+| `embedding.ask` | Embeddings are generated |
+| `image.ask` | An image is generated |
+
+Subscribe from anywhere — a Rails initializer, a background job, a plain Ruby script:
 
 ```ruby
-Ask::Agent.configure do |c|
-  c.track_cost = true
-end
-
-# Per-session cost
-session.run("Analyze this data")
-puts "Session cost: $#{session.total_cost}"
-
-# Accumulated across all sessions
-report = Ask::Agent.cost_report
-# => { total_cost: 1.23, total_calls: 47, by_model: { "gpt-4o" => 0.89 } }
-```
-
-Cost tracking uses built-in pricing estimates for common models. Extend with custom pricing:
-
-```ruby
-Ask::Agent.configure do |c|
-  c.pricing = {
-    "gpt-4o" => { input: 0.0000025, output: 0.00001 },  # per token
-    "claude-sonnet-4" => { input: 0.000003, output: 0.000015 }
-  }
+Ask::Instrumentation.subscribe("chat.ask") do |event|
+  Rails.logger.info "LLM call: #{event.payload[:provider]} #{event.payload[:model]} " \
+                    "#{event.duration}ms cost=$#{event.payload[:cost]}"
 end
 ```
 
-## Usage Analytics
+Attach metadata that flows through every event in a block:
 
 ```ruby
-# Total usage across all sessions
-Ask::Agent.usage
-# => { total_tokens: 150000, total_cost: 2.50,
-#      total_turns: 320, total_tool_calls: 480 }
-
-# Usage by model
-Ask::Agent.usage_by_model
-# => { "gpt-4o" => { tokens: 100000, cost: 1.50 },
-#      "claude-sonnet-4" => { tokens: 50000, cost: 1.00 } }
-```
-
-## Logging Setup
-
-```ruby
-Ask::Agent.configure do |c|
-  c.log_level = :info  # :debug, :info, :warn, :error
-  c.log_to = "log/ask-agent.log"
+Ask::Instrumentation.with_metadata(user_id: current_user.id, session_id: session.id) do
+  response = session.run("Summarize this article")
 end
 ```
 
-The log captures tool calls, LLM requests, errors, and turn completions in a structured format.
+Instrument your own code the same way:
+
+```ruby
+Ask::Instrumentation.instrument("chat.ask", provider: "openai", model: "gpt-4o") do
+  provider.chat(messages, model: "gpt-4o")
+end
+```
+
+The `ask-monitoring` Rails engine subscribes to these events for its dashboard, and `ask-opentelemetry` turns them into spans. Both work with any provider.
+
+## Telemetry
+
+The agent ships a file-backed telemetry log for error tracking. It's on by default; configure the directory through the session:
+
+```ruby
+telemetry = Ask::Agent::Telemetry.new(dir: "log/ask/")
+session = Ask::Agent::Session.new(model: "gpt-4o", telemetry: telemetry)
+```
+
+Every error and notable lifecycle event is appended as JSON lines. The `MetaAgent` component reads this same log to propose improvements (see [The Agent Loop](/ask-docs/core/agent)).
 
 ## Next Steps
 

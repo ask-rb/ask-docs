@@ -158,13 +158,15 @@ No additional auth configuration needed.
 
 ## Adding Skills to Your Gem
 
-Add a `.ask/skills/` directory to your gem:
+Add an `ask/skills/<name>/SKILL.md` path under `lib/`:
 
 ```
 ask-my-service/
-├── .ask/
-│   └── skills/
-│       └── my-service-workflow.md
+└── lib/
+    └── ask/
+        └── skills/
+            └── my-service-workflow/
+                └── SKILL.md
 ```
 
 The skill is auto-discovered when the gem is loaded.
@@ -172,11 +174,7 @@ The skill is auto-discovered when the gem is loaded.
 ## Testing with VCR
 
 ```ruby
-require "ask/test"
-
 class MyServiceClientTest < Minitest::Test
-  include Ask::Test::VCRHelper
-
   def test_list_resources
     VCR.use_cassette("my_service/resources") do
       client = Ask::MyService.client

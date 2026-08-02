@@ -15,6 +15,25 @@ ask-graph lets you define durable, multi-step workflows with conditional routing
 gem "ask-graph"
 ```
 
+## ask-graph vs ask-agent
+
+These two solve different problems, and knowing which one you need saves you a lot of rework.
+
+**ask-agent is an LLM-driven loop.** The model decides what to do next, turn by turn: call this tool, read that file, then answer. Use it for open-ended work where you can't enumerate the steps in advance — chatbots, coding assistants, research agents, anything conversational. Each turn costs tokens, and the path is different every run.
+
+**ask-graph is a deterministic pipeline.** You write every step up front as plain Ruby. The workflow runs the same way every time, checkpoints after each step, and resumes from the last completed step after a crash. Use it for processes with known steps and a business SLA — charge a card, send an email, sync a CRM, generate a report at 9am. No LLM tokens involved unless you put a model call inside a step.
+
+| | ask-agent | ask-graph |
+|---|---|---|
+| **Decides what to do** | The model, at runtime | You, at write time |
+| **Steps** | Emergent, different each run | Fixed, declared up front |
+| **Determinism** | None by nature | Fully reproducible |
+| **Crash recovery** | Session state saved per turn | Checkpoint per step, resume in place |
+| **Cost** | Token-based per turn | Zero unless a step calls an LLM |
+| **Good for** | Chatbots, coding assistants, research | Order fulfillment, ETL, approvals, scheduled jobs |
+
+They compose well. A workflow step can call an agent session when a decision needs a model. An agent tool can run a workflow when a task has a known shape. See [Where actions fit](/ask-docs/rails/actions#where-actions-fit) for how agents, workflows, and actions relate in a Rails app.
+
 ## Quick Start
 
 ```ruby

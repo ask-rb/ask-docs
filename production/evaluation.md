@@ -215,6 +215,48 @@ results = Ask::Eval::Assertions.evaluate_all(tc, [
 ```
 
 
+## Agent Session Evaluation
+
+{: .new }
+> New in ask-eval 0.2.0
+
+Test a full agent session, not just a single output. `Ask::Eval::SessionEval` wraps an `Ask::Agent::Session` and tracks which tools it called and what it cost:
+
+```ruby
+eval = Ask::Eval::SessionEval.new(session)
+eval.run("Check server health")
+eval.tool_called?("bash")   # => true
+eval.total_cost             # => 0.0012
+```
+
+The `eval_session` DSL wires this up in a Minitest test with automatic recording:
+
+```ruby
+test "health check agent" do
+  eval_session(model: "gpt-4o", tools: [Bash]) do |r|
+    r.run("Check health")
+    assert_tool_called "bash"
+    assert_cost_under 0.01
+  end
+end
+```
+
+## Deterministic CI with Recorded Replays
+
+{: .new }
+> New in ask-eval 0.2.0
+
+LLM calls are non-deterministic, which makes CI flaky. `Ask::Eval::Recorder` captures provider interactions to JSON files on the first run, then replays them on demand:
+
+```ruby
+recorder = Ask::Eval::Recorder.new(test_name: "my_suite")
+recorder.wrap(session)
+session.run("Check health")
+recorder.save  # test/recordings/my_suite/recording.json
+```
+
+Run with `ASK_EVAL_MODE=replay` and the recorder uses the saved responses instead of making real API calls. No network, no cost, deterministic assertions. If no recording exists, it raises with a clear message telling you to run once without the env var first.
+
 ## Custom Judges
 
 The 5 built-in judges cover common cases, but you can create your own by
@@ -267,4 +309,5 @@ assert_faithful response, context: docs, model: ->(messages) {
 
 | Version | Features |
 |---------|----------|
-| **v0.1.0** | Deterministic + Faithful/Hallucination/Bias/Toxicity/Correctness judges + Minitest DSL + custom judges + CI reporters (JUnit, GitHub) + cost tracking. No future versions planned — everything core is here. |
+| **v0.2.0** | Session evaluation (`SessionEval`, `eval_session`, `assert_tool_called`, `assert_cost_under`) and regression recording/replay (`Recorder`, `ASK_EVAL_MODE=replay`) |
+| **v0.1.0** | Deterministic + Faithful/Hallucination/Bias/Toxicity/Correctness judges + Minitest DSL + custom judges + CI reporters (JUnit, GitHub) + cost tracking |

@@ -143,7 +143,7 @@ Ask::SolidErrors::GEM_NAME     # => "solid_errors"
 
 ```bash
 bundle install
-bundle exec rake test  # 41 tests, 76 assertions
+bundle exec rake test
 ```
 
 ## Dependencies

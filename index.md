@@ -43,4 +43,4 @@ gem "ask-rag"     # RAG pipeline (loaders, splitters, vector stores)
 
 ## Ready to build?
 
-Jump to [Getting Started](/ask-docs/getting-started/first-agent) and have an agent running in 5 minutes.
+Jump to [Getting Started](/ask-docs/getting-started/first-agent). You'll need Ruby 3.2+ and an API key for your provider of choice (or just Ollama, no key required).

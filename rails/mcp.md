@@ -75,12 +75,27 @@ This boots your Rails app and starts an MCP stdio server. Configure in your agen
 
 ### Option 2: HTTP endpoint (remote/production)
 
-Mount in `config/routes.rb` behind your existing auth:
+The gem ships the stdio server only. For HTTP, add a small controller to your
+app that delegates to `Ask::Rails::MCP.process_message`:
 
 ```ruby
+# app/controllers/ask/mcp_controller.rb
+class Ask::McpController < ApplicationController
+  skip_forgery_protection
+
+  def handle
+    render json: Ask::Rails::MCP.process_message(JSON.parse(request.raw_post))
+  rescue JSON::ParserError => e
+    render json: { jsonrpc: "2.0", id: nil, error: { code: -32700, message: "Parse error: #{e.message}" } }
+  end
+end
+```
+
+```ruby
+# config/routes.rb
 Rails.application.routes.draw do
   authenticate :user, ->(u) { u.admin? } do
-    post "ask/mcp", to: "ask/rails/mcp#handle"
+    post "ask/mcp", to: "ask/mcp#handle"
   end
 end
 ```
@@ -99,6 +114,9 @@ Then configure any MCP-compatible agent:
   }
 }
 ```
+
+MCP clients always send an `initialize` request first — the handler tracks
+that and rejects `tools/list` and `tools/call` until it arrives.
 
 ## How coding agents use these tools
 

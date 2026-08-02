@@ -1,5 +1,29 @@
 # Changelog
 
+## [0.3.0] — 2026-08-02
+
+### Changed
+
+- **Accuracy pass across the whole site** — every page re-checked against the
+  current gem codebases (ask-agent 0.25.0, ask-llm-providers 0.10.1, ask-core
+  0.8.0, ask-rails 0.15.3, and the rest).
+  - Getting started: first-agent now covers the 33 supported providers (not
+    just OpenAI/Anthropic), installs both `ask-agent` and `ask-tools-shell`,
+    and uses the 8-tool shell set (including ApplyPatch).
+  - Core: removed the deleted `Ask::Tools::SubAgent` section, fixed the shell
+    tool namespaces, corrected skill discovery paths and priority, documented
+    ask-mcp's server side, fixed ask-core's contents (auth and cost
+    calculation live in other gems), and fixed the ask-ui-kit bundle table.
+  - Production: observability, monitoring, and OpenTelemetry pages rewritten
+    to match the real APIs (real event classes, `ask:monitoring:install`
+    generator, `Ask::OpenTelemetry.install`, actual alert rule shape).
+  - Evaluation: documented ask-eval 0.2.0 (SessionEval, eval_session,
+    Recorder replay).
+  - Reference: gem index now covers all 30+ gems including ask-graph,
+    ask-rails-harness-mcp, ask-app-server, ask-acp, ask-coding-providers,
+    ask-channel-providers, and the ask-ui-kit npm package; corrected the
+    dependency graph and the agent definition convention (`HealthCheck::Agent`).
+
 ## [0.2.0] — 2026-07-24
 
 ### Added

@@ -34,6 +34,7 @@ The generator creates:
 
 - `config/initializers/ask_rails_harness.rb` — provider and agent configuration
 - `db/migrate/*_create_ask_sessions.rb` — session persistence migration
+- `db/migrate/*_create_ask_audit_logs.rb` — audit log table (tool call recording)
 - `app/tools/` — directory for custom tools (with `.keep`)
 
 Run the migration:

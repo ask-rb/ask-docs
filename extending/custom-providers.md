@@ -9,6 +9,13 @@ nav_order: 2
 
 Build an LLM provider for any API. Providers are the bridge between the ask-rb ecosystem and LLM APIs — every provider implements the same interface.
 
+The provider base class and registry live in `ask-core`; the 33 built-in providers ship in `ask-llm-providers`:
+
+```ruby
+gem "ask-core"
+gem "ask-llm-providers"   # optional — needed only for the built-in providers
+```
+
 ## The Provider Contract
 
 Subclass `Ask::Provider` and implement these methods:

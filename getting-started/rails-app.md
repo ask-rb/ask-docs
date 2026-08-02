@@ -139,35 +139,35 @@ Tools shared across all agents go in `app/agents/shared/tools/`.
 
 ## 4. Run your agent
 
-  ```ruby
-  agent = Ask::Agent.new("support_bot")
-  response = agent.run("How do I reset my password?")
-  puts response
-  ```
+```ruby
+agent = Ask::Agent.new("support_bot")
+response = agent.run("How do I reset my password?")
+puts response
+```
 
-  For one-off conversations without a definition file:
+For one-off conversations without a definition file:
 
-  ```ruby
-  session = Ask::Agent::Session.new(
+```ruby
+session = Ask::Agent::Session.new(
   model: "gpt-4o",
   system_prompt: "You are a helpful assistant."
-  )
-  response = session.run("Summarize this article")
-  ```
+)
+response = session.run("Summarize this article")
+```
 
-  ## 5. Define a workflow
+## 5. Define a workflow
 
-  Workflows are multi-step, crash-safe processes — order fulfillment, document pipelines, approval flows. Scaffold one:
+Workflows are multi-step, crash-safe processes — order fulfillment, document pipelines, approval flows. Scaffold one:
 
-  ```bash
-  rails generate ask:workflow order_fulfillment
-  ```
+```bash
+rails generate ask:workflow order_fulfillment
+```
 
-  This creates `app/workflows/order_fulfillment/workflow.rb` and a `steps/` directory:
+This creates `app/workflows/order_fulfillment/workflow.rb` and a `steps/` directory:
 
-  ```ruby
-  # app/workflows/order_fulfillment/workflow.rb
-  module OrderFulfillment
+```ruby
+# app/workflows/order_fulfillment/workflow.rb
+module OrderFulfillment
   class Workflow < ApplicationWorkflow
     step ValidatePayment
     step NotifyCustomer
@@ -231,20 +231,29 @@ module SupportBot
 end
 ```
 
-  ## 7. Use streaming for a better UX
+## 7. Use streaming for a better UX
 
-  Pass a block to stream responses token-by-token:
+`Ask::Agent::Streaming` turns an agent run into Server-Sent Events. It works
+in any Rack app, or with `ActionController::Live::SSE` in Rails:
 
-  ```ruby
-  session = Ask::Agent::Session.new(model: "gpt-4o")
+```ruby
+# app/controllers/chats_controller.rb
+def create
+  session = Ask::Agent.new("support_bot")
+  response.headers["Content-Type"] = "text/event-stream"
 
-  session.run("Tell me about our products") do |chunk|
-  if chunk.content
-    # Send to browser via ActionCable, Turbo Stream, or SSE
-    ActionCable.server.broadcast("chat", { content: chunk.content })
+  sse = ActionController::Live::SSE.new(response.stream)
+  Ask::Agent::Streaming.run(session, params[:message]) do |type, data|
+    sse.write(data, event: type)
   end
+ensure
+  sse&.close
 end
 ```
+
+Events arrive as SSE messages with types like `delta` (text chunks),
+`thinking`, `tool_start`, `tool_end`, and `done`. The browser can render
+these as they arrive — no polling.
 
 For a complete Rails streaming setup, see `Ask::Agent::Streaming` in the [API reference](/ask-docs/reference/api#ask-agent).
 

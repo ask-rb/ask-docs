@@ -32,7 +32,7 @@ session = Ask::Rails::Harness.agent_session
 Run the generator migration to create the table:
 
 ```bash
-rails generate ask_rails:install
+rails generate ask_rails_harness:install
 rails db:migrate
 ```
 
@@ -49,17 +49,17 @@ add_index :ask_sessions, :session_id, unique: true
 
 ## Saving and Loading
 
-		```ruby
-			adapter = Ask::Rails::Harness.configuration.persistence_adapter
+```ruby
+adapter = Ask::Rails::Harness.configuration.persistence_adapter
 
-			session = Ask::Rails::Harness.agent_session
-		session.run("Hello")
-		saved_id = session.id
-		
-		# Load it later using the Session.load class method
-		restored = Ask::Agent::Session.load(saved_id, adapter: adapter)
-		restored.run("Continue where I left off")
-		```
+session = Ask::Rails::Harness.agent_session
+session.run("Hello")
+saved_id = session.id
+
+# Load it later using the Session.load class method
+restored = Ask::Agent::Session.load(saved_id, adapter: adapter)
+restored.run("Continue where I left off")
+```
 
 ## In-Memory vs Database
 

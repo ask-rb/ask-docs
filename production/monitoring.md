@@ -7,7 +7,7 @@ nav_order: 2
 
 # Monitoring Dashboard
 
-A Rails engine dashboard at `/ask/monitoring` for real-time visibility into your agents.
+A Rails engine at `/ask/monitoring` showing live cost, throughput, error rate, and response time for every LLM call in your app. Updates via Hotwire Turbo every 30 seconds — no Redis, no ActionCable.
 
 ```ruby
 gem "ask-monitoring"
@@ -23,76 +23,68 @@ gem "ask-instrumentation"  # required dependency
 
 ```bash
 bundle install
-rails generate ask_monitoring:install
+rails generate ask:monitoring:install
 rails db:migrate
 ```
 
 Mount the engine in `config/routes.rb`:
 
 ```ruby
-mount Ask::Monitoring::Engine, at: "/ask"
+mount Ask::Monitoring::Engine, at: "/ask/monitoring"
 ```
 
 Visit `/ask/monitoring` in your browser.
 
-## Dashboard Metrics
+## Dashboard
 
 | Metric | What It Shows |
 |---|---|
-| **Cost** | Total and per-model spend (daily, weekly, monthly) |
-| **Throughput** | Requests per minute, average response time |
-| **Errors** | Error rate by type (rate limit, auth, timeout, etc.) |
-| **Active Sessions** | Currently running sessions |
-| **Tool Usage** | Most-used tools and average execution time |
-| **Model Distribution** | Which models are being used and how often |
+| **Total Cost** | Spend in USD, calculated from token counts × model pricing |
+| **Requests** | Request count in the selected time range |
+| **Error Rate** | Percentage of failed requests |
+| **Response Time (p50)** | Median latency in milliseconds |
 
-## Alert Channels
+Filter by time range (1h, 24h, 7d, 30d), provider, or model.
 
-Configure alerts for critical thresholds:
+## Cost tracking
+
+Pricing is built in for 22+ models across OpenAI, Anthropic, Google, Mistral, Cohere, and Bedrock:
 
 ```ruby
-Ask::Monitoring.configure do |c|
-  # Slack alerts
-  c.alert_channel :slack, webhook_url: ENV["SLACK_ALERT_WEBHOOK"]
+Ask::Monitoring::Cost.for("openai/gpt-4", tokens: { input: 100, output: 50 })
+# => 0.006 (USD)
+```
 
-  # Email alerts
-  c.alert_channel :email, to: "team@example.com"
+Register custom pricing for your own models:
 
-  # Webhook
-  c.alert_channel :webhook, url: ENV["ALERT_WEBHOOK_URL"]
+```ruby
+Ask::Monitoring::Cost.register("my-provider/my-model", input: 0.001, output: 0.002)
+```
+
+## Alerts
+
+Alert rules are procs that receive a metrics hash and fire when they return true. Route alerts to Slack or email:
+
+```ruby
+Ask::Monitoring.configure do |config|
+  config.alert_rules << {
+    name: "High error rate",
+    condition: ->(metrics) { metrics[:error_rate] > 0.05 },
+    channels: [:slack]
+  }
 end
 ```
 
-## Alert Rules
+Slack alerts use Incoming Webhooks:
 
 ```ruby
-Ask::Monitoring.configure do |c|
-  c.alert_rules = [
-    # Cost spike
-    { metric: :cost, threshold: 10.0, window: "1h", channel: :slack },
-    # Error rate
-    { metric: :error_rate, threshold: 0.05, window: "5m", channel: :email },
-    # Latency
-    { metric: :p95_latency_ms, threshold: 30000, window: "5m", channel: :webhook }
-  ]
-end
+channel = Ask::Monitoring::Channels::Slack.new(
+  webhook_url: ENV["SLACK_WEBHOOK_URL"]
+)
+channel.deliver(alert)
 ```
 
-## Custom Metrics
-
-```ruby
-Ask::Monitoring.track_metric(:custom_tool_usage, value: 42, tags: { tool: "bash" })
-
-# View in dashboard under "Custom Metrics"
-```
-
-## Data Retention
-
-```ruby
-Ask::Monitoring.configure do |c|
-  c.retention_days = 90  # Keep metrics for 90 days
-end
-```
+Email alerts work the same way with `Channels::Email.new(from:, to:)`. Set `alert_cooldown` to stop repeated alerts from the same rule from spamming (default 5 minutes).
 
 ## Next Steps
 

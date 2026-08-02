@@ -7,27 +7,33 @@ nav_order: 1
 
 # Your First Agent
 
-Build a working AI agent in under 5 minutes. You'll need Ruby 3.2+ and an API key from OpenAI or Anthropic.
+You'll need Ruby 3.2+ and an API key for whichever model you want to use. ask-rb talks to 33 providers: OpenAI, Anthropic, Google Gemini, Mistral, Amazon Bedrock, Cloudflare, plus 26 OpenAI-compatible APIs (DeepSeek, Groq, OpenRouter, xAI, Perplexity, and more). No key needed if you run Ollama locally. Pick what fits your project.
 
 ## 1. Install
 
 ```bash
-gem install ask-agent
+gem install ask-agent ask-tools-shell
 ```
 
-This installs the agent runtime plus the shell tools (bash, read, write, glob, grep) and the LLM provider gem.
+`ask-agent` is the runtime. `ask-tools-shell` adds the shell tools (bash, read, write, glob, grep) that the examples below use.
 
 ## 2. Set your API key
+
+Keys are read from environment variables at runtime:
 
 ```bash
 export OPENAI_API_KEY="sk-your-key-here"
 ```
 
-Or for Anthropic:
+Or any other provider:
 
 ```bash
-export ANTHROPIC_API_KEY="sk-ant-your-key-here"
+export GEMINI_API_KEY="your-key-here"
+export MISTRAL_API_KEY="your-key-here"
+export DEEPSEEK_API_KEY="your-key-here"
 ```
+
+With Ollama there's nothing to set — it runs locally on `localhost:11434` and needs no key.
 
 ## 3. Create an agent
 
@@ -35,6 +41,7 @@ Create a file called `agent.rb`:
 
 ```ruby
 require "ask-agent"
+require "ask-tools-shell"
 
 session = Ask::Agent::Session.new(
   model: "gpt-4o",
@@ -55,7 +62,9 @@ You should see the agent running a bash command to check the Ruby version and re
 
 ### Using a different provider
 
-Some models are registered under one provider but served by another. For example, `deepseek-v4-flash` is in the model catalog under the `deepseek` provider, but you might access it through `opencode_go`. Pass the `provider:` parameter to override:
+The provider is resolved from the model name. `"gpt-4o"` picks OpenAI, `"claude-sonnet-4"` picks Anthropic, `"gemini-2.0-flash"` picks Google, and so on.
+
+Sometimes you want a model that's registered under one provider but served by another. For example, `deepseek-v4-flash` is cataloged under the `deepseek` provider, but you can reach it through `opencode_go`, an OpenAI-compatible gateway. Pass `provider:` to override:
 
 ```ruby
 session = Ask::Agent::Session.new(
@@ -65,20 +74,20 @@ session = Ask::Agent::Session.new(
 )
 ```
 
-This works with any OpenAI-compatible provider — set `OPENCODE_API_KEY` (or `OPENCODE_GO_API_KEY`) in your environment and the agent resolves everything automatically.
+Set `OPENCODE_GO_API_KEY` in your environment and the agent resolves everything automatically. The same works for any OpenAI-compatible provider in the registry — pass its slug as `provider:` and the matching `*_API_KEY` env var.
 
 ## 4. Give it more tools
 
 ```ruby
 session = Ask::Agent::Session.new(
   model: "gpt-4o",
-  tools: Ask::Tools::Shell::TOOLS  # 7 shell tools via the TOOLS constant
+  tools: Ask::Tools::Shell::TOOLS  # 8 shell tools via the TOOLS constant
 )
 
 response = session.run("Create a file called hello.rb that prints a greeting")
 ```
 
-The agent can now read, write, edit files, glob, grep, and run code.
+The agent can now read, write, and edit files, glob, grep, run code, and apply patches.
 
 ## 5. Add streaming
 
@@ -109,7 +118,7 @@ You'll see the agent's response stream in real-time, with tool execution progres
 - **Ask::Agent::Session** manages the think-call-execute loop
 - **Tools** give the agent capabilities (bash, filesystem access)
 - **Events** let you observe the agent in real-time
-- The **provider** (OpenAI, Anthropic, etc.) handles model communication
+- The **provider** (OpenAI, Anthropic, or any of 30+) handles model communication
 
 ## Next steps
 

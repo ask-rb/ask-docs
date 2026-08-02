@@ -7,6 +7,12 @@ nav_order: 3
 
 # Custom Agents
 
+Everything in this guide comes from `ask-agent`:
+
+```ruby
+gem "ask-agent"
+```
+
 ## Agent Definitions (File Convention)
 
 The easiest way to create a reusable agent is with `Ask::Agent::Definition`.

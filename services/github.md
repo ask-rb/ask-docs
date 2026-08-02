@@ -109,11 +109,8 @@ Ask::GitHub::GEM_NAME     # => "octokit"
 
 ```bash
 bundle install
-bundle exec rake test    # 31 tests, 78 assertions
+bundle exec rake test
 bundle exec rake coverage  # with SimpleCov
-
-# Run integration tests (requires GITHUB_TOKEN)
-GITHUB_TOKEN=ghp_... bundle exec rake test
 ```
 
 ## Dependencies

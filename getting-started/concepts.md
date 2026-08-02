@@ -19,7 +19,7 @@ You ──> Agent ──> Tools ──> World
 
 - An **Agent** runs a loop: think → call tools → execute → feed results back
 - **Tools** are capabilities the agent can use (bash, read, write, SQL, API calls)
-- A **Provider** connects to an LLM (OpenAI, Anthropic, Google, etc.)
+- A **Provider** connects to an LLM (OpenAI, Anthropic, Google, Mistral, Ollama, and 25+ OpenAI-compatible APIs)
 - **Skills** guide *how* the agent approaches problems (methodology, not capability)
 
 ## What is an Agent?
@@ -41,7 +41,7 @@ Turn 2: LLM thinks: Let me read that file
 Done: LLM provides answer
 ```
 
-The loop runs until the agent answers the user or hits the turn limit (default 50).
+The loop runs until the agent answers the user or hits the turn limit (default 25).
 
 ## What is a Tool?
 

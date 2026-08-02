@@ -7,7 +7,11 @@ nav_order: 2
 
 # Database Tools
 
-Nine built-in tools that give your agent deep access to your Rails application.
+Nine built-in tools that give your agent deep access to your Rails application. They ship with `ask-rails-harness`:
+
+```ruby
+gem "ask-rails-harness"
+```
 
 ## Quick Start
 

@@ -31,7 +31,7 @@ Your searches stay on your machine.
 
 ## Quick Start
 
-Get web search working end-to-end in 3 minutes:
+Get web search working end-to-end:
 
 ```sh
 # 1. Start SearXNG

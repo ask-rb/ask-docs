@@ -170,23 +170,21 @@ my_service:
 
 ## Adding Skills
 
-Include a `.ask/skills/` directory in your gem for auto-discovered methodology:
+Include an `ask/skills/<name>/SKILL.md` path in your gem's `lib/` for auto-discovered methodology:
 
 ```
 ask-my-service/
-├── .ask/
-│   └── skills/
-│       └── my-service-workflow.md
+└── lib/
+    └── ask/
+        └── skills/
+            └── my-service-workflow/
+                └── SKILL.md
 ```
 
 ## Testing
 
 ```ruby
-require "ask/test"
-
 class MyServiceClientTest < Minitest::Test
-  include Ask::Test::VCRHelper
-
   def test_list_resources
     VCR.use_cassette("my_service/resources") do
       client = Ask::MyService.client

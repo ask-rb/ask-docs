@@ -7,7 +7,7 @@ nav_order: 3
 
 # OpenTelemetry Tracing
 
-Distributed tracing for your agents. Export spans to Langfuse, Datadog, Honeycomb, Jaeger, or any OpenTelemetry-compatible backend.
+Distributed tracing for your agents. `ask-opentelemetry` subscribes to `ask-instrumentation` events and wraps every LLM operation in an OpenTelemetry span. Export to Langfuse, Datadog, Honeycomb, Jaeger, Arize Phoenix, or any OpenTelemetry-compatible backend.
 
 ```ruby
 gem "ask-opentelemetry"
@@ -18,112 +18,63 @@ gem "ask-opentelemetry"
 ```ruby
 require "ask/opentelemetry"
 
-Ask::OpenTelemetry.setup(
-  service_name: "my-agent",
-  exporter: :langfuse,
-  langfuse_secret_key: ENV["LANGFUSE_SECRET_KEY"],
-  langfuse_public_key: ENV["LANGFUSE_PUBLIC_KEY"],
-  langfuse_host: "https://cloud.langfuse.com"
-)
+Ask::OpenTelemetry.install
 ```
 
-## How Spans Map to Events
+That's the whole setup. In a Rails app the railtie installs it automatically on boot — no manual call needed. Safe to call repeatedly; subsequent calls are no-ops.
 
-Each agent event maps to an OpenTelemetry span:
+From here, every chat completion, tool call, embedding, and image generation gets a span.
 
-| Event | Span Name | Attributes |
+## How Events Map to Spans
+
+| Instrumentation Event | Span Name | Attributes |
 |---|---|---|
-| `LlmCallStart` → `LlmCallComplete` | `llm.call` | `llm.model`, `llm.input_tokens`, `llm.output_tokens`, `llm.cost` |
-| `ToolExecutionStart` → `ToolExecutionComplete` | `tool.execute` | `tool.name`, `tool.duration_ms`, `tool.status` |
-| `TurnComplete` | `agent.turn` | `turn.number`, `turn.tool_calls` |
-| `SessionComplete` | `agent.session` | `session.turns`, `session.total_cost` |
+| `chat.ask` / `chat.stream.ask` | `llm.chat` | `llm.provider`, `llm.model`, `llm.input_tokens`, `llm.output_tokens`, `llm.duration_ms` |
+| `tool.ask` | `llm.tool` | `llm.tool`, `llm.tool_args`, `llm.duration_ms` |
+| `embedding.ask` | `llm.embedding` | `llm.provider`, `llm.model`, `llm.duration_ms` |
+| `image.ask` | `llm.image` | `llm.provider`, `llm.model`, `llm.image.size`, `llm.duration_ms` |
+
+Metadata attached with `Ask::Instrumentation.with_metadata(user_id:, session_id:)` is forwarded as `llm.metadata.*` attributes on every span in that block.
 
 ## Exporters
 
-### Langfuse
+ask-opentelemetry is backend-agnostic. It emits standard OpenTelemetry spans; the exporter is configured by the OpenTelemetry SDK in your app, the same way you'd configure it for any other tracing.
+
+For example, an OTLP exporter pointed at Langfuse:
 
 ```ruby
-Ask::OpenTelemetry.setup(
-  service_name: "my-agent",
-  exporter: :langfuse,
-  langfuse_secret_key: ENV["LANGFUSE_SECRET_KEY"],
-  langfuse_public_key: ENV["LANGFUSE_PUBLIC_KEY"]
-)
+require "opentelemetry-sdk"
+require "opentelemetry-exporter-otlp"
+
+OpenTelemetry::SDK.configure do |c|
+  c.service_name = "my-agent"
+  c.add_span_processor(
+    OpenTelemetry::SDK::Trace::Export::BatchSpanProcessor.new(
+      OpenTelemetry::Exporter::OTLP::Exporter.new(
+        endpoint: "https://cloud.langfuse.com/api/public/otel",
+        headers: {
+          "Authorization" => "Basic #{Base64.strict_encode64("#{ENV["LANGFUSE_PUBLIC_KEY"]}:#{ENV["LANGFUSE_SECRET_KEY"]}")}"
+        }
+      )
+    )
+  )
+end
 ```
 
-### Datadog
-
-```ruby
-Ask::OpenTelemetry.setup(
-  service_name: "my-agent",
-  exporter: :datadog,
-  datadog_agent_url: "http://localhost:8126"
-)
-```
-
-### Honeycomb
-
-```ruby
-Ask::OpenTelemetry.setup(
-  service_name: "my-agent",
-  exporter: :honeycomb,
-  honeycomb_api_key: ENV["HONEYCOMB_API_KEY"],
-  honeycomb_dataset: "ask-agent"
-)
-```
-
-### Jaeger (local dev)
-
-```ruby
-Ask::OpenTelemetry.setup(
-  service_name: "my-agent",
-  exporter: :jaeger,
-  jaeger_host: "localhost",
-  jaeger_port: 6831
-)
-```
-
-## Trace Context Propagation
-
-Pass trace context across service boundaries:
-
-```ruby
-# Extract from incoming request headers
-context = Ask::OpenTelemetry.extract(rack_request.headers)
-
-# Create session with trace context
-session = Ask::Agent::Session.new(
-  model: "gpt-4o",
-  trace_context: context
-)
-
-# Inject to outgoing requests
-headers = {}
-Ask::OpenTelemetry.inject(headers)
-Faraday.get(url, headers: headers)
-```
+Datadog, Honeycomb, and Jaeger each ship their own OpenTelemetry exporters — same pattern, different endpoint. Point the SDK at them and the spans flow.
 
 ## Manual Instrumentation
 
-Add custom spans around any code:
+Add custom spans around any code with the standard OpenTelemetry API:
 
 ```ruby
-Ask::OpenTelemetry.in_span("custom.process") do |span|
+tracer = OpenTelemetry.tracer_provider.tracer("my-app")
+
+tracer.in_span("custom.process") do |span|
   span.set_attribute("input.size", data.size)
   result = process(data)
   span.set_attribute("output.count", result.count)
   result
-end
-```
-
-## Configuration
-
-```ruby
-Ask::OpenTelemetry.configure do |c|
-  c.service_name = "my-agent"
-  c.service_version = "1.0.0"
-  c.environment = Rails.env
-  c.sample_rate = 1.0  # Sample all requests (0.0 - 1.0)
 end
 ```
 

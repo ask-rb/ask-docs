@@ -51,20 +51,21 @@ class MyProvider < Ask::Provider
 end
 ```
 
-### Auth helpers
-
-```ruby
-Ask::Auth.from_env("OPENAI_API_KEY")          # env var
-Ask::Auth::OAuth.new(client_id: "...")         # PKCE flow
-Ask::Auth::CredentialStore.new(path: "...")    # file-backed with 0600
-```
-
 ### Role mapping
 
+Message roles are normalized on construction. `"user"`, `:user`, and any
+string form become the canonical symbol; unknown roles raise `InvalidRole`.
+
 ```ruby
-Ask::RoleMap.normalize("developer")  # => "system"
-Ask::RoleMap.normalize("ai")         # => "assistant"
+Ask::Message.new(role: "user", content: "hi").user?  # => true
+Ask::Message.new(role: :bogus, content: "hi")        # raises Ask::InvalidRole
 ```
+
+The valid roles are `:system`, `:user`, `:assistant`, and `:tool`.
+
+### Credential resolution
+
+Credentials are resolved by the `ask-auth` gem, not by ask-core. `Ask::Auth.resolve(:openai_api_key)` walks env vars, `~/.ask/credentials.yml`, Rails credentials, a database-backed store, and OAuth — see [Credential Resolution](/ask-docs/core/auth).
 
 ### Model Catalog
 
@@ -228,25 +229,16 @@ conv.user([
 
 Content blocks are frozen value objects with structural equality and `#to_h` serialization. Each provider (OpenAI, Anthropic, etc.) transforms them to its own wire format automatically.
 
-### CostCalculator
+### Cost calculation and pricing data
 
-`Ask::LLM::CostCalculator` computes API costs from model pricing data. Supports text and audio tokens, cache read/write, reasoning tokens, and batch tier pricing:
-
-```ruby
-cost = Ask::LLM::CostCalculator.calculate(model,
-  input_tokens: 1000, output_tokens: 500,
-  cache_read_tokens: 2000, reasoning_tokens: 200,
-  tier: :batch)
-
-Ask::LLM::CostCalculator.per_million(model)
-# => { input: 2.5, output: 10.0, cache_read: 1.25, ... }
-```
-
-### Model pricing data
-
-The gem ships **406 models across 12 providers** with pricing data sourced from models.dev and OpenRouter. Run `rake models:update` to refresh before releasing.
+`Ask::LLM::CostCalculator` ships with `ask-llm-providers`, alongside the model
+catalog data: 406 models across 12 providers with pricing from models.dev and
+OpenRouter. Run `rake models:update` in the ask-llm-providers repo before a
+release. See [LLM Providers](/ask-docs/core/providers).
 
 ## Exports
 
-`Conversation`, `Stream`, `Chunk`, `Response`, `Provider`, `ToolDef`, `ToolCall`, `Auth`, `Auth::OAuth`,
-`Auth::CredentialStore`, `RoleMap`, `Error` classes.
+`Conversation`, `Message`, `Stream`, `Chunk`, `Provider`, `ModelCatalog`,
+`ModelInfo`, `ToolDef`, `Result`, `Content` (`Text`, `Image`, `Audio`,
+`Video`, `File`), `Document`, `ProviderTool`, `State::Adapter`, and the
+`Ask::Error` hierarchy.

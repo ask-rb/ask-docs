@@ -416,10 +416,6 @@ scrollBtn.addEventListener("ask-scroll", () => {
 
 ## Dark Mode
 
----
-
-## Dark Mode
-
 All components automatically support dark mode:
 
 | Scenario | Applied by |
@@ -479,10 +475,11 @@ All components use Shadow DOM for style encapsulation. Each is a self-contained 
 
 | Version | Size (uncompressed) | Size (gzip) |
 |---------|---------------------|-------------|
-| 0.1.0 | 27 kB | 8 kB |
-| 0.2.0 | 100 kB | 19.5 kB |
+| 0.3.0 | ~102 kB | ~20 kB |
 
-The increase from 0.1.0 covers 14 additional components. Each component is lazy by default — the bundle is loaded once and all components register themselves via `customElements.define()`.
+All 16 components ship in one bundle. Each component registers itself via
+`customElements.define()` on load, so importing the bundle makes every
+`<ask-*>` element available.
 
 ## Changelog
 

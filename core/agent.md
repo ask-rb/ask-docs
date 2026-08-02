@@ -16,6 +16,8 @@ Agent runtime for the ask-rb ecosystem. The core agent loop: think → call tool
 
 **Use ask-rails when** you want to add AI capabilities to your Rails app for your users. Provides generators, file conventions, and a railtie for building agents with the ask-rb ecosystem. Rails 7.1+ only.
 
+**Use ask-graph when** the process is deterministic — a fixed sequence of steps you can write up front, with checkpointing and crash recovery. Agents are for open-ended, model-driven work; graphs are for pipelines with a known shape. See [ask-graph vs ask-agent](/ask-docs/core/graph#ask-graph-vs-ask-agent).
+
 Ported from `RubyLLM::Conductor` to `Ask::Agent` namespace.
 
 ## Installation
@@ -128,7 +130,7 @@ session = Ask::Agent::Session.new(
 
 | Adapter | Description |
 |---|---|
-| `:active_record` | Writes to an `ask_audit_logs` table. Auto-creates the table on first write. For Rails: run `rails generate ask_rails:install` for a proper migration. |
+| `:active_record` | Writes to an `ask_audit_logs` table. Auto-creates the table on first write. For Rails: run `rails generate ask:install` for a proper migration. |
 | `:file` | Appends JSON lines to a file. Good for development. |
 | Custom | Any object implementing `#write(entry)` — see `Ask::Agent::Extensions::AuditLog::Adapter`. |
 
@@ -154,7 +156,7 @@ Sensitive arguments (`password`, `token`, `api_key`, `sql`, `command`) are redac
 If you're using Rails, generate the audit log migration:
 
 ```bash
-rails generate ask_rails:install
+rails generate ask:install
 ```
 
 This creates `db/migrate/create_ask_audit_logs.rb` with the correct table schema.
@@ -566,9 +568,79 @@ end
 Ask::Agent.configure { |c| c.stream_transforms.use FilterTransform }
 ```
 
+## Context Compaction
+
+{: .new }
+> Model-aware reserve in ask-agent 0.25.0
+
+Long conversations eventually outgrow the model's context window. The
+`Compactor` summarizes older messages and replaces them with a structured
+summary, preserving a recent tail verbatim.
+
+### Model-aware reserve (default)
+
+Compaction triggers when the conversation tokens exceed
+`context_window - reserve`. The reserve is derived from the model's declared
+`max_output_tokens` (capped at 20,000), so the agent always keeps exactly the
+headroom a single turn can consume. Models without declared limits get a
+static 20,000-token reserve. A safety floor clamps the reserve for
+tiny-window models so compaction can fire usefully.
+
+```ruby
+# Default (reserve mode)
+compactor = Ask::Agent::Compactor.new
+
+# Legacy: compact at 80% of the window
+compactor = Ask::Agent::Compactor.new(threshold: 0.8)
+
+# Explicit headroom
+compactor = Ask::Agent::Compactor.new(reserve_tokens: 5_000)
+```
+
+### Token-aware recent tail
+
+`keep_recent_tokens:` preserves the last N tokens of conversation verbatim
+(default 8,000) and summarizes only what's older — recent-context fidelity
+depends on the active work, not message counts. When not configured, the
+legacy fixed message-count tail (`keep_count:`, default 8) is used.
+
+```ruby
+compactor = Ask::Agent::Compactor.new(keep_recent_tokens: 12_000)
+```
+
+### Global configuration
+
+```ruby
+Ask::Agent.configure do |c|
+  c.compactor_reserve_tokens = 10_000        # headroom for one turn
+  c.compactor_keep_recent_tokens = 12_000    # verbatim recent tail
+end
+```
+
+### Overflow recovery
+
+When the LLM returns a context-overflow error, the session compacts
+automatically and retries. A second overflow in the same session falls back
+to `microcompact!`, which clears oversized tool results in place (rebuilding
+messages and preserving tool-call IDs).
+
+### Events
+
+Compaction emits `CompactionStart` and `CompactionEnd` events:
+
+```ruby
+session.on(Ask::Agent::Events::CompactionStart) do |event|
+  puts "Compacting from #{event.tokens_before} tokens"
+end
+
+session.on(Ask::Agent::Events::CompactionEnd) do |event|
+  puts "Compacted #{event.tokens_before} → #{event.tokens_after} tokens"
+end
+```
+
 ## Extensions
 
-- **PermissionGate** — Require approval for destructive tools
+- **Permissions** — Enforce access modes (`:full_access`, `:read_only`, `:ask_before_changes`) on tool calls
 - **RateLimiter** — Prevent runaway tool calls
 - **AuditLog** — Immutable, append-only tool call log
 
@@ -690,13 +762,13 @@ Skills follow a progressive disclosure pattern: **names and descriptions** are l
 
 ## Configuration
 
-	```ruby
-	Ask::Agent.configure do |c|
-	  c.default_model = "claude-sonnet-4"
-	  c.default_max_turns = 50
-	  c.parallel_tool_execution = true
-	  c.prompt_caching = false    # disable provider-native prompt caching
-	  c.middleware.use :log_calls
-	  c.stream_transforms.use :thinking_separator
-	end
-	```
+```ruby
+Ask::Agent.configure do |c|
+  c.default_model = "claude-sonnet-4"
+  c.default_max_turns = 50
+  c.parallel_tool_execution = true
+  c.prompt_caching = false    # disable provider-native prompt caching
+  c.middleware.use :log_calls
+  c.stream_transforms.use :thinking_separator
+end
+```

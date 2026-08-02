@@ -47,7 +47,7 @@ Available constants for AI system prompts:
 
 ```ruby
 client = Ask::Slack.client
-client.channels_list
+client.conversations_list
 client.conversations_history(channel: "C123456")
 ```
 

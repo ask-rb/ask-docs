@@ -24,7 +24,7 @@ You can use all three together: `ask-agent` provides the core agent loop, `ask-r
 
 | Guide | What you'll learn |
 |---|---|
-| [Your First Agent](/ask-docs/getting-started/first-agent) | Install, configure, and run an ask-agent in under 5 minutes |
+| [Your First Agent](/ask-docs/getting-started/first-agent) | Install, configure, and run an ask-agent |
 | [Add AI to Your Rails App](/ask-docs/getting-started/rails-app) | Set up ask-rails and build agents that use your app's data |
 | [Give Agents Access to Your Rails App](/ask-docs/getting-started/rails-ai) | Connect AI agents to your Rails app for internal/admin use with ask-rails-harness |
 | [Core Concepts](/ask-docs/getting-started/concepts) | The mental model behind the ecosystem |

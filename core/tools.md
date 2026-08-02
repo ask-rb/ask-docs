@@ -97,6 +97,8 @@ Thread-safe via `Monitor`.
 
 ## Writing Custom Tools
 
+This is all `ask-tools` — `gem "ask-tools"` (it's already a dependency of `ask-agent` if you're building an agent).
+
 ```ruby
 class SearchTool < Ask::Tool
   description "Searches a knowledge base"
@@ -124,7 +126,7 @@ end
 
 ## ask-tools-shell
 
-**Shell, filesystem, and code execution tools.** Ships 7 tools every agent needs: Bash, Read, Write, Edit, Glob, Grep, and Code.
+**Shell, filesystem, and code execution tools.** Ships 8 tools every agent needs: Bash, Read, Write, Edit, Glob, Grep, Code, and ApplyPatch.
 
 ```ruby
 gem "ask-tools-shell"
@@ -136,11 +138,11 @@ gem "ask-tools-shell"
 require "ask-tools-shell"
 
 Ask::Tools::Shell.all.map(&:name)
-# => ["bash", "read", "write", "edit", "glob", "grep", "code"]
+# => ["bash", "read", "write", "edit", "glob", "grep", "code", "apply_patch"]
 
-Ask::Tools::Bash.new.call(command: "echo hello")
-Ask::Tools::Read.new.call(path: "/etc/hosts")
-Ask::Tools::Code.new.call(code: "puts RUBY_VERSION")
+Ask::Tools::Shell::Bash.new.call(command: "echo hello")
+Ask::Tools::Shell::Read.new.call(path: "/etc/hosts")
+Ask::Tools::Shell::Code.new.call(code: "puts RUBY_VERSION")
 ```
 
 ### Sandbox Configuration (v0.2.0+)
@@ -184,6 +186,7 @@ of `Ask::Result.ok`.
 | **Glob** | `pattern` (req), `path` | Find files matching glob. Max 1000 results, sorted newest first |
 | **Grep** | `pattern` (req), `path`, `include` | Regex search in files. Max 100 matches, 500 chars/line. Skips .git, node_modules, etc. |
 | **Code** | `code` (req) | Execute Ruby in a subprocess. Uses available gems, passes env through |
+| **ApplyPatch** | `patchText` (req) | Edit files using a unified diff format. Precise, multi-file edits in one call |
 
 ### Links
 
@@ -192,42 +195,23 @@ of `Ask::Result.ok`.
 
 ---
 
-## Ask::Tools::SubAgent — Sub-Agent Delegate Tool
+## Sub-Agents as Tools
 
-{: .new }
-> New in ask-tools 0.3.0
-
-A tool that delegates a task to a specialized sub-agent. When the coordinator
-LLM calls it, a fresh sub-agent session runs independently with its own model,
-tools, and instructions.
+To delegate a task to a sub-agent, use `Ask::Agent::SubAgent` from ask-agent. It satisfies the tool duck type (`name`, `description`, `params_schema`, `call`), so it plugs straight into a session's tools array:
 
 ```ruby
-require "ask-tools"
-
-search = Ask::Tools::SubAgent.new(
+search = Ask::Agent::SubAgent.new(
   name: "web_search",
   description: "Search the web for current information",
-  runner: ->(task) {
-    Ask::Agent::Session.new(model: "gpt-4o-mini", tools: [Search])
-      .run(task).to_s
-  }
+  model: "gpt-4o-mini",
+  tools: [Ask::Tools::WebSearch],
+  system_prompt: "You are a research assistant."
 )
 
-search.call(task: "Latest Rails release")
-# => "Rails 8.0 was released on..."
+session = Ask::Agent::Session.new(model: "gpt-4o", tools: [search])
 ```
 
-The name and description can be set per-instance, so multiple sub-agents
-can coexist in the same tool list:
-
-```ruby
-search = Ask::Tools::SubAgent.new(name: "web_search",     runner: ...)
-review = Ask::Tools::SubAgent.new(name: "code_review",     runner: ...)
-analyze = Ask::Tools::SubAgent.new(name: "data_analysis",  runner: ...)
-```
-
-Use `Ask::Agent.sub_agent_tool` to create these from a session factory
-without writing the runner lambda manually (see [The Agent Loop](agent.md)).
+When the coordinator calls it, a fresh session runs with its own model, tools, and instructions. See [Sub-Agent Delegation](/ask-docs/core/agent#sub-agent-delegation) for the full picture.
 
 ---
 
@@ -282,8 +266,12 @@ chat.ask("What is the population of Tokyo? Search the web.")
 ### Usage with Agent
 
 ```ruby
-agent = Ask::Agent.new(tools: [Ask::Tools::WebSearch])
-agent.run("Find recent news about Mars exploration.")
+session = Ask::Agent::Session.new(
+  model: "gpt-4o",
+  tools: [Ask::Tools::WebSearch]
+)
+
+session.run("Find recent news about Mars exploration.")
 ```
 
 ### Available Tools
@@ -316,7 +304,7 @@ Results are returned as a numbered markdown-like string:
 
 ```bash
 bundle install
-bundle exec rake test    # 12 tests, 25 assertions
+bundle exec rake test
 ```
 
 Requires a running SearXNG instance for the integration test.
@@ -324,7 +312,7 @@ Requires a running SearXNG instance for the integration test.
 ### Dependencies
 
 - **Runtime:** `ask-tools >= 0.1`
-- **Zero of our own runtime deps** — clean dependency tree
+- **No Rails or HTTP framework dependencies** — works in a script or a full Rails app
 
 ### Links
 

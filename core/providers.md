@@ -93,7 +93,7 @@ These share OpenAI's wire format. Each is configured via a registry entry — no
 | Meta (Llama) | `LLAMA_API_KEY` | Chat, streaming, tools |
 | GitHub Models | `GITHUB_API_KEY` | Chat, streaming, tools, vision |
 | OpenCode | `OPENCODE_API_KEY` | Chat, streaming, tools |
-| OpenCode Go | `OPENCODE_API_KEY` or `OPENCODE_GO_API_KEY` | Chat, streaming, tools |
+| OpenCode Go | `OPENCODE_GO_API_KEY` | Chat, streaming, tools |
 | Mimo | `MIMO_API_KEY` | Chat, streaming |
 
 ## Using a Model Through a Different Provider
@@ -155,8 +155,7 @@ deepseek: { api_base: "https://api.deepseek.com", api_key_env: "DEEPSEEK_API_KEY
 openrouter: { api_base: "https://openrouter.ai/api/v1", api_key_env: "OPENROUTER_API_KEY",
               extra_headers: { "HTTP-Referer" => "...", "X-Title" => "ask-rb" } },
 
-opencode_go: { api_base: "https://opencode.ai/zen/go/v1", api_key_env: "OPENCODE_API_KEY" },
-             # Also accepts OPENCODE_GO_API_KEY via slug convention
+opencode_go: { api_base: "https://opencode.ai/zen/go/v1", api_key_env: "OPENCODE_GO_API_KEY" },
 ```
 
 ## Streaming

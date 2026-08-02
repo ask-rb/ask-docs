@@ -14,6 +14,18 @@ nav_order: 5
 This follows the same progressive disclosure pattern as Anthropic's Agent Skills — the agent
 knows what's available and pulls in details only when relevant.
 
+The discovery and loading machinery lives in `ask-skills`, which `ask-agent` depends on. If you're using agents, skills work out of the box:
+
+```ruby
+gem "ask-agent"    # pulls in ask-skills
+```
+
+For standalone skill discovery without the agent loop (a CLI tool, a Rake task), add the gem directly:
+
+```ruby
+gem "ask-skills"
+```
+
 ```ruby
 # Skills are NOT code — they're markdown files
 # They live in the project, a gem, or user config
@@ -42,13 +54,19 @@ Skills are methodology. **Tools are capability.** An agent with `Bash`, `Read`, 
 
 ## Where Skills Come From
 
-Skills are auto-discovered from three sources:
+Skills are auto-discovered from four sources, in priority order:
 
 | Source | Location | Priority |
 |---|---|---|
-| Gems | `shared/ask/skills/` in each gem | Low |
-| Project | `.agents/skills/` in the project root | Medium |
+| Project | `.agents/skills/` in the project root | Highest |
 | User config | `~/.config/ask/skills/` | High |
+| Gems | `ask/skills/*/SKILL.md` in installed gems | Low |
+| Built-in | `skill.design`, `skill.compose` (ask-skills) | Lowest |
+
+The project always wins when the same skill name exists in several places.
+On top of these, ask-agent also discovers per-agent skills in
+`agents/<name>/skills/` and shared skills in `agents/shared/skills/`
+(see [The Agent Loop](/ask-docs/core/agent#skills)).
 
 When the agent starts, all skills are **listed by name and description** in the system prompt
 so the LLM knows what's available. Every session also includes a built-in `load_skill` tool
