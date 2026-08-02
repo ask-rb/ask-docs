@@ -3,3 +3,6 @@ _site/
 Gemfile.lock
 vendor/
 ask-web-search-mcp-*.gem
+.env
+
+sessions.db

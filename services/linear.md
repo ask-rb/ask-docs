@@ -16,6 +16,7 @@ gem "ask-linear"
 ## Quick Start
 
 ```ruby
+# not-verified
 require "ask-linear"
 
 client = Ask::Linear.client

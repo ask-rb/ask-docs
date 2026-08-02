@@ -18,6 +18,7 @@ gem "ask-auth"
 ## Quick Start
 
 ```ruby
+# not-verified
 require "ask-auth"
 
 # Simple — works everywhere, no config needed

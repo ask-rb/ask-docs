@@ -19,15 +19,16 @@ gem install ask-agent ask-tools-shell
 
 ## 2. Set your API key
 
-Keys are read from environment variables at runtime:
+Keys are read from environment variables at runtime. This guide's examples use OpenCode Go, an OpenAI-compatible gateway:
 
 ```bash
-export OPENAI_API_KEY="sk-your-key-here"
+export OPENCODE_GO_API_KEY="your-key-here"
 ```
 
 Or any other provider:
 
 ```bash
+export OPENAI_API_KEY="sk-your-key-here"
 export GEMINI_API_KEY="your-key-here"
 export MISTRAL_API_KEY="your-key-here"
 export DEEPSEEK_API_KEY="your-key-here"
@@ -43,13 +44,17 @@ Create a file called `agent.rb`:
 require "ask-agent"
 require "ask-tools-shell"
 
+# not-verified
+# Live agent run: output varies per call. Requires OPENCODE_GO_API_KEY.
 session = Ask::Agent::Session.new(
-  model: "gpt-4o",
+  model: "deepseek-v4-flash",
+  provider: :opencode_go,
   tools: [Ask::Tools::Bash, Ask::Tools::Read, Ask::Tools::Write]
 )
 
-response = session.run("What Ruby version is installed?")
-puts response
+response = session.run("Run `ruby -v` and answer with only the version string.")
+response
+# => "ruby 4.0.1"
 ```
 
 Run it:
@@ -58,13 +63,13 @@ Run it:
 ruby agent.rb
 ```
 
-You should see the agent running a bash command to check the Ruby version and reporting back.
+The agent runs a bash command to check the Ruby version and reports back. The example above shows a real response; your model may phrase it differently.
 
 ### Using a different provider
 
 The provider is resolved from the model name. `"gpt-4o"` picks OpenAI, `"claude-sonnet-4"` picks Anthropic, `"gemini-2.0-flash"` picks Google, and so on.
 
-Sometimes you want a model that's registered under one provider but served by another. For example, `deepseek-v4-flash` is cataloged under the `deepseek` provider, but you can reach it through `opencode_go`, an OpenAI-compatible gateway. Pass `provider:` to override:
+Sometimes you want a model that's registered under one provider but served by another. The example above does exactly this: `deepseek-v4-flash` is cataloged under the `deepseek` provider, but we reach it through `opencode_go`, an OpenAI-compatible gateway, by passing `provider:`:
 
 ```ruby
 session = Ask::Agent::Session.new(
@@ -74,11 +79,12 @@ session = Ask::Agent::Session.new(
 )
 ```
 
-Set `OPENCODE_GO_API_KEY` in your environment and the agent resolves everything automatically. The same works for any OpenAI-compatible provider in the registry — pass its slug as `provider:` and the matching `*_API_KEY` env var.
+Set the matching `*_API_KEY` env var (`OPENCODE_GO_API_KEY` here) and the agent resolves everything automatically. The same works for any OpenAI-compatible provider in the registry — pass its slug as `provider:`.
 
 ## 4. Give it more tools
 
 ```ruby
+# not-verified: runs a live agent session; output varies per run
 session = Ask::Agent::Session.new(
   model: "gpt-4o",
   tools: Ask::Tools::Shell::TOOLS  # 8 shell tools via the TOOLS constant
@@ -92,6 +98,7 @@ The agent can now read, write, and edit files, glob, grep, run code, and apply p
 ## 5. Add streaming
 
 ```ruby
+# not-verified: streams a live agent session
 session = Ask::Agent::Session.new(
   model: "gpt-4o",
   tools: [Ask::Tools::Bash]

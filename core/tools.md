@@ -228,6 +228,7 @@ gem "ask-web-search"
 ### Quick Start
 
 ```ruby
+# not-verified: live SearXNG search, output varies per query
 require "ask/web_search"
 
 tool = Ask::Tools::WebSearch.new

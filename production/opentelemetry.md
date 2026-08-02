@@ -16,7 +16,7 @@ gem "ask-opentelemetry"
 ## Quick Start
 
 ```ruby
-require "ask/opentelemetry"
+require "ask/open_telemetry"
 
 Ask::OpenTelemetry.install
 ```

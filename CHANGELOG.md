@@ -1,5 +1,33 @@
 # Changelog
 
+## [0.6.0] — 2026-08-02
+
+### Added
+
+- **Executable examples runner** (`rake docs:generate` / `rake docs:verify`).
+  Runnable ruby blocks (first line `require "ask..."`) are executed against
+  the ask-* gems and their `# =>` output slots are filled with real results.
+  Blocks marked `# not-verified` are skipped; keyed examples skip when the
+  key is missing. Copy `.env.example` to `.env` (gitignored) for local keys.
+- Real generated outputs in the getting-started agent example and the
+  providers quick start (OpenCode Go / deepseek-v4-flash).
+- `# not-verified` markers on non-runnable blocks: Rails-bound tools,
+  credential examples (output would be a secret), live web search,
+  embedding pipelines, and the Minitest examples.
+
+### Fixed
+
+- `Workflow.call(order: order)` → `Workflow.call({ order: order })` in the
+  graph quick start and the Rails app guide (the API takes a positional
+  input hash).
+- `require "ask/opentelemetry"` → `require "ask/open_telemetry"`.
+- `Ask::MCP::Client.stdio` → `Ask::MCP.from_stdio` in the Rails MCP guide.
+- Missing `require "ask-agent"` in the persistence example.
+- Broken multi-line `# =>` slot in the sandbox quick start.
+- ask-agent 0.25.1: `Session` was passing raw tool classes to `Chat`,
+  crashing on first run with `Ask::InvalidToolDefinition`. Tools now
+  resolve before the Chat is built.
+
 ## [0.5.0] — 2026-08-02
 
 ### Changed

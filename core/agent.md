@@ -282,6 +282,8 @@ mid-conversation doesn't lose progress.
 ### Quick Start
 
 ```ruby
+# not-verified
+require "ask-agent"
 require "ask-state-providers"
 
 store = Ask::State::Providers::SQLite.new  # or Redis, Postgres, MySQL

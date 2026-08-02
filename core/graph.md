@@ -38,6 +38,26 @@ They compose well. A workflow step can call an agent session when a decision nee
 
 ```ruby
 require "ask-graph"
+require "ostruct"
+
+# Steps are plain Ruby classes with a call(context) method
+class ValidateOrder
+  def call(context)
+    context.valid = context.order.valid?
+  end
+end
+
+class ChargeCustomer
+  def call(context) = context.charged = true
+end
+
+class SendConfirmation
+  def call(context) = context.sent = true
+end
+
+class NotifyAdmin
+  def call(context) = context.notified = true
+end
 
 # Define a workflow
 module ProcessOrder
@@ -50,15 +70,18 @@ module ProcessOrder
     private
 
     def valid?
-      context.order.valid?
+      context.valid
     end
   end
 end
 
 # Run it
-result = ProcessOrder::Workflow.call(order: order)
-result.order      # => the validated order
-result.charged    # => true if payment succeeded
+order = OpenStruct.new(valid?: true)
+result = ProcessOrder::Workflow.call({ order: order })
+result.order.valid?  # => true
+result.charged       # => true
+# NotifyAdmin is skipped: the unless: condition is false
+result.notified      # => nil
 ```
 
 The `call` class method creates an instance, runs through all steps, and returns a `Context` object with every step's output accessible by name.

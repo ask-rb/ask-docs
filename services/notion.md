@@ -17,6 +17,7 @@ gem "ask-notion"
 ## Quick Start
 
 ```ruby
+# not-verified
 require "ask-notion"
 
 client = Ask::Notion.client

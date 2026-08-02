@@ -151,11 +151,13 @@ Same MCP config works in Cursor's MCP settings.
 The tools are standard MCP tools — any MCP client can discover and call them:
 
 ```ruby
+# not-verified
 # Example: Connect from a Ruby script
 require "ask/mcp"
 
-client = Ask::MCP::Client.stdio("ask-rails-harness-mcp")
-tools = client.list_tools
+client = Ask::MCP.from_stdio("ask-rails-harness-mcp")
+client.start
+tools = client.tools
 result = client.call_tool("schema_graph", { detail: "all" })
 ```
 

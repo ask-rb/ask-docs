@@ -19,6 +19,7 @@ gem "ask-honeybadger"
 ## Quick Start
 
 ```ruby
+# not-verified
 require "ask-honeybadger"
 
 client = Ask::Honeybadger.client

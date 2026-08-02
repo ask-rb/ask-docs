@@ -25,20 +25,20 @@ schema = Ask::Schema.create do
 end
 
 schema.new("person").to_json_schema
-# => {
-#   name: "person",
-#   schema: {
-#     type: "object",
-#     properties: {
-#       name: { type: "string", description: "The person's name" },
-#       age: { type: "integer", description: "Their age" },
-#       role: { type: "string", enum: ["admin", "user", "guest"] }
-#     },
-#     required: ["name", "age", "role"],
-#     additionalProperties: false,
-#     strict: true
-#   }
-# }
+# => {name: "person",
+#  description: nil,
+#  schema:
+#   {type: "object",
+#    properties:
+#     {name: {type: "string", description: "The person's name"},
+#      age: {type: "integer", description: "Their age"},
+#      role:
+#       {type: "string",
+#        enum: ["admin", "user", "guest"],
+#        description: "Access level"}},
+#    required: [:name, :age, :role],
+#    additionalProperties: false,
+#    strict: true}}
 ```
 
 `Ask::Schema.create` returns a schema class. You instantiate it with a name (`schema.new("person")`) and call `to_json_schema` or `to_json` on the instance.

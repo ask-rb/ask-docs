@@ -19,6 +19,7 @@ gem "ask-sentry"
 ## Quick Start
 
 ```ruby
+# not-verified
 require "ask-sentry"
 
 client = Ask::Sentry.client

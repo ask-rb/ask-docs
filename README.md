@@ -24,8 +24,37 @@ Rails/             — Setup, database tools, persistence, errors
 Services/          — GitHub, Slack, Notion, Linear, Sentry, Honeybadger
 Production/        — Observability, monitoring, tracing, evaluation
 Extending/         — Custom tools, providers, agents, services, skills
-Reference/         — Gem index, API docs, design philosophy
+Reference/         — Gem index, API documentation, design philosophy
 ```
+
+## Example outputs
+
+Code examples in the docs carry real outputs (`# =>` comments). A runner
+executes the runnable ones against the ask-* gems (found as sibling repos)
+and keeps those outputs current:
+
+```bash
+# Dry run; exits 1 if any example output is stale
+rake docs:verify
+
+# Rewrite the markdown files with the real outputs
+rake docs:generate
+
+# One file at a time
+FILE=core/tools.md rake docs:verify
+```
+
+Conventions:
+
+- A fenced ruby block whose first line is `require "ask..."` is runnable.
+- A line ending in `# =>` is an output slot; the generator replaces its
+  value with the real result.
+- A block containing a `# not-verified` line is skipped (Rails-bound
+  snippets, live web search, examples whose output is intentionally
+  illustrative).
+- Keyed examples (agents, providers) skip automatically when the key is
+  missing. Copy `.env.example` to `.env` (gitignored) and fill in keys to
+  run them locally.
 
 ## License
 

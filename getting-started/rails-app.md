@@ -192,7 +192,7 @@ end
 Run it:
 
 ```ruby
-result = OrderFulfillment::Workflow.call(order: order)
+result = OrderFulfillment::Workflow.call({ order: order })
 result.payment
 ```
 

@@ -13,8 +13,7 @@ require "ask-sandbox-providers"
 
 # Default: Local (subprocess + rlimits)
 result = Ask::Sandbox.provider.call(["ruby", "-e", "puts 1+1"])
-result.stdout     # => "2
-"
+result.stdout     # => "2\n"
 result.exit_code  # => 0
 
 # String commands → shell execution
