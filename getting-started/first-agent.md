@@ -45,7 +45,7 @@ require "ask-tools-shell"
 
 session = Ask::Agent::Session.new(
   model: "gpt-4o",
-  tools: [Ask::Tools::Shell::Bash, Ask::Tools::Shell::Read, Ask::Tools::Shell::Write]
+  tools: [Ask::Tools::Bash, Ask::Tools::Read, Ask::Tools::Write]
 )
 
 response = session.run("What Ruby version is installed?")
@@ -70,7 +70,7 @@ Sometimes you want a model that's registered under one provider but served by an
 session = Ask::Agent::Session.new(
   model: "deepseek-v4-flash",
   provider: :opencode_go,
-  tools: [Ask::Tools::Shell::Bash, Ask::Tools::Shell::Read, Ask::Tools::Shell::Write]
+  tools: [Ask::Tools::Bash, Ask::Tools::Read, Ask::Tools::Write]
 )
 ```
 
@@ -94,7 +94,7 @@ The agent can now read, write, and edit files, glob, grep, run code, and apply p
 ```ruby
 session = Ask::Agent::Session.new(
   model: "gpt-4o",
-  tools: [Ask::Tools::Shell::Bash]
+  tools: [Ask::Tools::Bash]
 )
 
 session.on_event do |event|

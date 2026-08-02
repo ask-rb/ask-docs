@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.5.0] — 2026-08-02
+
+### Changed
+
+- **READMEs become front doors.** Every ask-* gem README was restructured to
+  the front-door shape (what, install, quick start, essential API, links to
+  the docs site). Deep content now lives here. The Gem Index's purpose
+  column was compressed to one-liners with guide links, so no fact is
+  stated twice.
+
 ## [0.4.0] — 2026-08-02
 
 ### Changed

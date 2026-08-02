@@ -140,10 +140,12 @@ require "ask-tools-shell"
 Ask::Tools::Shell.all.map(&:name)
 # => ["bash", "read", "write", "edit", "glob", "grep", "code", "apply_patch"]
 
-Ask::Tools::Shell::Bash.new.call(command: "echo hello")
-Ask::Tools::Shell::Read.new.call(path: "/etc/hosts")
-Ask::Tools::Shell::Code.new.call(code: "puts RUBY_VERSION")
+Ask::Tools::Bash.new.call(command: "echo hello")
+Ask::Tools::Read.new.call(path: "/etc/hosts")
+Ask::Tools::Code.new.call(code: "puts RUBY_VERSION")
 ```
+
+The tool classes live directly under `Ask::Tools` (`Ask::Tools::Bash`, `Ask::Tools::Read`, ...). The `Ask::Tools::Shell` module is the registry: `Shell::TOOLS` lists all eight classes and `Shell.all` returns instances.
 
 ### Sandbox Configuration (v0.2.0+)
 

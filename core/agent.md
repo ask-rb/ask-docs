@@ -46,7 +46,7 @@ gem "ask-agent"
 ```ruby
 session = Ask::Agent::Session.new(
   model: "gpt-4o",
-  tools: [Ask::Tools::Shell::Bash]
+  tools: [Ask::Tools::Bash]
 )
 
 response = session.run("List the current directory")
@@ -59,7 +59,7 @@ If a model is registered under one provider but served by another — for exampl
 session = Ask::Agent::Session.new(
   model: "deepseek-v4-flash",
   provider: :opencode_go,
-  tools: [Ask::Tools::Shell::Bash]
+  tools: [Ask::Tools::Bash]
 )
 ```
 
@@ -288,7 +288,7 @@ store = Ask::State::Providers::SQLite.new  # or Redis, Postgres, MySQL
 
 session = Ask::Agent::Session.new(
   model: "gpt-4o",
-  tools: [Ask::Tools::Shell::Bash],
+  tools: [Ask::Tools::Bash],
   state: store
 )
 
@@ -395,7 +395,7 @@ search = Ask::Agent::SubAgent.new("web_search")
 
 coordinator = Ask::Agent::Session.new(
   model: "gpt-4o",
-  tools: [search, Ask::Tools::Shell::Bash]
+  tools: [search, Ask::Tools::Bash]
 )
 ```
 
@@ -416,13 +416,13 @@ review = Ask::Agent::SubAgent.new(
   name: "code_review",
   description: "Review code for bugs, style issues, and security problems",
   model: "claude-sonnet-4",                           # better at code review
-  tools: [Ask::Tools::Shell::Read, Ask::Tools::Shell::Grep],
+  tools: [Ask::Tools::Read, Ask::Tools::Grep],
   system_prompt: "You are a senior code reviewer. Be thorough."
 )
 
 coordinator = Ask::Agent::Session.new(
   model: "gpt-4o",
-  tools: [search, review, Ask::Tools::Shell::Bash]
+  tools: [search, review, Ask::Tools::Bash]
 )
 
 coordinator.run("Find the latest Rails release and check our Gemfile")
@@ -435,7 +435,7 @@ review = Ask::Agent::SubAgent.new(
   name: "code_review",
   model: "claude-sonnet-4",
   provider: :anthropic,
-  tools: [Ask::Tools::Shell::Read, Ask::Tools::Shell::Grep],
+  tools: [Ask::Tools::Read, Ask::Tools::Grep],
   system_prompt: "You are a senior code reviewer."
 )
 ```

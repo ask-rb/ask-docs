@@ -29,7 +29,7 @@ The architecture, philosophy, and decisions behind `ask-rb`.
    back) is a separate concern.
 
 6. **Everything has a programmatic API.** Every gem can be used from Ruby code directly, not just through a CLI.
-   `Ask::Conversation.new`, `Ask::Tools::Shell::Bash.new.call(...)`, `Ask::Providers::OpenAI.new.chat(...)`. No hidden state.
+   `Ask::Conversation.new`, `Ask::Tools::Bash.new.call(...)`, `Ask::Providers::OpenAI.new.chat(...)`. No hidden state.
 
 7. **Extensions are first-class.** Third-party code can hook into every lifecycle event, register new tools, add
    commands, modify messages. Extensions are Ruby modules, not separate processes.

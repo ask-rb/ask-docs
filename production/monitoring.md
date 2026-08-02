@@ -48,7 +48,7 @@ Filter by time range (1h, 24h, 7d, 30d), provider, or model.
 
 ## Cost tracking
 
-Pricing is built in for 22+ models across OpenAI, Anthropic, Google, Mistral, Cohere, and Bedrock:
+Pricing is built in for 22 models across OpenAI, Anthropic, Google, Mistral, Cohere, and Bedrock:
 
 ```ruby
 Ask::Monitoring::Cost.for("openai/gpt-4", tokens: { input: 100, output: 50 })

@@ -232,7 +232,7 @@ Content blocks are frozen value objects with structural equality and `#to_h` ser
 ### Cost calculation and pricing data
 
 `Ask::LLM::CostCalculator` ships with `ask-llm-providers`, alongside the model
-catalog data: 406 models across 12 providers with pricing from models.dev and
+catalog data: 402 models across 12 providers with pricing from models.dev and
 OpenRouter. Run `rake models:update` in the ask-llm-providers repo before a
 release. See [LLM Providers](/ask-docs/core/providers).
 

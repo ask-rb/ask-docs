@@ -388,14 +388,14 @@ Shell and filesystem tools. [Source](https://github.com/ask-rb/ask-tools-shell)
 `gem "ask-tools-shell"` — depends on ask-tools and ask-sandbox-providers.
 
   ```ruby
-  Ask::Tools::Shell::Bash.new.call(command: "ls")
-  Ask::Tools::Shell::Read.new.call(path: "/etc/hosts")
-  Ask::Tools::Shell::Write.new.call(path: "file.txt", content: "data")
-  Ask::Tools::Shell::Edit.new.call(path: "file.txt", old_string: "old", new_string: "new")
-  Ask::Tools::Shell::Glob.new.call(pattern: "**/*.rb")
-  Ask::Tools::Shell::Grep.new.call(pattern: "class")
-  Ask::Tools::Shell::Code.new.call(code: "puts RUBY_VERSION")
-  Ask::Tools::Shell::ApplyPatch.new.call(patchText: "--- a/file\n+++ b/file\n@@ ...")
+  Ask::Tools::Bash.new.call(command: "ls")
+  Ask::Tools::Read.new.call(path: "/etc/hosts")
+  Ask::Tools::Write.new.call(path: "file.txt", content: "data")
+  Ask::Tools::Edit.new.call(path: "file.txt", old_string: "old", new_string: "new")
+  Ask::Tools::Glob.new.call(pattern: "**/*.rb")
+  Ask::Tools::Grep.new.call(pattern: "class")
+  Ask::Tools::Code.new.call(code: "puts RUBY_VERSION")
+  Ask::Tools::ApplyPatch.new.call(patchText: "--- a/file\n+++ b/file\n@@ ...")
   ```
 
   ## ask-llm-providers

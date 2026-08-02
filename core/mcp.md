@@ -53,7 +53,7 @@ ask-mcp supports three transports:
 |---|---|---|
 | stdio | `Ask::MCP::Transport::Stdio` | Local processes (CLI tools, local MCP servers) |
 | SSE | `Ask::MCP::Transport::SSE` | Remote servers with Server-Sent Events |
-| Streamable HTTP | `Ask::MCP::Transport::StreamableHttp` | Remote HTTP servers |
+| Streamable HTTP | `Ask::MCP::Transport::StreamableHTTP` | Remote HTTP servers |
 
 ```ruby
 # Factory methods for common cases
