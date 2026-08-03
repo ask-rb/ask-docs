@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.9.1] — 2026-08-03
+
+### Added
+
+- **New [App Server](/ask-docs/core/app-server) guide** — ask-app-server:
+  the JSON-RPC/stdio app server that exposes an ask-rb agent behind the
+  ZCode/Codex app-server protocol. Covers the protocol methods, events,
+  permission interactions, compatible clients, and configuration. Linked
+  from the Core Components index and the gem index.
+
 ## [0.9.0] — 2026-08-03
 
 ### Changed
