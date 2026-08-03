@@ -80,7 +80,6 @@ order = OpenStruct.new(valid?: true)
 result = ProcessOrder::Workflow.call({ order: order })
 result.order.valid?  # => true
 result.charged       # => true
-# NotifyAdmin is skipped: the unless: condition is false
 result.notified      # => nil
 ```
 

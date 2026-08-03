@@ -57,7 +57,7 @@ session = Ask::Agent::Session.new(
 
 response = session.run("Run `ruby -v` and answer with only the version string.")
 response
-# => "ruby 4.0.1"
+# => "ruby 4.0.1 (2026-01-13 revision e04267a14b) +PRISM [arm64-darwin24]"
 ```
 
 Run it:
@@ -99,18 +99,23 @@ session = Ask::Agent::Session.new(
 
 response = session.run("Create a file called hello.rb that prints a greeting, run it, and report the output.")
 response
-# => Done! I created `hello.rb` with the following content:
+# => Done. Here's what happened:
 # 
-# ```ruby
-# puts "Hello, world!"
-# ```
+# 1. **Created** `hello.rb` containing:
+#    ```ruby
+#    puts "Hello, world!"
+#    ```
 # 
-# **Output:**
-# ```
-# Hello, world!
-# ```
+# 2. **Ran** it with `ruby hello.rb` (initially it failed with a `LoadError`
+# because the shell started in a different sandbox directory than where the file
+# was written, so I ran it with the full path instead).
 # 
-# The script ran successfully (exit code 0). Note that the file was saved to a temporary directory, so I ran it via its absolute path since the shell's working directory differed.
+# 3. **Output:**
+#    ```
+#    Hello, world!
+#    ```
+# 
+# The program executed successfully and printed the greeting.
 ```
 
 The agent can now read, write, and edit files, glob, grep, run code, and apply patches. The example above shows a real run — your model may create the file differently.
@@ -139,9 +144,24 @@ session.on_event do |event|
   end
 end
 
-response = session.run("Run `ruby -e 'p RUBY_VERSION'` and then explain in one or two sentences what the output means.")
+response = session.run("Run `ruby -e 'p RUBY_VERSION'` and then write a short poem about Ruby.")
 response
-# => "The output `\"4.0.1\"` is the version of the Ruby interpreter currently installed and running on this system. Ruby 4.0 is a major release line, and this build specifically identifies itself as version 4.0.1."
+# => Ruby version is 4.0.1.
+# 
+# **A Poem for Ruby**
+# 
+# A gemstone's name, a language bright,
+# That makes the coder's heart take flight.
+# From blocks that chain with graceful ease,
+# To methods built to put minds at ease.
+# 
+# Objects true, and messages sent,
+# In every line, a clear intent.
+# The Rails run fast, the gems all glow,
+# And vibrant blooms in code do grow.
+# 
+# Though named for red, it sets you free —
+# A joy to write, in harmony.
 ```
 
 You'll see the agent's response stream in real-time, with tool execution progress indicators. The example above shows a real run — run it yourself to see it live.

@@ -1,13 +1,13 @@
 {
   "test": "first-agent-3",
-  "recorded_at": "2026-08-03T12:32:48Z",
+  "recorded_at": "2026-08-03T16:57:38Z",
   "interactions": [
     {
       "type": "provider",
       "messages": [
         {
           "role": "user",
-          "content": "Run `ruby -e 'p RUBY_VERSION'` and then explain in one or two sentences what the output means."
+          "content": "Run `ruby -e 'p RUBY_VERSION'` and then write a short poem about Ruby."
         }
       ],
       "model": "deepseek-v4-flash",
@@ -91,19 +91,37 @@
             "content": null,
             "tool_calls": null,
             "finish_reason": null,
-            "thinking": " explain"
+            "thinking": " write"
           },
           {
             "content": null,
             "tool_calls": null,
             "finish_reason": null,
-            "thinking": " the"
+            "thinking": " a"
           },
           {
             "content": null,
             "tool_calls": null,
             "finish_reason": null,
-            "thinking": " output"
+            "thinking": " short"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " poem"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " about"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " Ruby"
           },
           {
             "content": null,
@@ -145,13 +163,19 @@
             "content": null,
             "tool_calls": null,
             "finish_reason": null,
+            "thinking": " first"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
             "thinking": "."
           },
           {
             "content": null,
             "tool_calls": [
               {
-                "id": "call_00_SzRZfN5xzrIkVGm7KAvL7160",
+                "id": "call_00_4iAe694EKWFWa1OHyR7d5435",
                 "name": "bash",
                 "arguments": "",
                 "index": 0
@@ -425,7 +449,7 @@
       "messages": [
         {
           "role": "user",
-          "content": "Run `ruby -e 'p RUBY_VERSION'` and then explain in one or two sentences what the output means."
+          "content": "Run `ruby -e 'p RUBY_VERSION'` and then write a short poem about Ruby."
         },
         {
           "role": "assistant",
@@ -443,7 +467,7 @@
       "model": "deepseek-v4-flash",
       "result": {
         "type": "stream",
-        "accumulated_text": "The output `\"4.0.1\"` is the version of the Ruby interpreter currently installed and running on this system. Ruby 4.0 is a major release line, and this build specifically identifies itself as version 4.0.1.",
+        "accumulated_text": "Ruby version is 4.0.1.\n\n**A Poem for Ruby**\n\nA gemstone's name, a language bright,\nThat makes the coder's heart take flight.\nFrom blocks that chain with graceful ease,\nTo methods built to put minds at ease.\n\nObjects true, and messages sent,\nIn every line, a clear intent.\nThe Rails run fast, the gems all glow,\nAnd vibrant blooms in code do grow.\n\nThough named for red, it sets you free —\nA joy to write, in harmony.",
         "chunks": [
           {
             "content": null,
@@ -452,175 +476,25 @@
             "thinking": ""
           },
           {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": "The"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " output"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " is"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " `"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": "\""
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": "4"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": "."
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": "0"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": "."
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": "1"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": "\""
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": "`,"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " which"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " is"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " the"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " Ruby"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " version"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": "."
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " Explain"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " in"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " one"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " or"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " two"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " sentences"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": "."
-          },
-          {
-            "content": "The",
+            "content": "Ruby",
             "tool_calls": null,
             "finish_reason": null,
             "thinking": null
           },
           {
-            "content": " output",
+            "content": " version",
             "tool_calls": null,
             "finish_reason": null,
             "thinking": null
           },
           {
-            "content": " `",
+            "content": " is",
             "tool_calls": null,
             "finish_reason": null,
             "thinking": null
           },
           {
-            "content": "\"",
+            "content": " ",
             "tool_calls": null,
             "finish_reason": null,
             "thinking": null
@@ -656,43 +530,31 @@
             "thinking": null
           },
           {
-            "content": "\"",
+            "content": ".\n\n",
             "tool_calls": null,
             "finish_reason": null,
             "thinking": null
           },
           {
-            "content": "`",
+            "content": "**",
             "tool_calls": null,
             "finish_reason": null,
             "thinking": null
           },
           {
-            "content": " is",
+            "content": "A",
             "tool_calls": null,
             "finish_reason": null,
             "thinking": null
           },
           {
-            "content": " the",
+            "content": " Poem",
             "tool_calls": null,
             "finish_reason": null,
             "thinking": null
           },
           {
-            "content": " version",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": " of",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": " the",
+            "content": " for",
             "tool_calls": null,
             "finish_reason": null,
             "thinking": null
@@ -704,91 +566,43 @@
             "thinking": null
           },
           {
-            "content": " interpreter",
+            "content": "**\n\n",
             "tool_calls": null,
             "finish_reason": null,
             "thinking": null
           },
           {
-            "content": " currently",
+            "content": "A",
             "tool_calls": null,
             "finish_reason": null,
             "thinking": null
           },
           {
-            "content": " installed",
+            "content": " gem",
             "tool_calls": null,
             "finish_reason": null,
             "thinking": null
           },
           {
-            "content": " and",
+            "content": "stone",
             "tool_calls": null,
             "finish_reason": null,
             "thinking": null
           },
           {
-            "content": " running",
+            "content": "'s",
             "tool_calls": null,
             "finish_reason": null,
             "thinking": null
           },
           {
-            "content": " on",
+            "content": " name",
             "tool_calls": null,
             "finish_reason": null,
             "thinking": null
           },
           {
-            "content": " this",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": " system",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": ".",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": " Ruby",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": " ",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": "4",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": ".",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": "0",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": " is",
+            "content": ",",
             "tool_calls": null,
             "finish_reason": null,
             "thinking": null
@@ -800,19 +614,193 @@
             "thinking": null
           },
           {
-            "content": " major",
+            "content": " language",
             "tool_calls": null,
             "finish_reason": null,
             "thinking": null
           },
           {
-            "content": " release",
+            "content": " bright",
             "tool_calls": null,
             "finish_reason": null,
             "thinking": null
           },
           {
-            "content": " line",
+            "content": ",\n",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": "That",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " makes",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " the",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " c",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": "oder",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": "'s",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " heart",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " take",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " flight",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": ".\n",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": "From",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " blocks",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " that",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " chain",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " with",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " graceful",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " ease",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": ",\n",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": "To",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " methods",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " built",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " to",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " put",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " minds",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " at",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " ease",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": ".\n\n",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": "Objects",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " true",
             "tool_calls": null,
             "finish_reason": null,
             "thinking": null
@@ -830,79 +818,277 @@
             "thinking": null
           },
           {
-            "content": " this",
+            "content": " messages",
             "tool_calls": null,
             "finish_reason": null,
             "thinking": null
           },
           {
-            "content": " build",
+            "content": " sent",
             "tool_calls": null,
             "finish_reason": null,
             "thinking": null
           },
           {
-            "content": " specifically",
+            "content": ",\n",
             "tool_calls": null,
             "finish_reason": null,
             "thinking": null
           },
           {
-            "content": " identifies",
+            "content": "In",
             "tool_calls": null,
             "finish_reason": null,
             "thinking": null
           },
           {
-            "content": " itself",
+            "content": " every",
             "tool_calls": null,
             "finish_reason": null,
             "thinking": null
           },
           {
-            "content": " as",
+            "content": " line",
             "tool_calls": null,
             "finish_reason": null,
             "thinking": null
           },
           {
-            "content": " version",
+            "content": ",",
             "tool_calls": null,
             "finish_reason": null,
             "thinking": null
           },
           {
-            "content": " ",
+            "content": " a",
             "tool_calls": null,
             "finish_reason": null,
             "thinking": null
           },
           {
-            "content": "4",
+            "content": " clear",
             "tool_calls": null,
             "finish_reason": null,
             "thinking": null
           },
           {
-            "content": ".",
+            "content": " intent",
             "tool_calls": null,
             "finish_reason": null,
             "thinking": null
           },
           {
-            "content": "0",
+            "content": ".\n",
             "tool_calls": null,
             "finish_reason": null,
             "thinking": null
           },
           {
-            "content": ".",
+            "content": "The",
             "tool_calls": null,
             "finish_reason": null,
             "thinking": null
           },
           {
-            "content": "1",
+            "content": " Rails",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " run",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " fast",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": ",",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " the",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " gems",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " all",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " glow",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": ",\n",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": "And",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " vibrant",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " blooms",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " in",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " code",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " do",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " grow",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": ".\n\n",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": "Though",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " named",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " for",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " red",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": ",",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " it",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " sets",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " you",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " free",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " —\n",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": "A",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " joy",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " to",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " write",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": ",",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " in",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " harmony",
             "tool_calls": null,
             "finish_reason": null,
             "thinking": null

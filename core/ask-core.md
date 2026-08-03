@@ -204,7 +204,8 @@ doc = Ask::Document.new(
 doc.content   # => "Ruby was created by Matz in 1995."
 doc.metadata  # => {source: "history.pdf", page: 3}
 doc.id        # => nil (optional)
-doc.to_h      # => {content: "Ruby was created by Matz in 1995.", metadata: {source: "history.pdf", page: 3}}
+doc.to_h      # => {content: "Ruby was created by Matz in 1995.", metadata: {source: "history.pdf",
+# page: 3}}
 ```
 
 Two documents are equal when their content and metadata match. The `id` field is ignored for equality comparisons.
@@ -247,7 +248,6 @@ msg = Ask::Message.new(role: :user, content: [
 
 msg.multimodal?       # => true
 msg.content_blocks.size  # => 2
-# Backward compatible: plain text is extracted from the blocks
 msg.content           # => "What's in this image?"
 
 # Or via conversation

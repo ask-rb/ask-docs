@@ -1,6 +1,6 @@
 {
   "test": "first-agent-1",
-  "recorded_at": "2026-08-03T12:32:30Z",
+  "recorded_at": "2026-08-03T16:57:12Z",
   "interactions": [
     {
       "type": "provider",
@@ -145,7 +145,7 @@
             "content": null,
             "tool_calls": [
               {
-                "id": "call_00_ZWiVk6rOaVCTT3iivCMo1050",
+                "id": "call_00_rcAh7XziBYuMDThLhYT86843",
                 "name": "bash",
                 "arguments": "",
                 "index": 0
@@ -359,7 +359,7 @@
       "model": "deepseek-v4-flash",
       "result": {
         "type": "stream",
-        "accumulated_text": "ruby 4.0.1",
+        "accumulated_text": "ruby 4.0.1 (2026-01-13 revision e04267a14b) +PRISM [arm64-darwin24]",
         "chunks": [
           {
             "content": null,
@@ -411,6 +411,162 @@
           },
           {
             "content": "1",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " (",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": "202",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": "6",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": "-",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": "01",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": "-",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": "13",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " revision",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " e",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": "042",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": "67",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": "a",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": "14",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": "b",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": ")",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " +",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": "PR",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": "ISM",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " [",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": "arm",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": "64",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": "-d",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": "ar",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": "win",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": "24",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": "]",
             "tool_calls": null,
             "finish_reason": null,
             "thinking": null

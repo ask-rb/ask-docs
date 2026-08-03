@@ -201,7 +201,8 @@ end
 
 json = schema.new("form").to_json_schema
 json.dig(:schema, :if)
-# => {properties: {"age" => {const: 18}, "country" => {const: "US"}}, required: ["age", "country"]}
+# => {properties: {"age" => {const: 18}, "country" => {const: "US"}}, required:
+# ["age", "country"]}
 json.dig(:schema, :then, :required)
 # => ["license_number"]
 json.dig(:schema, :else, :required)

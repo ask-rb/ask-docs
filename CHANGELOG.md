@@ -11,9 +11,12 @@
   false`, etc.) and prose that named gpt-4o's provider was corrected to
   DeepSeek.
 - **Streaming example now actually showcases streaming.** The first-agent
-  streaming example asks the agent to run `ruby -e 'p RUBY_VERSION'` and
-  explain the output, so the recorded result is a streamed multi-sentence
-  explanation (tool events + text deltas) instead of a short array.
+  streaming example asks the agent to run `ruby -e 'p RUBY_VERSION'` and then
+  write a short poem about Ruby, so the recorded result is a streamed
+  multi-line response (tool events + text deltas) instead of a short array.
+- **Long output lines wrap at 80 columns.** The runner word-wraps generated
+  output so `# =>` results stay readable without horizontal scrolling,
+  hard-breaking only tokens longer than the width.
 - **Runner runs each example in a scratch temp dir**, so file-creating
   examples never drop files into the docs tree — the first-agent "more
   tools" example no longer needs a temp-dir wrapper or a comment about it.
@@ -48,6 +51,12 @@
   which is easily exceeded on a busy machine — every fork inside a sandboxed
   command then failed with `Resource temporarily unavailable`, breaking the
   Bash/Code tools for the agent examples. Raised to 1024.
+- Multi-line trailing slots (`expr # =>` followed by continuation comment
+  lines) are now idempotent: the runner consumes consecutive comment lines as
+  part of the slot, so re-running a wrapped multi-line output rewrites it
+  cleanly instead of stacking duplicates.
+- Wrapped continuation lines no longer get a double `#` prefix (the
+  `# # page: 3}}` bug) — the wrapper only prefixes lines it creates itself.
 
 ## [0.10.0] — 2026-08-03
 

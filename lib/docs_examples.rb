@@ -238,7 +238,11 @@ module DocsExamples
 
     # Output slots: [replace_from, replace_to, expr] indices into code_lines.
     #
-    # Pattern A: `expr # => rest` — the slot line itself is replaced.
+    # Pattern A: `expr # => rest` — the slot line itself is replaced, plus any
+    #   following comment lines that are part of the generated output (a value
+    #   can wrap to several lines). This keeps regeneration idempotent: the
+    #   wrapped continuation lines are consumed on the next pass instead of
+    #   piling up. A single-line value replaces exactly one line.
     # Pattern B: a bare `# =>` comment block right after a code line — the
     #   code line is the expression, only the comment lines are replaced.
     def slots
@@ -248,9 +252,9 @@ module DocsExamples
           expr = m[1].strip
           next if expr.match?(/\A(?:puts|print|p|warn|logger)\b/)
 
-          # A trailing slot is a single line: don't consume following comment
-          # lines, which may be unrelated explanatory comments.
-          slots << [i, i, expr]
+          j = i + 1
+          j += 1 while j < code_lines.length && code_lines[j].match?(COMMENT_LINE)
+          slots << [i, j - 1, expr]
         elsif line.match?(BARE_SLOT) && i > 0 && code_lines[i - 1].match?(/\A\S/) &&
               !code_lines[i - 1].match?(TRAILING_SLOT) &&
               !code_lines[i - 1].match?(/\A(?:puts|print|p|warn|logger)\b/)
@@ -322,9 +326,37 @@ module DocsExamples
     end
   end
 
+  # Wrap output lines at this many characters so readers don't have to
+  # scroll horizontally inside code blocks.
+  WRAP_WIDTH = 80
+
+  # Greedy word-wrap: break on spaces, and hard-break a single token longer
+  # than the width (long URLs, dense hash literals).
+  def self.wrap_line(line, width = WRAP_WIDTH)
+    return [line] if line.length <= width
+
+    lines = []
+    current = +""
+    line.split(" ").each do |word|
+      if !current.empty? && current.length + 1 + word.length > width
+        lines << current
+        current = +""
+      end
+      if current.empty? && word.length > width
+        lines << word[0, width]
+        current = +word[width..].to_s
+      else
+        current << (current.empty? ? word : " #{word}")
+      end
+    end
+    lines << current unless current.empty?
+    lines
+  end
+
   def self.slot_replacement(value)
     lines = format_value(value).split("\n", -1)
     lines.pop while lines.last.to_s.empty?
+    lines = lines.flat_map { |l| wrap_line(l) }
     ["# => #{lines.first}"] + lines.drop(1).map { |l| "# #{l}" }
   end
 
@@ -336,9 +368,11 @@ module DocsExamples
     orig = block.code_lines[from]
     if (m = orig.match(/\s+#\s*=>/))
       # Keep the expression and its alignment spaces; replace only the comment.
+      # slot_replacement already prefixes every line (including wrapped
+      # continuations) with `# `, so append them as-is.
       prefix = orig[0...orig.index("#", m.begin(0))]
       lines = slot_replacement(value)
-      [prefix + lines.first] + lines.drop(1).map { |l| "# #{l}" }
+      [prefix + lines.first] + lines.drop(1)
     else
       slot_replacement(value)
     end
