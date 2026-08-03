@@ -87,7 +87,7 @@ Don't add gems you don't need. `ask-agent` alone gets you a working agent; every
 
 | Gem | Purpose |
 |---|---|
-| **[ask-app-server](https://github.com/ask-rb/ask-app-server)** | JSON-RPC/stdio app server behind the ZCode/Codex app-server protocol. [Guide](/ask-docs/core/app-server) |
+| **[ask-app-server](https://github.com/ask-rb/ask-app-server)** | JSON-RPC/stdio app server exposing an ask-rb agent over the standard app-server protocol. [Guide](/ask-docs/core/app-server) |
 | **[ask-acp](https://github.com/ask-rb/ask-acp)** | Agent Client Protocol in Ruby: JSON-RPC 2.0 over stdio, client and server. |
 | **[ask-coding-providers](https://github.com/ask-rb/ask-coding-providers)** | Registry of coding-agent adapters: `:acp`, `:ask_agent`, `:claude`, `:codex`. |
 

@@ -7,24 +7,37 @@ nav_order: 12
 
 # ask-app-server
 
-**JSON-RPC/stdio app server for ask-rb agents.** Exposes `Ask::Agent::Session`
-behind the standard app-server protocol — the same protocol spoken by ZCode
-and Codex app-servers — so any client that can speak it can drive your agent.
+**Expose an ask-rb agent as an app-server — a long-lived process that speaks
+the standard JSON-RPC app-server protocol over stdio.** The app-server
+protocol is the interface OpenAI's Codex app-server uses to power rich
+clients: the Codex VS Code extension ships on it, and OpenAI's official
+`openai-codex` (Python) and `@openai/codex-sdk` (TypeScript) SDKs drive
+agents through it. ask-app-server speaks the same protocol, so any client
+that can drive an app-server can drive your ask-rb agent.
 
 ```ruby
 gem "ask-app-server"
 ```
 
-## What is this?
+## What you can build
 
-`ask-app-server` turns an ask-rb agent into a **programmable service** that
-speaks JSON-RPC over stdio. Any client that can speak the app-server protocol
-can drive your agent:
+Because the protocol is a standard, one server unlocks every client surface
+— you don't write a separate integration per client:
 
-- **Telegram bots** — the `zcode-telegram-bot` connects to ask-app-server instead of ZCode
-- **AI SDK providers** — the Vercel AI SDK provider works with ask-app-server unchanged
-- **IDE extensions** — VS Code, Cursor, and JetBrains extensions connect over stdio/socket
-- **Headless automation** — CI/CD pipelines, batch processing, scriptable agent tasks
+- **IDE extensions and editors** — the same interface that powers the Codex
+  VS Code extension; connect an editor to your agent over stdio or a socket
+- **Custom chat UIs and desktop apps** — stream `model.streaming` deltas and
+  `tool.updated` events into your own interface, with the full turn lifecycle
+- **Bots and assistants** — drive sessions programmatically from any runtime
+  that can spawn a subprocess and pipe JSON
+- **Automation and CI pipelines** — create a session, send a task, poll for
+  events, and read the completed turn, all from a script
+- **Your own client or SDK, in any language** — the wire format is plain
+  JSON-RPC 2.0 over newline-delimited JSON on stdio; nothing Ruby-specific
+
+App-server protocols are built for deep product integration — sessions,
+conversation history, approvals, and streamed agent events — the things a
+plain one-shot API call can't give you.
 
 ## Quick Start
 
@@ -68,21 +81,18 @@ From another process, send JSON-RPC requests:
 | `turn.failed` | Turn ended with an error |
 
 Event payloads are delivered as `session/event` notifications on subscribed
-sessions. The server also sends `interaction/requestPermission` when a blocked
-tool needs approval and `interaction/requestUserInput` when it needs input
-from the user.
+sessions. The server also sends `interaction/requestPermission` when a
+blocked tool needs approval and `interaction/requestUserInput` when it needs
+input from the user — so your client can build approval and prompt flows into
+its own UI.
 
 ## Clients
 
-This server is a drop-in replacement for `zcode app-server`. The following
-clients work without changes:
-
-- [ask-coding-providers](https://github.com/ask-rb/ask-coding-providers) —
-  ZCode adapter (set `ZCODE_CLI_PATH` to the `ask-app-server` binary)
-- [zcode-telegram-bot](https://github.com/ask-rb/zcode-telegram-bot) —
-  Python Telegram bot
-- [ai-sdk-provider-codex-app-server](https://github.com/pablof7z/ai-sdk-provider-codex-app-server) —
-  Vercel AI SDK provider
+Any app-server client can connect. That includes OpenAI's official Codex
+SDKs (`openai-codex` for Python, `@openai/codex-sdk` for TypeScript), which
+spawn an app-server subprocess and drive it over stdio — or write your own
+client in any language: the protocol is documented and the wire format is
+plain JSON-RPC.
 
 ## Configuration
 

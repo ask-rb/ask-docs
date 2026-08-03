@@ -5,10 +5,21 @@
 ### Added
 
 - **New [App Server](/ask-docs/core/app-server) guide** — ask-app-server:
-  the JSON-RPC/stdio app server that exposes an ask-rb agent behind the
-  ZCode/Codex app-server protocol. Covers the protocol methods, events,
-  permission interactions, compatible clients, and configuration. Linked
-  from the Core Components index and the gem index.
+  the JSON-RPC/stdio app server that exposes an ask-rb agent over the
+  standard app-server protocol. Covers what you can build (IDE extensions,
+  chat UIs, bots, automation, your own SDK), the protocol methods, events,
+  permission interactions, and configuration. Linked from the Core
+  Components index and the gem index.
+- Open-ended lists: "and more" phrasing where enumerations are examples
+  rather than complete sets (MCP clients, agent use cases), so the docs
+  don't imply a definitive list.
+
+### Changed
+
+- App Server guide rewritten around what the protocol is for (embedding an
+  agent in your own product), with the same framing as the Codex app-server;
+  removed mentions of niche internal/ecosystem projects (zcode-telegram-bot,
+  ai-sdk-provider-codex-app-server) and the "drop-in replacement" framing.
 
 ## [0.9.0] — 2026-08-03
 

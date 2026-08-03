@@ -10,7 +10,7 @@ nav_order: 4
 
 Agent runtime for the ask-rb ecosystem. The core agent loop: think → call tools → execute → feed back → repeat.
 
-**Use ask-agent when** you want to add AI capabilities to your app for your users — chatbots, automated workflows, coding assistants. Bring your own tools, persistence, and UI. Works in any Ruby app.
+**Use ask-agent when** you want to add AI capabilities to your app for your users — chatbots, automated workflows, coding assistants, and more. Bring your own tools, persistence, and UI. Works in any Ruby app.
 
 **Use ask-rails-harness when** you want to give AI agents access to your Rails app — internal admin tools, ops dashboards, dev assistants. Ships with Rails-aware tools (database, filesystem, logs) and an admin chat UI at `/ask`. Rails 7.1+ only.
 

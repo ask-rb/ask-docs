@@ -15,7 +15,7 @@ server over stdio. Supports the full MCP protocol with OAuth 2.1
 authentication.
 
 MCP is the industry standard for LLM tool discovery — the same protocol used by
-Claude Code, Codex, Cursor, and GitHub Copilot.
+Claude Code, Codex, Cursor, GitHub Copilot, and many other AI clients.
 
 ```ruby
 gem "ask-mcp"
