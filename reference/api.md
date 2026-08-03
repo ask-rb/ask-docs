@@ -18,78 +18,84 @@ The foundation gem. [Source](https://github.com/ask-rb/ask-core)
 ### Ask::Provider
 
 ```ruby
+require "ask"
+
 class MyProvider < Ask::Provider
   def api_base = "https://api.example.com/v1"
   def headers = { "Authorization" => "Bearer #{@config.api_key}" }
-  def chat(messages, model:, tools: nil, temperature: nil, stream: nil, schema: nil, **params, &block)
-  def embed(text, model:)
-  def list_models
+  def chat(messages, model:, tools: nil, temperature: nil, stream: nil, schema: nil, **params, &block) = Ask::Message.new(role: :assistant, content: "ok")
+  def embed(text, model:) = [0.1, 0.2]
+  def list_models = ["a", "b"]
 end
 
-Ask::Provider.register(:name, MyProvider)
-Ask::Provider.resolve(:name)
-Ask::Provider.providers  # => Hash of registered providers
+Ask::Provider.register(:my_provider, MyProvider)
+Ask::Provider.resolve(:my_provider)         # => MyProvider
+Ask::Provider.providers.key?(:my_provider)  # => true
 ```
 
 ### Ask::Conversation
 
 ```ruby
+require "ask"
+
 conv = Ask::Conversation.new
 conv.system("text")
 conv.user("text")
-conv.assistant("text", tool_calls: [...])
-conv.tool_result("text", tool_call_id: "id")
-conv.messages   # => Array of Ask::Message
-conv.user_messages
-conv.assistant_messages
-conv.tool_messages
-conv.system_messages
-conv.to_a       # => Array of hashes
+conv.assistant("text", tool_calls: [{ id: "c1", name: "tool", arguments: {} }])
+conv.tool_result("text", tool_call_id: "c1")
+conv.size                        # => 4
+conv.to_a.map { |m| m[:role] }   # => [:system, :user, :assistant, :tool]
+conv.user_messages.size          # => 1
 ```
 
 ### Ask::Message
 
 ```ruby
+require "ask"
+
 msg = Ask::Message.new(role: :user, content: "Hello")
-msg.role         # => :user
-msg.content      # => "Hello"
-msg.tool_calls   # => Array or nil
-msg.tool_call_id # => String or nil
-msg.user?        # Boolean
-msg.assistant?   # Boolean
-msg.tool_call?   # Boolean
-msg.tool_result? # Boolean
+msg.role          # => :user
+msg.content       # => "Hello"
+msg.tool_calls    # => nil
+msg.tool_call_id  # => nil
+msg.user?         # => true
+msg.assistant?    # => false
+msg.tool_call?    # => false
+msg.tool_result?  # => false
 ```
 
 ### Ask::Stream / Ask::Chunk
 
 ```ruby
-stream = Ask::Stream.new { |chunk| print chunk.content }
+require "ask"
+
+stream = Ask::Stream.new
 stream.add(Ask::Chunk.new(content: "Hello"))
+stream.add(Ask::Chunk.new(content: " world"))
 stream.finish!
-stream.accumulated_text  # => "Hello"
-stream.to_s              # => "Hello"
-stream.accumulated_usage # => { input_tokens: 10, output_tokens: 20 }
+stream.accumulated_text  # => "Hello world"
 stream.length            # => 2
+stream.accumulated_usage # => {}
 ```
 
 ### Ask::ModelCatalog
 
 ```ruby
-catalog = Ask::ModelCatalog.new([Ask::ModelInfo.new(id: "gpt-4o", provider: "openai")])
-catalog.find("gpt-4o")
-catalog.chat_models
-catalog.embedding_models
-catalog.by_provider("openai")
+require "ask"
 
-# Singleton
-Ask::ModelCatalog.instance
-Ask::ModelCatalog.find("gpt-4o")
+catalog = Ask::ModelCatalog.new([Ask::ModelInfo.new(id: "gpt-4o", provider: "openai")])
+catalog.find("gpt-4o").provider    # => "openai"
+catalog.by_provider("openai").size # => 1
+
+# The process-wide singleton (populated by ask-llm-providers when loaded)
+Ask::ModelCatalog.instance.class   # => Ask::ModelCatalog
 ```
 
 ### Ask::ToolDef
 
 ```ruby
+require "ask"
+
 tool = Ask::ToolDef.new(
   name: "get_weather",
   description: "Get current weather",
@@ -97,19 +103,39 @@ tool = Ask::ToolDef.new(
 )
 tool.frozen?      # => true
 tool.to_provider_format { |t| { type: "function", function: t.to_h } }
+# => {type: "function",
+#  function:
+#   {name: "get_weather",
+#    description: "Get current weather",
+#    parameters:
+#     {type: "object",
+#      properties: {location: {type: "string"}},
+#      required: ["location"]},
+#    provider_params: {}}}
 ```
 
 ### Ask::Result
 
 ```ruby
-Ask::Result.success("Data processed")
-Ask::Result.failure("API returned 500")
-Ask::Result.aborted("Cancelled")
-Ask::Result.blocked("Permission denied")
+require "ask"
 
-result.success?  # => true/false
-result.error?    # => true/false
-result.to_h      # => { content: "...", status: :success, metadata: {} }
+ok = Ask::Result.success("Data processed")
+ok.success?     # => true
+ok.content      # => "Data processed"
+ok.status       # => :success
+
+Ask::Result.failure("API returned 500").status   # => :error
+Ask::Result.aborted("Cancelled").status          # => :aborted
+Ask::Result.blocked("Permission denied").status  # => :blocked
+```
+
+### Errors
+
+```ruby
+require "ask"
+Ask::RateLimitError < Ask::Error   # => true
+Ask::InvalidRole < Ask::Error      # => true
+Ask::MissingCredential < Ask::Error  # => true
 ```
 
 ### Errors

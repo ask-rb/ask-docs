@@ -30,6 +30,14 @@
 #   where X is not set) is skipped. Keys live in .env (gitignored); without
 #   them the keyless examples still run and verify in CI.
 #
+# Markers live OUTSIDE the code blocks, as HTML comments on the line before
+# the opening fence, so readers never see them:
+#
+#   <!-- docs-example: recorded -->
+#   ```ruby
+#   ...
+#   ```
+#
 # Usage:
 #   ruby -Ilib lib/docs_examples.rb verify     # dry run, exits 1 on any diff
 #   ruby -Ilib lib/docs_examples.rb generate   # rewrites the markdown files
@@ -38,6 +46,7 @@
 # Gems are found as sibling repos (../ask-*) unless ASK_GEMS_ROOT is set.
 
 require "pp"
+require "rbconfig"
 require "stringio"
 
 module DocsExamples
@@ -45,8 +54,7 @@ module DocsExamples
   GEMS_ROOT = ENV.fetch("ASK_GEMS_ROOT") { File.expand_path("..", ROOT) }
   RECORDINGS_DIR = File.join(ROOT, "examples", "recordings")
 
-  NOT_VERIFIED = /\A\s*#\s*not-verified\s*\z/
-  RECORDED = /\A\s*#\s*recorded\s*\z/
+  DOCS_EXAMPLE = /<!--\s*docs-example:\s*([\w-]+)\s*-->/
   REQUIRED_KEY = /ENV\.fetch\(\s*["']([A-Z0-9_]+)["']\s*\)/
   TRAILING_SLOT = /^(.*?)\s*#\s*=>\s*(.*)$/
   BARE_SLOT = /\A\s*#\s*=>/
@@ -60,6 +68,11 @@ module DocsExamples
       $LOAD_PATH.unshift(path) unless $LOAD_PATH.include?(path)
     end
     load_dotenv
+    # Load the model catalog so ModelCatalog examples are real and
+    # deterministic (the 402 bundled models, no network).
+    require "ask-llm-providers"
+  rescue LoadError
+    # ask-llm-providers missing: ModelCatalog examples will fail loudly.
   end
 
   def self.load_dotenv(path = File.join(ROOT, ".env"))
@@ -91,7 +104,14 @@ module DocsExamples
       return super unless recorder
 
       if recorder.replaying?
-        recorder.replay_as_message
+        replayed = recorder.replay_as_message
+        # The agent loop always streams: it passes a block and accumulates
+        # chunks from it. Replay must yield the recorded chunks to that block
+        # or the loop never sees the response text or tool calls.
+        if block && replayed.is_a?(Ask::Stream)
+          replayed.each { |chunk| block.call(chunk) }
+        end
+        replayed
       else
         result = super
         recorder.record_call(args: args, kwargs: kwargs, result_data: recorder.send(:serialize, result))
@@ -128,9 +148,11 @@ module DocsExamples
 
   # ------------------------------------------------------------- block model
 
-  Block = Struct.new(:file, :fence_line, :code_lines) do
+  Block = Struct.new(:file, :fence_line, :code_lines, :mode) do
     # fence_line: 1-based line number of the opening ```ruby fence.
     # code_lines: the lines between the fences, chomped.
+    # mode: "recorded", "not-verified", or nil, from the HTML comment on the
+    # line before the fence.
 
     def runnable?
       first = code_lines.find { |l| !l.strip.empty? && !l.strip.start_with?("#") }
@@ -138,11 +160,11 @@ module DocsExamples
     end
 
     def not_verified?
-      code_lines.any? { |l| l.match?(NOT_VERIFIED) }
+      mode == "not-verified"
     end
 
     def recorded?
-      code_lines.any? { |l| l.match?(RECORDED) }
+      mode == "recorded"
     end
 
     def missing_key
@@ -208,13 +230,14 @@ module DocsExamples
       if (m = lines[i].match(/^```(\S*)/))
         lang = m[1].delete_prefix(".").split(" ").first
         fence_idx = i
+        mode = lines[fence_idx - 1].to_s.match(DOCS_EXAMPLE)&.captures&.first
         i += 1
         code = []
         while i < lines.length && !lines[i].match?(/^```/)
           code << lines[i].chomp
           i += 1
         end
-        blocks << Block.new(file, fence_idx + 1, code) if lang == "ruby"
+        blocks << Block.new(file, fence_idx + 1, code, mode) if lang == "ruby"
         i += 1 # skip the closing fence
       else
         i += 1
@@ -291,6 +314,11 @@ module DocsExamples
     original = lines.join
     blocks = extract_blocks(file)
     stats = { run: 0, slots: 0, skipped_not_verified: 0, skipped_key: 0, errors: [] }
+    # (absolute_from, absolute_to, replacement_lines) — collected across all
+    # blocks, then applied bottom-up so a replacement that changes the line
+    # count (e.g. a multi-line slot whose pretty-printed value differs in
+    # length) can't shift the indices of later blocks.
+    pending = []
 
     blocks.each do |block|
       unless block.runnable?
@@ -322,6 +350,11 @@ module DocsExamples
         DocsExamples.current_recorder = recorder
         replacements = run_block(block)
       rescue StandardError, ScriptError => e
+        if mode == :generate && e.class.name == "Ask::Auth::MissingCredential"
+          stats[:skipped_key] += 1
+          warn "  [skip] #{relative(block.file)}:#{block.fence_line} needs a provider API key (set it in .env)"
+          next
+        end
         stats[:errors] << "#{relative(block.file)}:#{block.fence_line} #{e.class}: #{e.message.lines.first.strip}"
         next
       ensure
@@ -337,9 +370,14 @@ module DocsExamples
         # fence_line is 1-based; code line `from` (0-based) sits at 0-based
         # index fence_line + from in `lines`. Replacement lines must carry
         # their own "\n" because lines.join concatenates without separators.
-        idx = block.fence_line + from
-        lines[idx..(block.fence_line + to)] = replacement_lines.map { |l| "#{l}\n" }
+        abs_from = block.fence_line + from
+        abs_to = block.fence_line + to
+        pending << [abs_from, abs_to, replacement_lines.map { |l| "#{l}\n" }]
       end
+    end
+
+    pending.sort_by { |from, _to, _| from }.reverse_each do |from, to, replacement_lines|
+      lines[from..to] = replacement_lines
     end
 
     [original, lines.join, stats]
@@ -351,27 +389,32 @@ module DocsExamples
 
   # ------------------------------------------------------------------- CLI
 
+  # Top-level entry: run each markdown file in a fresh Ruby process
+  # (see #run_child). Examples are standalone scripts — a reader following
+  # one guide page loads only the gems that page requires. Running every
+  # file in one process instead lets one file's loaded gems bleed into the
+  # next (ask-core and ask-tools both define Ask::Result, ask-tools registers
+  # tools in a shared registry, ...) and makes those examples behave
+  # differently than they would for a real reader.
   def self.run(mode)
     setup!
     filter = ENV["FILE"]
     files = filter ? [File.join(ROOT, filter)] : markdown_files
     failures = []
     changed = []
+    script = File.join(__dir__, "docs_examples.rb")
 
     files.each do |file|
       next unless File.exist?(file)
 
-      original, rewritten, stats = rewrite_blocks(file, mode)
-      if original != rewritten
-        if mode == :generate
-          File.write(file, rewritten)
-          changed << relative(file)
-        else
-          failures << relative(file)
-        end
+      env = { "FILE" => relative(file), "DOCS_EXAMPLES_PARENT" => "1" }
+      out = IO.popen([env, RbConfig.ruby, "-I#{__dir__}", script, mode.to_s], err: [:child, :out], &:read)
+      print out
+      if mode == :verify
+        failures << relative(file) unless $?.success?
+      elsif out.include?("file(s) updated")
+        changed << relative(file)
       end
-      print_stats(relative(file), stats)
-      stats[:errors].each { |e| warn "  [error] #{e}" }
     end
 
     puts "#{changed.size} file(s) updated" if mode == :generate && changed.any?
@@ -383,6 +426,24 @@ module DocsExamples
       else
         puts "verify: all example outputs are up to date"
       end
+    end
+  end
+
+  # Run one file. Spawned as a subprocess by #run (DOCS_EXAMPLES_PARENT=1);
+  # exits 1 in verify mode when the file's outputs are stale.
+  def self.run_child(mode)
+    setup!
+    file = File.join(ROOT, ENV.fetch("FILE"))
+    original, rewritten, stats = rewrite_blocks(file, mode)
+    print_stats(relative(file), stats)
+    stats[:errors].each { |e| warn "  [error] #{e}" }
+
+    return if original == rewritten
+
+    if mode == :generate
+      File.write(file, rewritten)
+    else
+      exit 1
     end
   end
 
@@ -404,5 +465,9 @@ if $PROGRAM_NAME == __FILE__
   mode = ARGV[0]
   abort "usage: #{$PROGRAM_NAME} verify|generate" unless %w[verify generate].include?(mode)
 
-  DocsExamples.run(mode.to_sym)
+  if ENV["DOCS_EXAMPLES_PARENT"] == "1"
+    DocsExamples.run_child(mode.to_sym)
+  else
+    DocsExamples.run(mode.to_sym)
+  end
 end

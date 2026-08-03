@@ -65,17 +65,22 @@ Subclass `Ask::Tool` to define a tool that an LLM can call.
 ## `Ask::Result` — Standardized Return Value
 
 ```ruby
+require "ask-tools"
+
 # Factories
-Ask::Result.ok(data: "output")
-Ask::Result.error(message: "fail")
+ok = Ask::Result.ok(data: "output")
+err = Ask::Result.error(message: "fail")
 
 # Attributes
-result.ok?         # => true / false
-result.output      # => "output"
-result.error       # => nil / "fail"
-result.metadata    # => {}
-result.to_s        # => human-readable
-result.to_h        # => { ok: true, output: "...", error: nil, metadata: {} }
+ok.ok?         # => true
+ok.output      # => "output"
+ok.error       # => nil
+ok.metadata    # => {}
+ok.to_s        # => "output"
+ok.to_h        # => {ok: true, output: "output", error: nil, metadata: {}}
+
+err.ok?        # => false
+err.error      # => "fail"
 ```
 
 ---
@@ -83,12 +88,29 @@ result.to_h        # => { ok: true, output: "...", error: nil, metadata: {} }
 ## `Ask::Tools` — Registry & Discovery
 
 ```ruby
-Ask::Tools.register(MyTool)
-Ask::Tools.all          # => [MyTool.new, ...]
-Ask::Tools.discover     # auto-discover loaded Ask::Tool subclasses
-Ask::Tools["my_tool"]   # find by derived name
-Ask::Tools.count        # => 1
-Ask::Tools.clear        # reset
+require "ask-tools"
+
+class PingTool < Ask::Tool
+  description "Pings"
+  def execute
+    Ask::Result.ok(data: "pong")
+  end
+end
+
+Ask::Tools.register(PingTool)
+Ask::Tools.all.map(&:name)      # => ["ping"]
+Ask::Tools["ping"].call.output  # => "pong"
+Ask::Tools.count                # => 1
+```
+
+`discover` auto-registers every loaded `Ask::Tool` subclass; `clear` empties the registry:
+
+```ruby
+require "ask-tools"
+
+Ask::Tools.discover
+Ask::Tools.clear
+Ask::Tools.count  # => 0
 ```
 
 Thread-safe via `Monitor`.
@@ -227,17 +249,18 @@ gem "ask-web-search"
 
 ### Quick Start
 
+<!-- docs-example: not-verified -->
 ```ruby
-# not-verified: live SearXNG search, output varies per query
 require "ask/web_search"
 
 tool = Ask::Tools::WebSearch.new
 result = tool.execute(query: "ruby programming language")
 puts result
-# => 1. Ruby — A Programmer's Best Friend
-#     https://www.ruby-lang.org
-#     Ruby is a dynamic, open-source programming language...
 ```
+
+`execute` returns a numbered, markdown-like string of results. The exact
+output depends on your SearXNG instance and the live search results, so it
+varies per query — run it against your own instance to see it.
 
 ### Configuration
 

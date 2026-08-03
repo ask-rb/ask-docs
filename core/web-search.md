@@ -116,8 +116,8 @@ gem "ask-web-search"
 
 ### Usage
 
+<!-- docs-example: not-verified -->
 ```ruby
-# not-verified
 require "ask/web_search"
 
 tool = Ask::Tools::WebSearch.new

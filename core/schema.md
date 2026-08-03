@@ -62,7 +62,9 @@ Each type accepts the usual JSON Schema constraints as keywords: `minimum`, `max
 ## Nested Schemas
 
 ```ruby
-Ask::Schema.create do
+require "ask-schema"
+
+schema = Ask::Schema.create do
   string :title
 
   object :author do
@@ -70,11 +72,36 @@ Ask::Schema.create do
     string :email
   end
 
-  array :comments, of: :object do
-    string :text
-    string :author
+  array :comments do
+    object do
+      string :text
+      string :author
+    end
   end
 end
+
+schema.new("post").to_json_schema
+# => {name: "post",
+#  description: nil,
+#  schema:
+#   {type: "object",
+#    properties:
+#     {title: {type: "string"},
+#      author:
+#       {type: "object",
+#        properties: {name: {type: "string"}, email: {type: "string"}},
+#        required: [:name, :email],
+#        additionalProperties: false},
+#      comments:
+#       {type: "array",
+#        items:
+#         {type: "object",
+#          properties: {text: {type: "string"}, author: {type: "string"}},
+#          required: [:text, :author],
+#          additionalProperties: false}}},
+#    required: [:title, :author, :comments],
+#    additionalProperties: false,
+#    strict: true}}
 ```
 
 ## Optional and Nullable Fields
@@ -82,22 +109,51 @@ end
 By default, all fields are required. Make a field optional with `required: false`:
 
 ```ruby
-Ask::Schema.create do
+require "ask-schema"
+
+schema = Ask::Schema.create do
   string :name
   string :nickname, required: false
   integer :age, required: false
 end
+
+schema.new("person").to_json_schema
+# => {name: "person",
+#  description: nil,
+#  schema:
+#   {type: "object",
+#    properties:
+#     {name: {type: "string"},
+#      nickname: {type: "string"},
+#      age: {type: "integer"}},
+#    required: [:name],
+#    additionalProperties: false,
+#    strict: true}}
 ```
 
 Or allow null explicitly with `optional`:
 
 ```ruby
-Ask::Schema.create do
+require "ask-schema"
+
+schema = Ask::Schema.create do
+  string :name
   optional :nickname do
     string
   end
 end
-# anyOf: [{ type: "string" }, { type: "null" }]
+
+schema.new("user").to_json_schema
+# => {name: "user",
+#  description: nil,
+#  schema:
+#   {type: "object",
+#    properties:
+#     {name: {type: "string"},
+#      nickname: {anyOf: [{type: "string"}, {type: "null"}]}},
+#    required: [:name, :nickname],
+#    additionalProperties: false,
+#    strict: true}}
 ```
 
 ## Reusable Definitions
@@ -105,6 +161,8 @@ end
 `define` creates a named sub-schema; reference it with `of:` — the output gets proper `$defs` and `$ref`:
 
 ```ruby
+require "ask-schema"
+
 class User < Ask::Schema
   define(:address) do
     string :street
@@ -116,6 +174,9 @@ class User < Ask::Schema
   object :home_address, of: :address
   object :work_address, of: :address
 end
+
+User.properties[:home_address]
+# => {"$ref" => "#/$defs/address"}
 ```
 
 ## Conditionals
@@ -123,6 +184,8 @@ end
 Use `given` for if/then/else-style branches. Values coerce automatically: scalars become `const`, arrays become `enum`, regexps become `pattern`:
 
 ```ruby
+require "ask-schema"
+
 schema = Ask::Schema.create do
   integer :age
   string :country
@@ -135,17 +198,38 @@ schema = Ask::Schema.create do
     end
   end
 end
+
+json = schema.new("form").to_json_schema
+json.dig(:schema, :if)
+# => {properties: {"age" => {const: 18}, "country" => {const: "US"}}, required: ["age", "country"]}
+json.dig(:schema, :then, :required)
+# => ["license_number"]
+json.dig(:schema, :else, :required)
+# => ["country_name"]
 ```
 
 `dependent` requires fields whenever another field is present:
 
 ```ruby
-Ask::Schema.create do
+require "ask-schema"
+
+schema = Ask::Schema.create do
   string :shipping_address
   dependent :shipping_address do
     requires :name, :street, :city
   end
 end
+
+schema.new("order").to_json_schema
+# => {name: "order",
+#  description: nil,
+#  schema:
+#   {type: "object",
+#    properties: {shipping_address: {type: "string"}},
+#    required: [:shipping_address],
+#    additionalProperties: false,
+#    strict: true,
+#    dependentRequired: {"shipping_address" => ["name", "street", "city"]}}}
 ```
 
 ## Using with Tools
@@ -153,6 +237,8 @@ end
 The schema DSL powers tool parameter definitions in `ask-tools`:
 
 ```ruby
+require "ask-tools"
+
 class SearchTool < Ask::Tool
   description "Search the knowledge base"
 
@@ -163,6 +249,14 @@ class SearchTool < Ask::Tool
     # ...
   end
 end
+
+SearchTool.params_schema
+# => {type: "object",
+#  properties:
+#   {"query" => {type: "string", description: "Search query"},
+#    "limit" => {type: "integer", description: "Max results"}},
+#  required: ["query"],
+#  additionalProperties: false}
 ```
 
 Each `param` declaration generates a JSON Schema entry in `params_schema`.
@@ -195,9 +289,11 @@ Providers serialize the schema instance via `to_json_schema` into their own stru
 Schemas validate themselves at definition time. Circular references are detected and rejected:
 
 ```ruby
+require "ask-schema"
+
 schema = Ask::Schema.create { string :name }
 schema.valid?     # => true
-schema.validate!  # => nil, or raises Ask::Schema::ValidationError
+schema.validate!  # => nil
 ```
 
 ## Implementation

@@ -29,8 +29,8 @@ No standalone evaluator. No new workflow. No separate config file. Just `assert_
 
 ## Quick Start
 
+<!-- docs-example: not-verified -->
 ```ruby
-# not-verified
 require "ask/eval"
 require "ask/eval/dsl"
 
@@ -113,8 +113,8 @@ assert_faithful response, context: docs, model: model
 For automatic inclusion in all Minitest tests, add to your test helper:
 
 # not-verified
+<!-- docs-example: not-verified -->
 ```ruby
-# not-verified
 # test/test_helper.rb
 require "ask/eval/minitest"
 ```

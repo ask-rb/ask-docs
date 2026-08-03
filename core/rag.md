@@ -19,8 +19,8 @@ gem "ask-rag"
 
 Here's the full pipeline end-to-end:
 
+<!-- docs-example: not-verified -->
 ```ruby
-# not-verified
 require "ask-rag"
 
 # 1. Load a document
@@ -180,9 +180,8 @@ docs[0].metadata  # => { source: "manual.pdf", page: 1, format: "pdf" }
 
 Auto-detects file types by extension and dispatches to the appropriate loader. Skips `.git`, `node_modules`, `.svn`, and other non-source directories by default.
 
-# not-verified
+<!-- docs-example: not-verified -->
 ```ruby
-# not-verified
 loader = Ask::RAG::Loader::Directory.new
 docs = loader.load("path/to/docs/")
 # Loads all .md, .txt, .html, .csv, .json, .pdf files recursively
@@ -382,9 +381,8 @@ If the store has no relevant documents, `query` returns `nil` — the LLM is nev
 
 ## Complete Example: Documentation Q&A Bot
 
-# not-verified
+<!-- docs-example: not-verified -->
 ```ruby
-# not-verified
 require "ask-rag"
 
 # Index phase — run once
@@ -429,8 +427,8 @@ end
 
 Use ask-rag as a tool inside an ask-agent session:
 
+<!-- docs-example: not-verified -->
 ```ruby
-# not-verified
 require "ask-rag"
 require "ask-agent"
 

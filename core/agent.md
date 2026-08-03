@@ -281,8 +281,8 @@ mid-conversation doesn't lose progress.
 
 ### Quick Start
 
+<!-- docs-example: not-verified -->
 ```ruby
-# not-verified
 require "ask-agent"
 require "ask-state-providers"
 

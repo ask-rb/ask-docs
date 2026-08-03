@@ -20,13 +20,16 @@ gem "ask-core"
 The core data structure — an ordered list of messages that can be serialized for any provider API.
 
 ```ruby
+require "ask"
+
 conversation = Ask::Conversation.new
-conversation.add_message(:system, "You are a helpful assistant")
-conversation.add_message(:user, "What's the weather in Paris?")
-conversation.add_message(:assistant, tool_calls: [
+conversation.system("You are a helpful assistant")
+conversation.user("What's the weather in Paris?")
+conversation.assistant(tool_calls: [
   { id: "call_1", name: "get_weather", arguments: { city: "Paris" } }
 ])
-conversation.to_a  # => array of hashes ready for API call
+conversation.size   # => 3
+conversation.last.tool_call?  # => true
 ```
 
 ### Streaming
@@ -34,9 +37,13 @@ conversation.to_a  # => array of hashes ready for API call
 Receive responses incrementally without mutating state.
 
 ```ruby
+require "ask"
+
 stream = Ask::Stream.new
-stream.each { |chunk| print chunk.content }
-stream.transcript  # full accumulated response
+stream.add(Ask::Chunk.new(content: "Hello"))
+stream.add(Ask::Chunk.new(content: " world"))
+stream.finish!
+stream.accumulated_text  # => "Hello world"
 ```
 
 ### Provider interface
@@ -44,9 +51,11 @@ stream.transcript  # full accumulated response
 A base class that all provider gems implement.
 
 ```ruby
+require "ask"
+
 class MyProvider < Ask::Provider
-  def chat(conversation, tools: [], model: nil, &stream_block)
-    # Returns Ask::Response or calls stream_block with Ask::Chunk
+  def chat(messages, model:, tools: nil, temperature: nil, stream: nil, schema: nil, **params, &block)
+    # Return an Ask::Message, or yield Ask::Chunk when streaming
   end
 end
 ```
@@ -57,8 +66,16 @@ Message roles are normalized on construction. `"user"`, `:user`, and any
 string form become the canonical symbol; unknown roles raise `InvalidRole`.
 
 ```ruby
+require "ask"
+
 Ask::Message.new(role: "user", content: "hi").user?  # => true
-Ask::Message.new(role: :bogus, content: "hi")        # raises Ask::InvalidRole
+
+error = begin
+  Ask::Message.new(role: :bogus, content: "hi")
+rescue Ask::InvalidRole => e
+  e.message
+end
+error  # => "Invalid role: :bogus. Valid: system, user, assistant, tool"
 ```
 
 The valid roles are `:system`, `:user`, `:assistant`, and `:tool`.
@@ -72,31 +89,29 @@ Credentials are resolved by the `ask-auth` gem, not by ask-core. `Ask::Auth.reso
 A process-wide singleton registry of known LLM models. Each entry is an immutable `Ask::ModelInfo` value object.
 
 ```ruby
-# Find a model by ID (provider preference resolves ambiguity)
+require "ask"
+require "ask-llm-providers"  # loads the bundled model catalog
+
+# Find a model by ID
 model = Ask::ModelCatalog.find("gpt-4o")
-model.provider         # => "openai"
-model.context_window   # => 128000
-model.max_output_tokens # => 16384
+model.provider           # => "openai"
+model.context_window     # => 128000
+model.max_output_tokens  # => 16384
 model.supports?(:vision) # => true
-model.capabilities     # => ["function_calling", "structured_output", "vision"]
 
 # Filter by capability
-Ask::ModelCatalog.chat_models          # models that support chat
-Ask::ModelCatalog.embedding_models     # models that support embeddings
-Ask::ModelCatalog.audio_models         # models with audio output
-Ask::ModelCatalog.image_models         # models with image output
+Ask::ModelCatalog.chat_models.size       # => 388
+Ask::ModelCatalog.embedding_models.size  # => 5
 
 # Filter by metadata
-Ask::ModelCatalog.by_provider("openai")
-Ask::ModelCatalog.by_family("gpt")
-
-# Refresh from models.dev API
-Ask::ModelCatalog.refresh!
+Ask::ModelCatalog.by_family("gpt").size  # => 19
 ```
 
 Models are loaded into the catalog by `Ask::LLM::Catalog.load!` (from ask-llm-providers) or registered individually:
 
 ```ruby
+require "ask"
+
 model = Ask::ModelInfo.new(
   id: "my-model",
   provider: "local",
@@ -104,7 +119,11 @@ model = Ask::ModelInfo.new(
   max_output_tokens: 1024,
   capabilities: ["chat"]
 )
+model.id               # => "my-model"
+model.context_window   # => 4096
+model.supports?(:chat) # => true
 Ask::ModelCatalog.instance.register(model)
+Ask::ModelCatalog.find("my-model") == model  # => true
 ```
 
 ### ModelInfo
@@ -130,13 +149,17 @@ Immutable value object for model metadata.
 When using the catalog through `ask-agent`, you can override which provider serves a model by passing `provider:` to `Ask::Agent::Session` or `Ask::Agent::Chat`:
 
 ```ruby
+require "ask-agent"
+require "ask-tools-shell"
+
 # deepseek-v4-flash is cataloged under the "deepseek" provider,
 # but can be served through a different compatible provider:
 session = Ask::Agent::Session.new(
   model: "deepseek-v4-flash",
   provider: :opencode_go,
-  tools: [...]
+  tools: [Ask::Tools::Bash]
 )
+session.tools.size  # => 2
 ```
 
 This bypasses the catalog's `provider` field and uses the specified provider instead. Useful when a model is available through multiple providers (e.g., self-hosted vs API).
@@ -172,14 +195,16 @@ end
 `Ask::Document` is a frozen value object for text content with metadata. It flows through every stage of a RAG pipeline — loaded from files, split into chunks, embedded and stored, and returned by retrieval queries.
 
 ```ruby
+require "ask"
+
 doc = Ask::Document.new(
   content: "Ruby was created by Matz in 1995.",
   metadata: { source: "history.pdf", page: 3 }
 )
 doc.content   # => "Ruby was created by Matz in 1995."
-doc.metadata  # => { source: "history.pdf", page: 3 }
+doc.metadata  # => {source: "history.pdf", page: 3}
 doc.id        # => nil (optional)
-doc.to_h      # => { content: "...", metadata: { source: "history.pdf", page: 3 } }
+doc.to_h      # => {content: "Ruby was created by Matz in 1995.", metadata: {source: "history.pdf", page: 3}}
 ```
 
 Two documents are equal when their content and metadata match. The `id` field is ignored for equality comparisons.
@@ -189,6 +214,8 @@ Two documents are equal when their content and metadata match. The `id` field is
 `Ask::Content` provides typed value objects for multi-modal message content. Messages can carry images, audio, video, and files alongside text.
 
 ```ruby
+require "ask"
+
 # Text
 Ask::Content::Text.new("What's in this image?")
 
@@ -211,20 +238,25 @@ Ask::Content::File.new(data: "file content", mime_type: "text/plain", filename: 
 Use content blocks in messages:
 
 ```ruby
+require "ask"
+
 msg = Ask::Message.new(role: :user, content: [
   Ask::Content::Text.new("What's in this image?"),
   Ask::Content::Image.new(url: "https://example.com/photo.jpg", mime_type: "image/jpeg")
 ])
 
-msg.multimodal?      # => true
-msg.content_blocks   # => [Text("What's in this?"), Image(...)]
-msg.content          # => "What's in this image?" (backward compatible)
+msg.multimodal?       # => true
+msg.content_blocks.size  # => 2
+# Backward compatible: plain text is extracted from the blocks
+msg.content           # => "What's in this image?"
 
 # Or via conversation
+conv = Ask::Conversation.new
 conv.user([
   Ask::Content::Text.new("Describe this"),
   Ask::Content::Image.new(base64: "data", mime_type: "image/png")
 ])
+conv.last.multimodal?  # => true
 ```
 
 Content blocks are frozen value objects with structural equality and `#to_h` serialization. Each provider (OpenAI, Anthropic, etc.) transforms them to its own wire format automatically.

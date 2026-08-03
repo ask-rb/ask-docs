@@ -18,8 +18,8 @@ gem "ask-sentry"
 
 ## Quick Start
 
+<!-- docs-example: not-verified -->
 ```ruby
-# not-verified
 require "ask-sentry"
 
 client = Ask::Sentry.client

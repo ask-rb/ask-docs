@@ -33,8 +33,8 @@ bin/rails db:migrate
 
 ## Quick Start
 
+<!-- docs-example: not-verified -->
 ```ruby
-# not-verified
 require "ask-solid_errors"
 
 # Last 10 errors
@@ -72,8 +72,8 @@ The client uses the existing ActiveRecord connection directly.
 `SolidErrors::Error`. All ActiveRecord query methods are available through
 `method_missing`, so agents can chain scopes freely.
 
+<!-- docs-example: not-verified -->
 ```ruby
-# not-verified
 client = Ask::SolidErrors.client
 client.where(exception_class: "RuntimeError")
       .order(created_at: :desc)

@@ -48,14 +48,20 @@ Conventions:
 
 - A fenced ruby block whose first line is `require "ask..."` is runnable.
 - A line ending in `# =>` is an output slot; the generator replaces its
-  value with the real result.
-- A block containing a `# not-verified` line is skipped (Rails-bound
-  snippets, live web search, examples whose output is intentionally
-  illustrative).
-- A block containing a `# recorded` line makes live LLM calls and is taped
-  with ask-eval's Recorder into `examples/recordings/`. Generate (with a
-  key) records; verify replays, so the block is checked with no key and no
-  network.
+  value with the real result. A bare `# =>` comment block right after a code
+  line is also a slot — the code line is the expression (used for multi-line
+  pretty-printed values).
+- An HTML comment directly before the fence controls how a block runs; the
+  markers render invisibly, so readers see only clean code and real outputs:
+  - `<!-- docs-example: not-verified -->` — skip (Rails-bound snippets, live
+    web search, examples whose output is intentionally illustrative).
+  - `<!-- docs-example: recorded -->` — make live LLM calls, taped with
+    ask-eval's Recorder into `examples/recordings/`. Generate (with a key)
+    records; verify replays, so the block is checked with no key and no
+    network.
+- Each markdown file runs in its own process, so an example loads only the
+  gems that page requires — the same environment a reader following that
+  page would have.
 - Keyed examples skip automatically when the key is missing. Copy
   `.env.example` to `.env` (gitignored) and fill in keys to run them
   locally.

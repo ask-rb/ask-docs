@@ -1,0 +1,872 @@
+{
+  "test": "first-agent-44",
+  "recorded_at": "2026-08-03T00:05:11Z",
+  "interactions": [
+    {
+      "messages": [
+        {
+          "role": "user",
+          "content": "Run `ruby -v` and answer with only the version string."
+        }
+      ],
+      "model": "deepseek-v4-flash",
+      "result": {
+        "type": "stream",
+        "accumulated_text": "",
+        "chunks": [
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": ""
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": "The"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " user"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " wants"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " me"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " to"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " run"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " `"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": "rub"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": "y"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " -"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": "v"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": "`"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " and"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " answer"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " with"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " only"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " the"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " version"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " string"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": "."
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " Let"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " me"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " do"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " that"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": "."
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": "call_00_vxpwc962wD3kGjjsc8Nh4659",
+                "name": "bash",
+                "arguments": "",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "{",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "\"",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "command",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "\"",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": ": ",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "\"",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "rub",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "y",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": " -",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "v",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "\"",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "}",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": "",
+            "tool_calls": null,
+            "finish_reason": "tool_calls",
+            "thinking": null
+          }
+        ]
+      }
+    },
+    {
+      "messages": [
+        {
+          "role": "user",
+          "content": "Run `ruby -v` and answer with only the version string."
+        }
+      ],
+      "model": "deepseek-v4-flash",
+      "result": {
+        "type": "stream",
+        "accumulated_text": "",
+        "chunks": [
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": ""
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": "The"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " user"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " wants"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " me"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " to"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " run"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " `"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": "rub"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": "y"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " -"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": "v"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": "`"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " and"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " answer"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " with"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " only"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " the"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " version"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " string"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": "."
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " Let"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " me"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " do"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " that"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": "."
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": "call_00_vxpwc962wD3kGjjsc8Nh4659",
+                "name": "bash",
+                "arguments": "",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "{",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "\"",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "command",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "\"",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": ": ",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "\"",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "rub",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "y",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": " -",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "v",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "\"",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": null,
+            "tool_calls": [
+              {
+                "id": null,
+                "name": null,
+                "arguments": "}",
+                "index": 0
+              }
+            ],
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": "",
+            "tool_calls": null,
+            "finish_reason": "tool_calls",
+            "thinking": null
+          }
+        ]
+      }
+    },
+    {
+      "messages": [
+        {
+          "role": "user",
+          "content": "Run `ruby -v` and answer with only the version string."
+        },
+        {
+          "role": "assistant",
+          "content": ""
+        },
+        {
+          "role": "tool",
+          "content": "{stdout: \"ruby 4.0.1 (2026-01-13 revision e04267a14b) +PRISM [arm64-darwin24]\\n\", stderr: \"\", exit_code: 0, timed_out: false}"
+        },
+        {
+          "role": "user",
+          "content": ""
+        }
+      ],
+      "model": "deepseek-v4-flash",
+      "result": {
+        "type": "stream",
+        "accumulated_text": "ruby 4.0.1",
+        "chunks": [
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": ""
+          },
+          {
+            "content": "rub",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": "y",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " ",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": "4",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": ".",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": "0",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": ".",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": "1",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": "",
+            "tool_calls": null,
+            "finish_reason": "stop",
+            "thinking": null
+          }
+        ]
+      }
+    },
+    {
+      "messages": [
+        {
+          "role": "user",
+          "content": "Run `ruby -v` and answer with only the version string."
+        },
+        {
+          "role": "assistant",
+          "content": ""
+        },
+        {
+          "role": "tool",
+          "content": "{stdout: \"ruby 4.0.1 (2026-01-13 revision e04267a14b) +PRISM [arm64-darwin24]\\n\", stderr: \"\", exit_code: 0, timed_out: false}"
+        },
+        {
+          "role": "user",
+          "content": ""
+        }
+      ],
+      "model": "deepseek-v4-flash",
+      "result": {
+        "type": "stream",
+        "accumulated_text": "ruby 4.0.1",
+        "chunks": [
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": ""
+          },
+          {
+            "content": "rub",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": "y",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " ",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": "4",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": ".",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": "0",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": ".",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": "1",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": "",
+            "tool_calls": null,
+            "finish_reason": "stop",
+            "thinking": null
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -38,14 +38,13 @@ With Ollama there's nothing to set — it runs locally on `localhost:11434` and 
 
 ## 3. Create an agent
 
-Create a file called `agent.rb`:
+Create a file called `agent.rb`. It needs `OPENCODE_GO_API_KEY` set (step 2):
 
+<!-- docs-example: recorded -->
 ```ruby
 require "ask-agent"
 require "ask-tools-shell"
 
-# recorded
-# Live agent run, taped with ask-eval's Recorder. Requires OPENCODE_GO_API_KEY.
 session = Ask::Agent::Session.new(
   model: "deepseek-v4-flash",
   provider: :opencode_go,

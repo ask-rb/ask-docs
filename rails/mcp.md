@@ -150,8 +150,8 @@ Same MCP config works in Cursor's MCP settings.
 
 The tools are standard MCP tools — any MCP client can discover and call them:
 
+<!-- docs-example: not-verified -->
 ```ruby
-# not-verified
 # Example: Connect from a Ruby script
 require "ask/mcp"
 

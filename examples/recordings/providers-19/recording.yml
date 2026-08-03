@@ -1,6 +1,6 @@
 {
-  "test": "providers-18",
-  "recorded_at": "2026-08-02T23:32:53Z",
+  "test": "providers-19",
+  "recorded_at": "2026-08-03T00:05:02Z",
   "interactions": [
     {
       "messages": [
@@ -18,12 +18,12 @@
           "model": "deepseek-v4-flash",
           "finish_reason": "stop",
           "input_tokens": 89,
-          "output_tokens": 12,
+          "output_tokens": 20,
           "cached_tokens": 0,
           "raw": {
-            "id": "365d070e-b3ae-42c7-b273-9ac3cce212d4",
+            "id": "18dd3ab1-0269-4487-af1e-d0451c8e1a41",
             "object": "chat.completion",
-            "created": 1785713573,
+            "created": 1785715501,
             "model": "deepseek-v4-flash",
             "choices": [
               {
@@ -33,21 +33,21 @@
                 "message": {
                   "role": "assistant",
                   "content": "OK",
-                  "reasoning_content": "We need answer only \"OK\" one word."
+                  "reasoning_content": "We need answer user asks \"Say OK in one word.\" Need one word. OK."
                 }
               }
             ],
             "usage": {
               "prompt_tokens": 89,
-              "completion_tokens": 12,
-              "total_tokens": 101,
+              "completion_tokens": 20,
+              "total_tokens": 109,
               "prompt_cache_hit_tokens": 0,
               "prompt_cache_miss_tokens": 89,
               "prompt_tokens_details": {
                 "cached_tokens": 0
               },
               "completion_tokens_details": {
-                "reasoning_tokens": 10
+                "reasoning_tokens": 18
               }
             },
             "cost": "0"
@@ -71,12 +71,12 @@
           "model": "deepseek-v4-flash",
           "finish_reason": "stop",
           "input_tokens": 89,
-          "output_tokens": 12,
+          "output_tokens": 20,
           "cached_tokens": 0,
           "raw": {
-            "id": "365d070e-b3ae-42c7-b273-9ac3cce212d4",
+            "id": "18dd3ab1-0269-4487-af1e-d0451c8e1a41",
             "object": "chat.completion",
-            "created": 1785713573,
+            "created": 1785715501,
             "model": "deepseek-v4-flash",
             "choices": [
               {
@@ -86,21 +86,21 @@
                 "message": {
                   "role": "assistant",
                   "content": "OK",
-                  "reasoning_content": "We need answer only \"OK\" one word."
+                  "reasoning_content": "We need answer user asks \"Say OK in one word.\" Need one word. OK."
                 }
               }
             ],
             "usage": {
               "prompt_tokens": 89,
-              "completion_tokens": 12,
-              "total_tokens": 101,
+              "completion_tokens": 20,
+              "total_tokens": 109,
               "prompt_cache_hit_tokens": 0,
               "prompt_cache_miss_tokens": 89,
               "prompt_tokens_details": {
                 "cached_tokens": 0
               },
               "completion_tokens_details": {
-                "reasoning_tokens": 10
+                "reasoning_tokens": 18
               }
             },
             "cost": "0"

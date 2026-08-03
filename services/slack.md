@@ -16,8 +16,8 @@ gem "ask-slack"
 
 ## Quick Start
 
+<!-- docs-example: not-verified -->
 ```ruby
-# not-verified
 require "ask-slack"
 
 client = Ask::Slack.client

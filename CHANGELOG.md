@@ -1,5 +1,44 @@
 # Changelog
 
+## [0.8.0] — 2026-08-03
+
+### Added
+
+- **Real `# =>` outputs everywhere concrete examples appear.** Ask-core
+  (Conversation, Streaming, Provider interface, Role mapping, Model Catalog,
+  ModelInfo, Provider override, Document, multi-modal Content, errors),
+  schema (nested schemas, optional/nullable fields, reusable definitions,
+  conditionals, tool params, validation), providers (registration,
+  capabilities introspection, model catalog, aliases), tools (`Ask::Result`,
+  the `Ask::Tools` registry), and the API reference (Provider, Conversation,
+  Message, Stream, ModelCatalog, ToolDef, Result, errors) now carry outputs
+  verified by running the real gems.
+- **Invisible block markers.** `# recorded` / `# not-verified` in-code
+  comments are replaced by `<!-- docs-example: ... -->` HTML comments on the
+  line before the fence, which kramdown renders invisibly — readers see only
+  clean code plus real outputs.
+- **Per-file process isolation for the runner.** Each markdown file now runs
+  in its own Ruby process, so an example loads only the gems that page
+  requires — matching what a reader following that page alone would
+  experience. This also fixes cross-file state bleed (e.g. ask-core and
+  ask-tools both define `Ask::Result`; loading both in one process breaks
+  each other's factories).
+- **Faithful stream replay.** The recorder hook now yields recorded chunks to
+  the caller's stream block, so agent-loop examples (`session.run`) replay
+  their full response instead of an empty string.
+
+### Fixed
+
+- Docs bugs the new outputs exposed: the nested-schema example used
+  `array :comments, of: :object` (correct form is `array :comments do
+  object do ... end end`); `Conversation#add_message` / `#messages` don't
+  exist (the real API is `system`/`user`/`assistant`/`tool_result` +
+  `size`/`last`); `Stream#transcript` is `Stream#accumulated_text`.
+- Runner rewrite applied replacements in file order, so a multi-line slot
+  that changed the line count shifted every later block's indices and
+  corrupted them. Replacements are now applied bottom-up across the whole
+  file.
+
 ## [0.7.0] — 2026-08-03
 
 ### Added

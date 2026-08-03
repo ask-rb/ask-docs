@@ -15,11 +15,10 @@ gem "ask-llm-providers"
 
 ## Quick Start
 
+<!-- docs-example: recorded -->
 ```ruby
 require "ask-llm-providers"
 
-# recorded
-# Live provider call, taped with ask-eval's Recorder. Requires OPENCODE_GO_API_KEY.
 provider = Ask::Provider.resolve(:opencode_go).new
 response = provider.chat(
   [{ role: "user", content: "Say OK in one word." }],
@@ -108,20 +107,25 @@ A model is registered under a specific provider in the catalog (e.g., `deepseek-
 Pass the `provider:` parameter to override which provider serves the model:
 
 ```ruby
+require "ask-agent"
+
 session = Ask::Agent::Session.new(
   model: "deepseek-v4-flash",
   provider: :opencode_go,  # use opencode_go instead of the default deepseek provider
-  tools: [...]
+  tools: []
 )
 ```
 
 Or when using `Ask::Agent::Chat` directly:
 
 ```ruby
+require "ask-agent"
+
 chat = Ask::Agent::Chat.new(
   model: "deepseek-v4-flash",
   provider: :opencode_go
 )
+chat.model_id  # => "deepseek-v4-flash"
 ```
 
 This works because the agent checks `provider:` first, then falls back to the catalog's provider. It also means you can use any OpenAI-compatible provider with any model name the provider supports, without adding model entries to the catalog.
@@ -133,9 +137,43 @@ The `provider:` parameter is available on both `Ask::Agent::Session.new` and `As
 All providers auto-register with `Ask::Provider` on gem load:
 
 ```ruby
-Ask::Provider.providers  # => { openai: OpenAI, anthropic: Anthropic, deepseek: ..., groq: ..., ... }
+require "ask-llm-providers"
+
+Ask::Provider.providers.keys
+# => [:openai,
+#  :anthropic,
+#  :gemini,
+#  :bedrock,
+#  :ollama,
+#  :mistral,
+#  :cloudflare,
+#  :aiml,
+#  :ai21,
+#  :anyscale,
+#  :cerebras,
+#  :deepinfra,
+#  :deepseek,
+#  :featherless,
+#  :fireworks,
+#  :friendli,
+#  :github,
+#  :groq,
+#  :hyperbolic,
+#  :meta,
+#  :mimo,
+#  :moonshot,
+#  :nebius,
+#  :novita,
+#  :nscale,
+#  :nvidia_nim,
+#  :opencode,
+#  :opencode_go,
+#  :openrouter,
+#  :perplexity,
+#  :sambanova,
+#  :together,
+#  :xai]
 Ask::Provider.resolve(:openai)  # => Ask::Providers::OpenAI
-Ask::Provider.resolve(:deepseek)  # => resolves to the OpenAICompatible subclass for DeepSeek
 ```
 
 ### Adding a new OpenAI-compatible provider
@@ -200,11 +238,23 @@ response = provider.chat(
 ## Capabilities Introspection
 
 ```ruby
-Ask::Providers::OpenAI.capabilities
-# => { chat: true, streaming: true, tool_calls: true, vision: true, ... }
+require "ask-llm-providers"
 
-Ask::Providers::Ollama.local?  # => true
-Ask::Providers::OpenAI.local?  # => false
+Ask::Providers::OpenAI.capabilities
+# => {chat: true,
+#  streaming: true,
+#  tool_calls: true,
+#  vision: true,
+#  thinking: true,
+#  structured_output: true,
+#  embed: true,
+#  transcribe: true,
+#  paint: true,
+#  moderate: true,
+#  prompt_caching: true}
+
+Ask::Providers::Ollama.local?   # => true
+Ask::Providers::OpenAI.local?   # => false
 ```
 
 ## Error Handling
@@ -225,13 +275,20 @@ Ask::ProviderError        # other errors
 The gem automatically populates `Ask::ModelCatalog` when loaded:
 
 ```ruby
-Ask::ModelCatalog.find("gpt-4o")
-Ask::ModelCatalog.find("claude-sonnet-4-6")
+require "ask-llm-providers"
+
+model = Ask::ModelCatalog.find("gpt-4o")
+model.provider           # => "openai"
+model.context_window     # => 128000
+model.max_output_tokens  # => 16384
+model.supports?(:vision) # => true
 ```
 
 Models are defined in JSON files under `lib/ask/llm/models/` with pricing, context windows, and capabilities. Short names are resolved via aliases:
 
 ```ruby
+require "ask-llm-providers"
+
 Ask::LLM::Aliases.resolve("claude-sonnet-4")
 # => "claude-sonnet-4-6"
 ```

@@ -17,8 +17,8 @@ gem "ask-github"
 
 ## Quick Start
 
+<!-- docs-example: not-verified -->
 ```ruby
-# not-verified
 require "ask-github"
 
 client = Ask::GitHub.client
