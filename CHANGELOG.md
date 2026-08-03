@@ -1,5 +1,36 @@
 # Changelog
 
+## [0.10.0] — 2026-08-03
+
+### Added
+
+- **first-agent examples 4 & 5 now show real `# =>` outputs.** Both are
+  recorded blocks like example 3: "Give it more tools" runs inside a temp
+  dir (so the demo `hello.rb` never lands in your project) and shows the
+  agent's real response; "Add streaming" shows the streamed final answer.
+  Original prompts unchanged.
+- **Tool-execution taping for deterministic multi-turn replays.** The
+  recorder now tapes tool calls alongside provider calls (ask-eval 0.3.0),
+  so a multi-turn agent run replays as a faithful tape — tool results are
+  replayed instead of re-executed, which keeps the loop deterministic even
+  when a tool would behave differently on a second run (transient failures,
+  temp paths, changing files).
+- Recordings are named by ordinal within the file (first-agent-1, -2, ...)
+  instead of fence line numbers, which shifted when generated output
+  changed the line count.
+
+### Fixed
+
+- The recorder hook fired twice per chat call (the module landed twice in a
+  provider's ancestry because OpenAI is both registered and an ancestor of
+  the OpenAI-compatible classes), misaligning replay tapes. A re-entrancy
+  guard makes the outermost prepend record once.
+- Streaming example used a nonexistent event class
+  (`ToolExecutionComplete` → `ToolExecutionEnd`); running it also exposed an
+  ask-agent bug — `String#truncate` (an ActiveSupport extension) used
+  without loading it, so bare `require "ask-agent"` streaming raised
+  NoMethodError. Fixed in ask-agent 0.25.2 with plain-Ruby truncation.
+
 ## [0.9.1] — 2026-08-03
 
 ### Added

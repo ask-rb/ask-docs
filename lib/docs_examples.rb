@@ -98,47 +98,106 @@ module DocsExamples
   # covers both sessions (Chat -> build_provider -> provider.chat) and direct
   # provider.chat calls. Only active while DocsExamples.current_recorder is
   # set; the runner process is the only place the hook lives.
+  #
+  # The hook is prepended to Ask::Provider AND to every registered provider
+  # class. OpenAI is registered and also an ancestor of the OpenAI-compatible
+  # classes, so a single prepend at both levels would put the module twice in
+  # one ancestry — every chat call would be recorded twice. The re-entrancy
+  # guard (recorder_hook_active?) makes the outermost prepend win: it records
+  # once and the inner ones pass straight through to the real chat.
   module ProviderRecorderHook
     def chat(*args, **kwargs, &block)
       recorder = DocsExamples.current_recorder
       return super unless recorder
+      return super if DocsExamples.recorder_hook_active?
 
-      if recorder.replaying?
-        replayed = recorder.replay_as_message
-        # The agent loop always streams: it passes a block and accumulates
-        # chunks from it. Replay must yield the recorded chunks to that block
-        # or the loop never sees the response text or tool calls.
-        if block && replayed.is_a?(Ask::Stream)
-          replayed.each { |chunk| block.call(chunk) }
+      DocsExamples.with_recorder_hook_active do
+        if recorder.replaying?
+          replayed = recorder.replay_as_message
+          # The agent loop always streams: it passes a block and accumulates
+          # chunks from it. Replay must yield the recorded chunks to that block
+          # or the loop never sees the response text or tool calls.
+          if block && replayed.is_a?(Ask::Stream)
+            replayed.each { |chunk| block.call(chunk) }
+          end
+          replayed
+        else
+          result = super
+          recorder.record_call(args: args, kwargs: kwargs, result_data: recorder.send(:serialize, result))
+          result
         end
-        replayed
-      else
-        result = super
-        recorder.record_call(args: args, kwargs: kwargs, result_data: recorder.send(:serialize, result))
-        result
+      end
+    end
+  end
+
+  # Tapes tool executions too. Without this, a multi-turn agent run replays
+  # the model's messages but re-executes the tools — if a tool result differs
+  # (a transient failure, a temp path, a changing file listing), the loop
+  # diverges and the final output no longer matches. With tool results taped
+  # and replayed, the whole run is a faithful tape, like VCR.
+  module ToolRecorderHook
+    def call(args = {}, **kwargs, &block)
+      recorder = DocsExamples.current_recorder
+      return super unless recorder
+      return super if DocsExamples.recorder_hook_active?
+
+      DocsExamples.with_recorder_hook_active do
+        if recorder.replaying?
+          recorder.replay_tool_call
+        else
+          result = super
+          recorder.record_tool_call(
+            name: self.class.name,
+            args: args,
+            result_data: recorder.send(:serialize_tool_result, result)
+          )
+          result
+        end
       end
     end
   end
 
   @hook_installed = false
 
+  def self.recorder_hook_active?
+    Thread.current[:ask_docs_recorder_hook_active] == true
+  end
+
+  def self.with_recorder_hook_active
+    previous = Thread.current[:ask_docs_recorder_hook_active]
+    Thread.current[:ask_docs_recorder_hook_active] = true
+    yield
+  ensure
+    Thread.current[:ask_docs_recorder_hook_active] = previous
+  end
+
   def self.install_recorder_hook!
     return if @hook_installed
 
     require "ask"              # ask-core: Ask::Provider
     require "ask-llm-providers" # registers all 33 providers
+    require "ask-tools"         # Ask::Tool — the tool-execution entry point
     require "ask-eval"          # Ask::Eval::Recorder
     # Prepend to the base (custom providers that don't override chat) and to
     # every registered provider class: OpenAI, Anthropic, and the compat
-    # subclasses all override chat, so a base-only hook would never fire.
+    # subclasses override chat, so a base-only hook would never fire. The
+    # re-entrancy guard in the hook makes this safe even where the module
+    # lands twice in one ancestry.
     Ask::Provider.prepend(ProviderRecorderHook)
     Ask::Provider.providers.values.each { |klass| klass.prepend(ProviderRecorderHook) }
+    Ask::Tool.prepend(ToolRecorderHook)
     @hook_installed = true
   end
 
   def self.recorder_for(block, mode)
     install_recorder_hook!
-    name = "#{File.basename(block.file, ".md")}-#{block.fence_line}"
+    # Name recordings by the block's ordinal among recorded blocks in the
+    # file (first-agent-1, first-agent-2, ...). Fence line numbers shift when
+    # an earlier block's generated output changes the line count, which would
+    # silently orphan recordings.
+    blocks = extract_blocks(block.file)
+    ordinal = blocks.count { |b| b.recorded? && b.fence_line <= block.fence_line }
+    name = "#{File.basename(block.file, ".md")}-#{ordinal}"
     Ask::Eval::Recorder.new(
       test_name: name,
       mode: mode == :generate ? :record : :replay,

@@ -82,24 +82,47 @@ Set the matching `*_API_KEY` env var (`OPENCODE_GO_API_KEY` here) and the agent 
 
 ## 4. Give it more tools
 
+<!-- docs-example: recorded -->
 ```ruby
-# not-verified: runs a live agent session; output varies per run
-session = Ask::Agent::Session.new(
-  model: "gpt-4o",
-  tools: Ask::Tools::Shell::TOOLS  # 8 shell tools via the TOOLS constant
-)
+require "ask-agent"
+require "ask-tools-shell"
+require "tmpdir"
 
-response = session.run("Create a file called hello.rb that prints a greeting")
+# Run inside a temp dir so the demo file doesn't land in your project
+response = Dir.mktmpdir do |dir|
+  Dir.chdir(dir) do
+    session = Ask::Agent::Session.new(
+      model: "deepseek-v4-flash",
+      provider: :opencode_go,
+      tools: Ask::Tools::Shell::TOOLS  # 8 shell tools via the TOOLS constant
+    )
+
+    session.run("Create a file called hello.rb that prints a greeting")
+  end
+end
+
+response
+# => "Done! I created `hello.rb` with a simple greeting script that prints \"Hello, world!\" when run.\n" +
+# "\n" +
+# "```ruby\n" +
+# "puts \"Hello, world!\"\n" +
+# "```\n" +
+# "\n" +
+# "It's been verified to run successfully with `ruby hello.rb`, producing the output `Hello, world!`."
 ```
 
-The agent can now read, write, and edit files, glob, grep, run code, and apply patches.
+The agent can now read, write, and edit files, glob, grep, run code, and apply patches. The example above shows a real run — your model may create the file differently.
 
 ## 5. Add streaming
 
+<!-- docs-example: recorded -->
 ```ruby
-# not-verified: streams a live agent session
+require "ask-agent"
+require "ask-tools-shell"
+
 session = Ask::Agent::Session.new(
-  model: "gpt-4o",
+  model: "deepseek-v4-flash",
+  provider: :opencode_go,
   tools: [Ask::Tools::Bash]
 )
 
@@ -109,15 +132,22 @@ session.on_event do |event|
     print event.content
   when Ask::Agent::Events::ToolExecutionStart
     puts "\n[Running #{event.name}...]"
-  when Ask::Agent::Events::ToolExecutionComplete
+  when Ask::Agent::Events::ToolExecutionEnd
     puts "\n[#{event.name} finished in #{event.duration_ms}ms]"
   end
 end
 
 response = session.run("What's the current date and who's the user?")
+response
+# => "Based on what I could retrieve from the environment:\n" +
+# "\n" +
+# "- **Current date:** Monday, August 3, 2026 (12:09 EAT, East Africa Time)\n" +
+# "- **User:** The current system user is `kaka` (as reported by `whoami`). There's no additional full-name metadata available in the environment to tell me more about who you are.\n" +
+# "\n" +
+# "If you'd like me to look up something more specific about your account, let me know what you're after."
 ```
 
-You'll see the agent's response stream in real-time, with tool execution progress indicators.
+You'll see the agent's response stream in real-time, with tool execution progress indicators. The example above shows a real run — run it yourself to see it live.
 
 ## What just happened?
 

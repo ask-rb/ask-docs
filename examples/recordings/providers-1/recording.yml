@@ -1,0 +1,60 @@
+{
+  "test": "providers-1",
+  "recorded_at": "2026-08-03T09:10:44Z",
+  "interactions": [
+    {
+      "type": "provider",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Say OK in one word."
+        }
+      ],
+      "model": "deepseek-v4-flash",
+      "result": {
+        "type": "message",
+        "content": "OK.",
+        "tool_calls": null,
+        "metadata": {
+          "model": "deepseek-v4-flash",
+          "finish_reason": "stop",
+          "input_tokens": 89,
+          "output_tokens": 11,
+          "cached_tokens": 0,
+          "raw": {
+            "id": "94ec462a-40b9-40d7-8738-27ae6b81e7e2",
+            "object": "chat.completion",
+            "created": 1785748235,
+            "model": "deepseek-v4-flash",
+            "choices": [
+              {
+                "index": 0,
+                "finish_reason": "stop",
+                "logprobs": null,
+                "message": {
+                  "role": "assistant",
+                  "content": "OK.",
+                  "reasoning_content": "We need answer OK in one word."
+                }
+              }
+            ],
+            "usage": {
+              "prompt_tokens": 89,
+              "completion_tokens": 11,
+              "total_tokens": 100,
+              "prompt_cache_hit_tokens": 0,
+              "prompt_cache_miss_tokens": 89,
+              "prompt_tokens_details": {
+                "cached_tokens": 0
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 8
+              }
+            },
+            "cost": "0"
+          }
+        }
+      }
+    }
+  ]
+}
