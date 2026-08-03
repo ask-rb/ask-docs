@@ -64,6 +64,10 @@ Subclass `Ask::Tool` to define a tool that an LLM can call.
 
 ## `Ask::Result` — Standardized Return Value
 
+`Ask::Result` lives in ask-core (the zero-dependency foundation) and is the
+single result type for the whole ecosystem — providers, tools, and agents all
+return it. This is the same class you get from `require "ask"`.
+
 ```ruby
 require "ask-tools"
 

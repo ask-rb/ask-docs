@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.9.0] — 2026-08-03
+
+### Changed
+
+- **`Ask::Result` is now the single result type for the whole ecosystem.**
+  ask-core owns it with both the foundational API (`success`/`failure`/
+  `aborted`/`blocked`) and the tool API (`ok`/`error`); ask-tools now depends
+  on ask-core instead of redefining the class. This fixes the collision where
+  `Ask::Result.success` raised `ArgumentError` in any app loading both gems,
+  and fixes `ask-rag`'s embedding pipeline (`raw.output` on provider results).
+  Updated the API reference and tools guides to show the union.
+- **New [Architecture & Ownership](/ask-docs/reference/architecture) page** —
+  the gem layering and the ownership rule: shared value objects and base
+  contracts live in ask-core (zero-dependency); feature gems extend, never
+  redefine.
+
 ## [0.8.0] — 2026-08-03
 
 ### Added

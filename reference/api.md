@@ -116,14 +116,22 @@ tool.to_provider_format { |t| { type: "function", function: t.to_h } }
 
 ### Ask::Result
 
+The single result type for the whole ecosystem — defined in ask-core, used by
+providers, tools, and agents. Supports both the foundational API
+(`success`/`failure`/`aborted`/`blocked`) and the tool API (`ok`/`error`).
+
 ```ruby
 require "ask"
 
 ok = Ask::Result.success("Data processed")
 ok.success?     # => true
+ok.ok?          # => true
 ok.content      # => "Data processed"
+ok.output       # => "Data processed"
 ok.status       # => :success
 
+Ask::Result.ok(data: "processed").to_h
+# => {ok: true, output: "processed", error: nil, metadata: {}}
 Ask::Result.failure("API returned 500").status   # => :error
 Ask::Result.aborted("Cancelled").status          # => :aborted
 Ask::Result.blocked("Permission denied").status  # => :blocked
