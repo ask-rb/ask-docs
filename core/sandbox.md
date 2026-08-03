@@ -65,7 +65,7 @@ Process-level isolation via `Process.spawn` with `pgroup: true`.
 **Security measures:**
 - Process group isolation — kills entire tree on timeout
 - `Process.setrlimit`: CPU (10s/30s), address space (2GB), processes (50), file size (10MB), FDs (200)
-- Temp directory via `Dir.mktmpdir`
+- Caller's working directory by default (or `workdir:` for a pinned directory)
 - Environment sanitization — strips `BUNDLE_*`, `GEM_*`, `RUBYOPT`, `RUBYLIB`; preserves `ASK_*`
 - Output truncated at 100KB per stream
 

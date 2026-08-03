@@ -1,6 +1,6 @@
 {
   "test": "first-agent-2",
-  "recorded_at": "2026-08-03T17:54:59Z",
+  "recorded_at": "2026-08-03T18:03:43Z",
   "interactions": [
     {
       "type": "provider",
@@ -13,7 +13,7 @@
       "model": "deepseek-v4-flash",
       "result": {
         "type": "stream",
-        "accumulated_text": "I'll create the `hello.rb` file with a greeting.",
+        "accumulated_text": "I'll create the file `hello.rb` with a simple greeting, then run it.",
         "chunks": [
           {
             "content": null,
@@ -199,127 +199,7 @@
             "content": null,
             "tool_calls": null,
             "finish_reason": null,
-            "thinking": "I"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": "'ll"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " create"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " the"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " file"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " and"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " run"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " it"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": "."
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " These"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " are"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " somewhat"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " dependent"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " -"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " I"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " need"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " to"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " create"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " the"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " file"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " first"
+            "thinking": "First"
           },
           {
             "content": null,
@@ -331,96 +211,6 @@
             "content": null,
             "tool_calls": null,
             "finish_reason": null,
-            "thinking": " then"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " run"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " it"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": "."
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " But"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " I"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " can"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " create"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " and"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " run"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " in"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " sequence"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": "."
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " Let"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " me"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
             "thinking": " create"
           },
           {
@@ -439,7 +229,25 @@
             "content": null,
             "tool_calls": null,
             "finish_reason": null,
-            "thinking": " first"
+            "thinking": " with"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " the"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " Ruby"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " code"
           },
           {
             "content": null,
@@ -472,6 +280,12 @@
             "thinking": null
           },
           {
+            "content": " file",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
             "content": " `",
             "tool_calls": null,
             "finish_reason": null,
@@ -496,12 +310,6 @@
             "thinking": null
           },
           {
-            "content": " file",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
             "content": " with",
             "tool_calls": null,
             "finish_reason": null,
@@ -514,7 +322,37 @@
             "thinking": null
           },
           {
+            "content": " simple",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
             "content": " greeting",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": ",",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " then",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " run",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " it",
             "tool_calls": null,
             "finish_reason": null,
             "thinking": null
@@ -529,7 +367,7 @@
             "content": null,
             "tool_calls": [
               {
-                "id": "call_00_8FesqvrUTcGZ6xTcBUuS6258",
+                "id": "call_00_yXDgXNVswdzuB9x4VUdA2094",
                 "name": "write",
                 "arguments": "",
                 "index": 0
@@ -853,12 +691,12 @@
       "result": {
         "ok": true,
         "output": {
-          "path": "/private/var/folders/3b/kt90wy3d66lftws_dwtxxglm0000gn/T/ask-docs-example20260803-45528-r9zlrc/hello.rb",
+          "path": "/private/var/folders/3b/kt90wy3d66lftws_dwtxxglm0000gn/T/ask-docs-example20260803-52537-ldrril/hello.rb",
           "bytes": 21
         },
         "error": null,
         "metadata": {
-          "path": "/private/var/folders/3b/kt90wy3d66lftws_dwtxxglm0000gn/T/ask-docs-example20260803-45528-r9zlrc/hello.rb",
+          "path": "/private/var/folders/3b/kt90wy3d66lftws_dwtxxglm0000gn/T/ask-docs-example20260803-52537-ldrril/hello.rb",
           "bytes": 21
         },
         "type": "result"
@@ -873,11 +711,11 @@
         },
         {
           "role": "assistant",
-          "content": "I'll create the `hello.rb` file with a greeting."
+          "content": "I'll create the file `hello.rb` with a simple greeting, then run it."
         },
         {
           "role": "tool",
-          "content": "{path: \"/private/var/folders/3b/kt90wy3d66lftws_dwtxxglm0000gn/T/ask-docs-example20260803-45528-r9zlrc/hello.rb\", bytes: 21}"
+          "content": "{path: \"/private/var/folders/3b/kt90wy3d66lftws_dwtxxglm0000gn/T/ask-docs-example20260803-52537-ldrril/hello.rb\", bytes: 21}"
         },
         {
           "role": "user",
@@ -887,7 +725,7 @@
       "model": "deepseek-v4-flash",
       "result": {
         "type": "stream",
-        "accumulated_text": "Now let me run it.",
+        "accumulated_text": "",
         "chunks": [
           {
             "content": null,
@@ -896,46 +734,10 @@
             "thinking": ""
           },
           {
-            "content": "Now",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": " let",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": " me",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": " run",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": " it",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": ".",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
             "content": null,
             "tool_calls": [
               {
-                "id": "call_00_ET_8AvPjkVUcN45tmMii87U0150",
+                "id": "call_00_ET_oIMsFXwVUmXrApF9WH5s4259",
                 "name": "bash",
                 "arguments": "",
                 "index": 0
@@ -1116,994 +918,6 @@
       "result": {
         "ok": true,
         "output": {
-          "stdout": "",
-          "stderr": "ruby: No such file or directory -- hello.rb (LoadError)\n",
-          "exit_code": 1,
-          "timed_out": false
-        },
-        "error": null,
-        "metadata": {},
-        "type": "result"
-      }
-    },
-    {
-      "type": "provider",
-      "messages": [
-        {
-          "role": "user",
-          "content": "Create a file called hello.rb that prints a greeting, run it, and report the output."
-        },
-        {
-          "role": "assistant",
-          "content": "I'll create the `hello.rb` file with a greeting."
-        },
-        {
-          "role": "tool",
-          "content": "{path: \"/private/var/folders/3b/kt90wy3d66lftws_dwtxxglm0000gn/T/ask-docs-example20260803-45528-r9zlrc/hello.rb\", bytes: 21}"
-        },
-        {
-          "role": "user",
-          "content": ""
-        },
-        {
-          "role": "assistant",
-          "content": "Now let me run it."
-        },
-        {
-          "role": "tool",
-          "content": "{stdout: \"\", stderr: \"ruby: No such file or directory -- hello.rb (LoadError)\\n\", exit_code: 1, timed_out: false}"
-        },
-        {
-          "role": "user",
-          "content": ""
-        }
-      ],
-      "model": "deepseek-v4-flash",
-      "result": {
-        "type": "stream",
-        "accumulated_text": "The file was written to a temp directory but the shell seems to be running elsewhere. Let me run it with the full path.",
-        "chunks": [
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": ""
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": "The"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " file"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " was"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " written"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " to"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " a"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " temp"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " directory"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " but"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " the"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " bash"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " command"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " may"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " be"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " running"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " in"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " a"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " different"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " working"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " directory"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": "."
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " Let"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " me"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " find"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " the"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " actual"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " path"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " and"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " run"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " with"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " the"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " full"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": " path"
-          },
-          {
-            "content": null,
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": "."
-          },
-          {
-            "content": "The",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": " file",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": " was",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": " written",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": " to",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": " a",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": " temp",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": " directory",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": " but",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": " the",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": " shell",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": " seems",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": " to",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": " be",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": " running",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": " elsewhere",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": ".",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": " Let",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": " me",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": " run",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": " it",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": " with",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": " the",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": " full",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": " path",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": ".",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": null,
-            "tool_calls": [
-              {
-                "id": "call_00_esAJDEPGj4ZaGgMRKXwf7223",
-                "name": "bash",
-                "arguments": "",
-                "index": 0
-              }
-            ],
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": null,
-            "tool_calls": [
-              {
-                "id": null,
-                "name": null,
-                "arguments": "{",
-                "index": 0
-              }
-            ],
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": null,
-            "tool_calls": [
-              {
-                "id": null,
-                "name": null,
-                "arguments": "\"",
-                "index": 0
-              }
-            ],
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": null,
-            "tool_calls": [
-              {
-                "id": null,
-                "name": null,
-                "arguments": "command",
-                "index": 0
-              }
-            ],
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": null,
-            "tool_calls": [
-              {
-                "id": null,
-                "name": null,
-                "arguments": "\"",
-                "index": 0
-              }
-            ],
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": null,
-            "tool_calls": [
-              {
-                "id": null,
-                "name": null,
-                "arguments": ": ",
-                "index": 0
-              }
-            ],
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": null,
-            "tool_calls": [
-              {
-                "id": null,
-                "name": null,
-                "arguments": "\"",
-                "index": 0
-              }
-            ],
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": null,
-            "tool_calls": [
-              {
-                "id": null,
-                "name": null,
-                "arguments": "cd",
-                "index": 0
-              }
-            ],
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": null,
-            "tool_calls": [
-              {
-                "id": null,
-                "name": null,
-                "arguments": " \\\"$",
-                "index": 0
-              }
-            ],
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": null,
-            "tool_calls": [
-              {
-                "id": null,
-                "name": null,
-                "arguments": "(",
-                "index": 0
-              }
-            ],
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": null,
-            "tool_calls": [
-              {
-                "id": null,
-                "name": null,
-                "arguments": "dirname",
-                "index": 0
-              }
-            ],
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": null,
-            "tool_calls": [
-              {
-                "id": null,
-                "name": null,
-                "arguments": " \\\"$",
-                "index": 0
-              }
-            ],
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": null,
-            "tool_calls": [
-              {
-                "id": null,
-                "name": null,
-                "arguments": "(",
-                "index": 0
-              }
-            ],
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": null,
-            "tool_calls": [
-              {
-                "id": null,
-                "name": null,
-                "arguments": "find",
-                "index": 0
-              }
-            ],
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": null,
-            "tool_calls": [
-              {
-                "id": null,
-                "name": null,
-                "arguments": " /",
-                "index": 0
-              }
-            ],
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": null,
-            "tool_calls": [
-              {
-                "id": null,
-                "name": null,
-                "arguments": "private",
-                "index": 0
-              }
-            ],
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": null,
-            "tool_calls": [
-              {
-                "id": null,
-                "name": null,
-                "arguments": "/",
-                "index": 0
-              }
-            ],
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": null,
-            "tool_calls": [
-              {
-                "id": null,
-                "name": null,
-                "arguments": "var",
-                "index": 0
-              }
-            ],
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": null,
-            "tool_calls": [
-              {
-                "id": null,
-                "name": null,
-                "arguments": "/f",
-                "index": 0
-              }
-            ],
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": null,
-            "tool_calls": [
-              {
-                "id": null,
-                "name": null,
-                "arguments": "old",
-                "index": 0
-              }
-            ],
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": null,
-            "tool_calls": [
-              {
-                "id": null,
-                "name": null,
-                "arguments": "ers",
-                "index": 0
-              }
-            ],
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": null,
-            "tool_calls": [
-              {
-                "id": null,
-                "name": null,
-                "arguments": " -",
-                "index": 0
-              }
-            ],
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": null,
-            "tool_calls": [
-              {
-                "id": null,
-                "name": null,
-                "arguments": "name",
-                "index": 0
-              }
-            ],
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": null,
-            "tool_calls": [
-              {
-                "id": null,
-                "name": null,
-                "arguments": " hello",
-                "index": 0
-              }
-            ],
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": null,
-            "tool_calls": [
-              {
-                "id": null,
-                "name": null,
-                "arguments": ".rb",
-                "index": 0
-              }
-            ],
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": null,
-            "tool_calls": [
-              {
-                "id": null,
-                "name": null,
-                "arguments": " ",
-                "index": 0
-              }
-            ],
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": null,
-            "tool_calls": [
-              {
-                "id": null,
-                "name": null,
-                "arguments": "2",
-                "index": 0
-              }
-            ],
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": null,
-            "tool_calls": [
-              {
-                "id": null,
-                "name": null,
-                "arguments": ">/",
-                "index": 0
-              }
-            ],
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": null,
-            "tool_calls": [
-              {
-                "id": null,
-                "name": null,
-                "arguments": "dev",
-                "index": 0
-              }
-            ],
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": null,
-            "tool_calls": [
-              {
-                "id": null,
-                "name": null,
-                "arguments": "/null",
-                "index": 0
-              }
-            ],
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": null,
-            "tool_calls": [
-              {
-                "id": null,
-                "name": null,
-                "arguments": " |",
-                "index": 0
-              }
-            ],
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": null,
-            "tool_calls": [
-              {
-                "id": null,
-                "name": null,
-                "arguments": " head",
-                "index": 0
-              }
-            ],
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": null,
-            "tool_calls": [
-              {
-                "id": null,
-                "name": null,
-                "arguments": " -",
-                "index": 0
-              }
-            ],
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": null,
-            "tool_calls": [
-              {
-                "id": null,
-                "name": null,
-                "arguments": "1",
-                "index": 0
-              }
-            ],
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": null,
-            "tool_calls": [
-              {
-                "id": null,
-                "name": null,
-                "arguments": ")",
-                "index": 0
-              }
-            ],
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": null,
-            "tool_calls": [
-              {
-                "id": null,
-                "name": null,
-                "arguments": "\\\")",
-                "index": 0
-              }
-            ],
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": null,
-            "tool_calls": [
-              {
-                "id": null,
-                "name": null,
-                "arguments": "\\\"",
-                "index": 0
-              }
-            ],
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": null,
-            "tool_calls": [
-              {
-                "id": null,
-                "name": null,
-                "arguments": " &&",
-                "index": 0
-              }
-            ],
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": null,
-            "tool_calls": [
-              {
-                "id": null,
-                "name": null,
-                "arguments": " ruby",
-                "index": 0
-              }
-            ],
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": null,
-            "tool_calls": [
-              {
-                "id": null,
-                "name": null,
-                "arguments": " hello",
-                "index": 0
-              }
-            ],
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": null,
-            "tool_calls": [
-              {
-                "id": null,
-                "name": null,
-                "arguments": ".rb",
-                "index": 0
-              }
-            ],
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": null,
-            "tool_calls": [
-              {
-                "id": null,
-                "name": null,
-                "arguments": "\"",
-                "index": 0
-              }
-            ],
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": null,
-            "tool_calls": [
-              {
-                "id": null,
-                "name": null,
-                "arguments": "}",
-                "index": 0
-              }
-            ],
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": "",
-            "tool_calls": null,
-            "finish_reason": "tool_calls",
-            "thinking": null
-          }
-        ]
-      }
-    },
-    {
-      "type": "tool",
-      "name": "Ask::Tools::Bash",
-      "args": "{\"command\": \"cd \\\"$(dirname \\\"$(find /private/var/folders -name hello.rb 2>/dev/null | head -1)\\\")\\\" && ruby hello.rb\"}",
-      "result": {
-        "ok": true,
-        "output": {
           "stdout": "Hello, world!\n",
           "stderr": "",
           "exit_code": 0,
@@ -2123,11 +937,11 @@
         },
         {
           "role": "assistant",
-          "content": "I'll create the `hello.rb` file with a greeting."
+          "content": "I'll create the file `hello.rb` with a simple greeting, then run it."
         },
         {
           "role": "tool",
-          "content": "{path: \"/private/var/folders/3b/kt90wy3d66lftws_dwtxxglm0000gn/T/ask-docs-example20260803-45528-r9zlrc/hello.rb\", bytes: 21}"
+          "content": "{path: \"/private/var/folders/3b/kt90wy3d66lftws_dwtxxglm0000gn/T/ask-docs-example20260803-52537-ldrril/hello.rb\", bytes: 21}"
         },
         {
           "role": "user",
@@ -2135,19 +949,7 @@
         },
         {
           "role": "assistant",
-          "content": "Now let me run it."
-        },
-        {
-          "role": "tool",
-          "content": "{stdout: \"\", stderr: \"ruby: No such file or directory -- hello.rb (LoadError)\\n\", exit_code: 1, timed_out: false}"
-        },
-        {
-          "role": "user",
           "content": ""
-        },
-        {
-          "role": "assistant",
-          "content": "The file was written to a temp directory but the shell seems to be running elsewhere. Let me run it with the full path."
         },
         {
           "role": "tool",
@@ -2161,7 +963,7 @@
       "model": "deepseek-v4-flash",
       "result": {
         "type": "stream",
-        "accumulated_text": "Done! Here's what I did:\n\n1. **Created `hello.rb`** containing a single line that prints a greeting:\n   ```ruby\n   puts \"Hello, world!\"\n   ```\n2. **Ran it** with `ruby hello.rb` (navigating to the directory where the file was saved).\n\n**Output:**\n```\nHello, world!\n```\n\nThe program executed successfully (exit code 0) and printed the greeting.",
+        "accumulated_text": "Done! I created `hello.rb` and ran it successfully.\n\n**Output:**\n```\nHello, world!\n```\n\nThe script simply contains `puts \"Hello, world!\"`, which printed the greeting to stdout with exit code 0.",
         "chunks": [
           {
             "content": null,
@@ -2182,61 +984,13 @@
             "thinking": null
           },
           {
-            "content": " Here",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": "'s",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": " what",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
             "content": " I",
             "tool_calls": null,
             "finish_reason": null,
             "thinking": null
           },
           {
-            "content": " did",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": ":\n\n",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": "1",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": ".",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": " **",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": "Created",
+            "content": " created",
             "tool_calls": null,
             "finish_reason": null,
             "thinking": null
@@ -2266,169 +1020,13 @@
             "thinking": null
           },
           {
-            "content": "**",
+            "content": " and",
             "tool_calls": null,
             "finish_reason": null,
             "thinking": null
           },
           {
-            "content": " containing",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": " a",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": " single",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": " line",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": " that",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": " prints",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": " a",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": " greeting",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": ":\n",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": "  ",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": " ```",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": "rub",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": "y",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": "\n",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": "  ",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": " puts",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": " \"",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": "Hello",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": ",",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": " world",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": "!\"\n",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": "  ",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": " ```\n",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": "2",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": ".",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": " **",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": "Ran",
+            "content": " ran",
             "tool_calls": null,
             "finish_reason": null,
             "thinking": null
@@ -2440,127 +1038,13 @@
             "thinking": null
           },
           {
-            "content": "**",
+            "content": " successfully",
             "tool_calls": null,
             "finish_reason": null,
             "thinking": null
           },
           {
-            "content": " with",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": " `",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": "rub",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": "y",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": " hello",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": ".rb",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": "`",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": " (",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": "n",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": "avig",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": "ating",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": " to",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": " the",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": " directory",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": " where",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": " the",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": " file",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": " was",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": " saved",
-            "tool_calls": null,
-            "finish_reason": null,
-            "thinking": null
-          },
-          {
-            "content": ").\n\n",
+            "content": ".\n\n",
             "tool_calls": null,
             "finish_reason": null,
             "thinking": null
@@ -2632,61 +1116,73 @@
             "thinking": null
           },
           {
-            "content": " program",
+            "content": " script",
             "tool_calls": null,
             "finish_reason": null,
             "thinking": null
           },
           {
-            "content": " executed",
+            "content": " simply",
             "tool_calls": null,
             "finish_reason": null,
             "thinking": null
           },
           {
-            "content": " successfully",
+            "content": " contains",
             "tool_calls": null,
             "finish_reason": null,
             "thinking": null
           },
           {
-            "content": " (",
+            "content": " `",
             "tool_calls": null,
             "finish_reason": null,
             "thinking": null
           },
           {
-            "content": "exit",
+            "content": "puts",
             "tool_calls": null,
             "finish_reason": null,
             "thinking": null
           },
           {
-            "content": " code",
+            "content": " \"",
             "tool_calls": null,
             "finish_reason": null,
             "thinking": null
           },
           {
-            "content": " ",
+            "content": "Hello",
             "tool_calls": null,
             "finish_reason": null,
             "thinking": null
           },
           {
-            "content": "0",
+            "content": ",",
             "tool_calls": null,
             "finish_reason": null,
             "thinking": null
           },
           {
-            "content": ")",
+            "content": " world",
             "tool_calls": null,
             "finish_reason": null,
             "thinking": null
           },
           {
-            "content": " and",
+            "content": "!\"",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": "`,",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " which",
             "tool_calls": null,
             "finish_reason": null,
             "thinking": null
@@ -2705,6 +1201,48 @@
           },
           {
             "content": " greeting",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " to",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " stdout",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " with",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " exit",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " code",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": " ",
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": null
+          },
+          {
+            "content": "0",
             "tool_calls": null,
             "finish_reason": null,
             "thinking": null

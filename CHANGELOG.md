@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.13.0] — 2026-08-03
+
+### Changed
+
+- **Sandboxed commands now run in the caller's working directory**
+  (ask-sandbox-providers 0.1.4). Previously every Bash command ran in a
+  fresh throwaway temp dir, so a file the Write/Edit tools had just created
+  was invisible to it — `ruby hello.rb` after writing it with Write failed
+  with `LoadError` and agents had to work around it with absolute paths.
+  Now the shell tools share one working directory, like a real terminal.
+  `workdir:` still pins a specific directory. The Local provider's security
+  list on the sandbox page was updated to match.
+
+### Fixed
+
+- **First-agent example 4 is now a genuinely clean run.** Re-recorded after
+  the sandbox fix: the agent writes `hello.rb`, runs `ruby hello.rb`, and it
+  succeeds on the first try — the recorded output no longer narrates the
+  LoadError workaround.
+- **`bin/rerun-example.rb`** — a small script to re-record (or replay) a
+  single example block: `FILE=... PATTERN=... ruby bin/rerun-example.rb`
+  (add `REPLAY=1` to replay the existing tape without a key).
+
 ## [0.12.0] — 2026-08-03
 
 ### Changed

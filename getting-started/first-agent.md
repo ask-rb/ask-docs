@@ -99,21 +99,15 @@ session = Ask::Agent::Session.new(
 
 response = session.run("Create a file called hello.rb that prints a greeting, run it, and report the output.")
 response
-# => Done! Here's what I did:
-# 
-# 1. **Created `hello.rb`** containing a single line that prints a greeting:
-#    ```ruby
-#    puts "Hello, world!"
-#    ```
-# 2. **Ran it** with `ruby hello.rb` (navigating to the directory where the file
-# was saved).
+# => Done! I created `hello.rb` and ran it successfully.
 # 
 # **Output:**
 # ```
 # Hello, world!
 # ```
 # 
-# The program executed successfully (exit code 0) and printed the greeting.
+# The script simply contains `puts "Hello, world!"`, which printed the greeting to
+# stdout with exit code 0.
 ```
 
 The agent can now read, write, and edit files, glob, grep, run code, and apply patches. The example above shows a real run — your model may create the file differently.
