@@ -38,7 +38,7 @@ The generator creates:
 ```ruby
 # config/initializers/ask_rails_harness.rb
 Ask::Rails::Harness.configure do |config|
-  config.default_model = ENV.fetch("ASK_DEFAULT_MODEL", "gpt-4o")
+  config.default_model = ENV.fetch("ASK_DEFAULT_MODEL", "deepseek-v4-flash")
   config.max_turns = ENV.fetch("ASK_MAX_TURNS", 25).to_i
 end
 ```
@@ -47,7 +47,7 @@ end
 
 | Option | Default | Description |
 |---|---|---|
-| `default_model` | `"gpt-4o"` (or `ASK_DEFAULT_MODEL` env) | LLM model for agent sessions |
+| `default_model` | `"deepseek-v4-flash"` (or `ASK_DEFAULT_MODEL` env) | LLM model for agent sessions |
 | `max_turns` | `25` (or `ASK_MAX_TURNS` env) | Max think-call-execute cycles per session |
 | `tool_concurrency` | `5` | Number of tools the agent can run in parallel |
 | `system_prompt` | `nil` (built-in default) | Custom system prompt for the agent |

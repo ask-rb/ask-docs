@@ -83,9 +83,9 @@ stream.accumulated_usage # => {}
 ```ruby
 require "ask"
 
-catalog = Ask::ModelCatalog.new([Ask::ModelInfo.new(id: "gpt-4o", provider: "openai")])
-catalog.find("gpt-4o").provider    # => "openai"
-catalog.by_provider("openai").size # => 1
+catalog = Ask::ModelCatalog.new([Ask::ModelInfo.new(id: "deepseek-v4-flash", provider: "deepseek")])
+catalog.find("deepseek-v4-flash").provider    # => "deepseek"
+catalog.by_provider("deepseek").size # => 1
 
 # The process-wide singleton (populated by ask-llm-providers when loaded)
 Ask::ModelCatalog.instance.class   # => Ask::ModelCatalog
@@ -215,7 +215,7 @@ Agent loop. [Source](https://github.com/ask-rb/ask-agent)
 # agents/health_check/agent.rb
 module HealthCheck
   class Agent < Ask::Agent::Definition
-    model "gpt-4o"
+    model "deepseek-v4-flash"
     tools :bash, :read, :grep
     schedule "every 5 minutes"
   end
@@ -289,7 +289,7 @@ class NoOp < Ask::Agent::StreamTransforms::Base
 ```ruby
 # Quick one-shot chat — no Session setup needed
 Ask.chat("Hello!")
-Ask.chat("Tell me about X", model: "gpt-4o")
+Ask.chat("Tell me about X", model: "deepseek-v4-flash")
 
 # With streaming
 Ask.chat("Stream this") { |chunk| puts chunk.content if chunk.content }
@@ -316,7 +316,7 @@ session = Ask::Agent::Session.new(model: "claude-sonnet-4", prompt_caching: fals
 ```ruby
 Ask::Agent.configure do |c|
   c.scheduler.every "5 minutes", name: "task-name" do
-    Ask::Agent::Session.new(model: "gpt-4o").run("Do something")
+    Ask::Agent::Session.new(model: "deepseek-v4-flash").run("Do something")
   end
   c.scheduler.cron "0 9 * * 1-5", name: "weekday-task"
 end
@@ -342,7 +342,7 @@ rails generate ask:install
 
 # config/initializers/ask.rb
 Ask::Agent.configure do |config|
-  config.default_model = ENV.fetch("ASK_DEFAULT_MODEL", "gpt-4o")
+  config.default_model = ENV.fetch("ASK_DEFAULT_MODEL", "deepseek-v4-flash")
 end
 ```
 
@@ -350,7 +350,7 @@ end
 # app/agents/support_bot/agent.rb
 module SupportBot
   class Agent < ApplicationAgent
-    model "gpt-4o"
+    model "deepseek-v4-flash"
     tools :search_products
   end
 end
@@ -360,7 +360,7 @@ agent = Ask::Agent.new("support_bot")
 agent.run("How do I reset my password?")
 
   # One-off conversations
-  session = Ask::Agent::Session.new(model: "gpt-4o")
+  session = Ask::Agent::Session.new(model: "deepseek-v4-flash")
   session.run("Summarize this article") do |chunk|
   puts chunk.content if chunk.content
   end
@@ -397,7 +397,7 @@ agent.run("How do I reset my password?")
   Ask::Rails::Harness.agent_session(user: current_user)
 
   Ask::Rails::Harness.configure do |c|
-  c.default_model = "gpt-4o"
+  c.default_model = "deepseek-v4-flash"
   c.max_turns = 50
   end
 
@@ -604,7 +604,7 @@ Shell and filesystem tools. [Source](https://github.com/ask-rb/ask-tools-shell)
 
   # Use with sessions
   session = Ask::Agent::Session.new(
-  model: "gpt-4o",
+  model: "deepseek-v4-flash",
   tools: [Bash, Read, Ask::ProviderTool.web_search]
   )
   ```

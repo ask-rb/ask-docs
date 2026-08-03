@@ -45,7 +45,7 @@ gem "ask-agent"
 
 ```ruby
 session = Ask::Agent::Session.new(
-  model: "gpt-4o",
+  model: "deepseek-v4-flash",
   tools: [Ask::Tools::Bash]
 )
 
@@ -121,7 +121,7 @@ end
 
 # Per-session override
 session = Ask::Agent::Session.new(
-  model: "gpt-4o",
+  model: "deepseek-v4-flash",
   audit_log: { adapter: :file, path: "tmp/my_agent_audit.jsonl" }
 )
 ```
@@ -174,7 +174,7 @@ This is different from `Reflector` (which has the same model evaluate its own ou
 
 ```ruby
 session = Ask::Agent::Session.new(
-  model: "gpt-4o",
+  model: "deepseek-v4-flash",
   evaluator: { model: "claude-sonnet-4", goal: "Write an email validator" }
 )
 session.run("Write a Ruby method that validates email addresses")
@@ -197,10 +197,10 @@ Ask::Agent.configure do |c|
 end
 
 # Then enable with the default
-session = Ask::Agent::Session.new(model: "gpt-4o", evaluator: true)
+session = Ask::Agent::Session.new(model: "deepseek-v4-flash", evaluator: true)
 
 # Or pass nothing (default) — no evaluation, backward compatible
-session = Ask::Agent::Session.new(model: "gpt-4o")
+session = Ask::Agent::Session.new(model: "deepseek-v4-flash")
 ```
 
 ### Custom Rubric
@@ -289,7 +289,7 @@ require "ask-state-providers"
 store = Ask::State::Providers::SQLite.new  # or Redis, Postgres, MySQL
 
 session = Ask::Agent::Session.new(
-  model: "gpt-4o",
+  model: "deepseek-v4-flash",
   tools: [Ask::Tools::Bash],
   state: store
 )
@@ -323,7 +323,7 @@ store = Ask::State::Providers::Postgres.new(url: ENV["DATABASE_URL"])
 ### Save & Resume
 
 ```ruby
-session = Ask::Agent::Session.new(model: "gpt-4o", state: store)
+session = Ask::Agent::Session.new(model: "deepseek-v4-flash", state: store)
 session.run("Analyze the logs")
 session_id = session.id  # save this somewhere
 
@@ -340,7 +340,7 @@ turn count, token usage) is preserved across loads.
 The old `persistence:` keyword still works but is deprecated:
 
 ```ruby
-session = Ask::Agent::Session.new(model: "gpt-4o", persistence: store)
+session = Ask::Agent::Session.new(model: "deepseek-v4-flash", persistence: store)
 ```
 
 Prefer `state:` — it's shorter and matches the `Ask::State::Adapter` naming.
@@ -357,7 +357,7 @@ class RedisAdapter
   def delete(key) = redis.del(key)
 end
 
-session = Ask::Agent::Session.new(model: "gpt-4o", state: RedisAdapter.new)
+session = Ask::Agent::Session.new(model: "deepseek-v4-flash", state: RedisAdapter.new)
 ```
 
 ## Events
@@ -396,7 +396,7 @@ it by name:
 search = Ask::Agent::SubAgent.new("web_search")
 
 coordinator = Ask::Agent::Session.new(
-  model: "gpt-4o",
+  model: "deepseek-v4-flash",
   tools: [search, Ask::Tools::Bash]
 )
 ```
@@ -409,7 +409,7 @@ This is the same definition convention used by `Ask::Agent.new("name")`.
 search = Ask::Agent::SubAgent.new(
   name: "web_search",
   description: "Search the web for current information",
-  model: "gpt-4o-mini",                              # cheaper model for search
+  model: "deepseek-v4-flash",                              # cheaper model for search
   tools: [Ask::Tools::WebSearch],
   system_prompt: "You are a research assistant."
 )
@@ -423,7 +423,7 @@ review = Ask::Agent::SubAgent.new(
 )
 
 coordinator = Ask::Agent::Session.new(
-  model: "gpt-4o",
+  model: "deepseek-v4-flash",
   tools: [search, review, Ask::Tools::Bash]
 )
 
@@ -445,7 +445,7 @@ review = Ask::Agent::SubAgent.new(
 ### What happens at runtime
 
 1. The coordinator LLM decides to call `web_search` with `task: "Latest Rails version"`
-2. A fresh sub-agent session starts with `gpt-4o-mini` + `WebSearchTool`
+2. A fresh sub-agent session starts with `deepseek-v4-flash` + `WebSearchTool`
 3. The sub-agent searches, processes results, and returns a concise answer
 4. The coordinator receives this as a normal tool response and continues
 
@@ -458,8 +458,8 @@ rephrase, or skip — the main conversation isn't disrupted.
 ```ruby
 # Multiple sub-agents, each with distinct identity
 tools = [
-  Ask::Agent::SubAgent.new(name: "data_analysis", model: "gpt-4o", tools: [Analyzer]),
-  Ask::Agent::SubAgent.new(name: "fact_check",    model: "gpt-4o-mini", tools: [WebSearch])
+  Ask::Agent::SubAgent.new(name: "data_analysis", model: "deepseek-v4-flash", tools: [Analyzer]),
+  Ask::Agent::SubAgent.new(name: "fact_check",    model: "deepseek-v4-flash", tools: [WebSearch])
 ]
 ```
 
@@ -471,7 +471,7 @@ Pass `Ask::ProviderTool` objects alongside regular tools in the `Session` constr
 
 ```ruby
 session = Ask::Agent::Session.new(
-  model: "gpt-4o",
+  model: "deepseek-v4-flash",
   tools: [
     Bash, Read,
     Ask::ProviderTool.web_search(search_context_size: "high"),
@@ -653,11 +653,11 @@ Schedule agents to run on cron schedules or recurring intervals. Tasks run in ba
 ```ruby
 Ask::Agent.configure do |c|
   c.scheduler.every "5 minutes", name: "health-check" do
-    Ask::Agent::Session.new(model: "gpt-4o").run("Check server health")
+    Ask::Agent::Session.new(model: "deepseek-v4-flash").run("Check server health")
   end
 
   c.scheduler.cron "0 9 * * 1-5", name: "morning-report" do
-    session = Ask::Agent::Session.new(model: "gpt-4o")
+    session = Ask::Agent::Session.new(model: "deepseek-v4-flash")
     session.run("Generate daily report and send to team")
   end
 end
@@ -696,7 +696,7 @@ agents/
 # agents/health_check/agent.rb
 module HealthCheck
   class Agent < Ask::Agent::Definition
-    model "gpt-4o"
+    model "deepseek-v4-flash"
     tools :bash, :read, :grep
     schedule "every 5 minutes"
   end

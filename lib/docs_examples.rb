@@ -48,6 +48,7 @@
 require "pp"
 require "rbconfig"
 require "stringio"
+require "tmpdir"
 
 module DocsExamples
   ROOT = File.expand_path("..", __dir__)
@@ -356,10 +357,18 @@ module DocsExamples
     # the docs as comments, not to the runner's console.
     original_stdout = $stdout
     $stdout = StringIO.new
-    begin
-      eval(block.code_without_slots, bind, "#{block.file}:#{code_start}", code_start)
-    ensure
-      $stdout = original_stdout
+    # Run each example in a scratch temp dir so file-creating examples never
+    # drop files into the docs tree (and readers don't need wrapper code or
+    # comments to clean up after them). The dir is removed when the block
+    # finishes; the slot expressions below don't depend on the CWD.
+    Dir.mktmpdir("ask-docs-example") do |dir|
+      Dir.chdir(dir) do
+        begin
+          eval(block.code_without_slots, bind, "#{block.file}:#{code_start}", code_start)
+        ensure
+          $stdout = original_stdout
+        end
+      end
     end
 
     replacements = {}

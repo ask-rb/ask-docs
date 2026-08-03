@@ -136,7 +136,7 @@ registry.names  # => ["debugging", ...]
 And to load a skill's instructions into a session manually:
 
 ```ruby
-session = Ask::Agent::Session.new(model: "gpt-4o")
+session = Ask::Agent::Session.new(model: "deepseek-v4-flash")
 session.skill("debugging")   # loads the full instructions
 ```
 

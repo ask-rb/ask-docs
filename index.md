@@ -12,10 +12,9 @@ nav_order: 0
 
 > **Every output in these docs is real.** The `# =>` results in the code
 > examples are the exact outputs from running the examples against the
-> ask-rb gems — and, for the live-LLM examples, against real models.
-> Nothing here is fabricated or hand-typed. Run `rake docs:generate` in
-> the ask-docs repo and the examples re-execute to produce the same
-> results.
+> ask-rb gems — and, for the live-LLM examples, against real models. Run
+> `rake docs:generate` in the ask-docs repo and the examples re-execute
+> to produce the same results.
 
 ```ruby
 gem "ask-core"

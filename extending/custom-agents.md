@@ -22,7 +22,7 @@ Create an `agent.rb` file in `agents/<name>/` or `app/agents/<name>/`:
 # app/agents/health_check/agent.rb
 module HealthCheck
   class Agent < Ask::Agent::Definition
-    model "gpt-4o"
+    model "deepseek-v4-flash"
     tools :bash, :read, :grep
     schedule "every 5 minutes"
   end
@@ -42,7 +42,7 @@ You are a health check agent. Check server status and report issues.
 
 | Method | Description | Example |
 |---|---|---|
-| `model` | LLM model identifier | `model "gpt-4o"` |
+| `model` | LLM model identifier | `model "deepseek-v4-flash"` |
 | `provider` | Provider override | `provider :opencode_go` |
 | `max_turns` | Max conversation turns | `max_turns 30` |
 | `parallel_tools` | Parallel tool execution | `parallel_tools false` |
@@ -123,7 +123,7 @@ class LoggingHooks < Ask::Agent::Hooks
 end
 
 session = Ask::Agent::Session.new(
-  model: "gpt-4o",
+  model: "deepseek-v4-flash",
   hooks: LoggingHooks.new
 )
 ```
@@ -176,7 +176,7 @@ class AggressiveCompactor < Ask::Agent::Compactor
 end
 
 session = Ask::Agent::Session.new(
-  model: "gpt-4o",
+  model: "deepseek-v4-flash",
   compactor: AggressiveCompactor.new
 )
 ```
@@ -203,7 +203,7 @@ class RedisStateAdapter
 end
 
 session = Ask::Agent::Session.new(
-  model: "gpt-4o",
+  model: "deepseek-v4-flash",
   state: RedisStateAdapter.new
 )
 

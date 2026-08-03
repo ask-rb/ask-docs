@@ -60,7 +60,7 @@ result.data   # => { location: "Tokyo", temperature: 22, ... }
 
 # With an agent
 session = Ask::Agent::Session.new(
-  model: "gpt-4o",
+  model: "deepseek-v4-flash",
   tools: [Weather]
 )
 session.run("What's the weather like in Tokyo today?")

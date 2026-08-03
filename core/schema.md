@@ -274,7 +274,7 @@ end
 
 response = provider.chat(
   [{ role: "user", content: "Tell me about John, 28, who likes hiking and photography" }],
-  model: "gpt-4o",
+  model: "deepseek-v4-flash",
   schema: schema.new("person")
 )
 

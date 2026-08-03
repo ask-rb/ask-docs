@@ -23,7 +23,7 @@ No standalone evaluator. No new workflow. No separate config file. Just `assert_
 | Integration | **Minitest-native assertions** — drops into existing tests |
 | Judges | **5 essential judges** — faithful, hallucination, bias, toxicity, correctness |
 | Reporters | **3 reporters** — console (dev), JUnit (CI), GitHub Actions (annotations) |
-| Judge model | **Any model as judge** — cheap gpt-4o-mini, accurate claude, or local |
+| Judge model | **Any model as judge** — cheap deepseek-v4-flash, accurate claude, or local |
 | Cost tracking | **Per evaluation** — token and cost tracking |
 | Test framework | **Minitest plugin** — auto-loads with `require "ask/eval/minitest"` |
 
@@ -87,7 +87,7 @@ Each assertion accepts a `model:` parameter. The model can be:
 
 - A **callable** (lambda/proc) — ideal for testing
 - An **Ask::Provider** instance (e.g., `Ask::Providers::OpenAI.new`)
-- A **model string** (e.g., `"openai/gpt-4o-mini"` — resolves via `Ask::ModelCatalog`)
+- A **model string** (e.g., `"openai/deepseek-v4-flash"` — resolves via `Ask::ModelCatalog`)
 
 Configure a default judge globally:
 
@@ -236,7 +236,7 @@ The `eval_session` DSL wires this up in a Minitest test with automatic recording
 
 ```ruby
 test "health check agent" do
-  eval_session(model: "gpt-4o", tools: [Bash]) do |r|
+  eval_session(model: "deepseek-v4-flash", tools: [Bash]) do |r|
     r.run("Check health")
     assert_tool_called "bash"
     assert_cost_under 0.01

@@ -71,7 +71,7 @@ A **provider** is a wrapper around an LLM API. Each provider gem knows:
 Providers are interchangeable. Switch from OpenAI to Anthropic by changing the model name:
 
 ```ruby
-session = Ask::Agent::Session.new(model: "gpt-4o")          # OpenAI
+session = Ask::Agent::Session.new(model: "deepseek-v4-flash")          # DeepSeek
 session = Ask::Agent::Session.new(model: "claude-sonnet-4")  # Anthropic
 session = Ask::Agent::Session.new(model: "gemini-2.0-flash") # Google
 ```

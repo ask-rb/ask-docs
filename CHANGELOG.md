@@ -1,5 +1,29 @@
 # Changelog
 
+## [0.12.0] — 2026-08-03
+
+### Changed
+
+- **`gpt-4o` → `deepseek-v4-flash` everywhere.** The docs no longer default
+  to the outdated gpt-4o model; all model usage (sessions, chats, catalog
+  lookups, prose) uses deepseek-v4-flash. Catalog examples re-ran with the
+  real deepseek-v4-flash values (1M context window, `supports?(:vision) =>
+  false`, etc.) and prose that named gpt-4o's provider was corrected to
+  DeepSeek.
+- **Streaming example now actually showcases streaming.** The first-agent
+  streaming example asks the agent to run `ruby -e 'p RUBY_VERSION'` and
+  explain the output, so the recorded result is a streamed multi-sentence
+  explanation (tool events + text deltas) instead of a short array.
+- **Runner runs each example in a scratch temp dir**, so file-creating
+  examples never drop files into the docs tree — the first-agent "more
+  tools" example no longer needs a temp-dir wrapper or a comment about it.
+
+### Removed
+
+- "Nothing is fabricated" phrasing from the real-outputs notes (the note
+  itself is enough).
+- Unnecessary in-example comments (e.g. the temp-dir explanation).
+
 ## [0.11.0] — 2026-08-03
 
 ### Added

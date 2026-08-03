@@ -18,7 +18,7 @@ gem "ask-instrumentation"
 Every session publishes lifecycle events as it runs. Subscribe with `on_event`, or filter by event class with `on`:
 
 ```ruby
-session = Ask::Agent::Session.new(model: "gpt-4o")
+session = Ask::Agent::Session.new(model: "deepseek-v4-flash")
 
 session.on_event do |event|
   case event
@@ -109,8 +109,8 @@ end
 Instrument your own code the same way:
 
 ```ruby
-Ask::Instrumentation.instrument("chat.ask", provider: "openai", model: "gpt-4o") do
-  provider.chat(messages, model: "gpt-4o")
+Ask::Instrumentation.instrument("chat.ask", provider: "openai", model: "deepseek-v4-flash") do
+  provider.chat(messages, model: "deepseek-v4-flash")
 end
 ```
 
@@ -122,7 +122,7 @@ The agent ships a file-backed telemetry log for error tracking. It's on by defau
 
 ```ruby
 telemetry = Ask::Agent::Telemetry.new(dir: "log/ask/")
-session = Ask::Agent::Session.new(model: "gpt-4o", telemetry: telemetry)
+session = Ask::Agent::Session.new(model: "deepseek-v4-flash", telemetry: telemetry)
 ```
 
 Every error and notable lifecycle event is appended as JSON lines. The `MetaAgent` component reads this same log to propose improvements (see [The Agent Loop](/ask-docs/core/agent)).

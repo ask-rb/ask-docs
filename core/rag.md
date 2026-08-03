@@ -367,12 +367,12 @@ The `Ask::RAG::Query.query` method combines retrieval and generation in one call
 answer = Ask::RAG::Query.query(
   store: store,
   question: "What is the default timeout configuration?",
-  model: "gpt-4o"           # LLM model to answer with
+  model: "deepseek-v4-flash"           # LLM model to answer with
 )
 
 puts answer.content            # The LLM's answer
 puts answer.metadata[:sources] # ["config.md", "settings.md"]
-puts answer.metadata[:model]   # "gpt-4o"
+puts answer.metadata[:model]   # "deepseek-v4-flash"
 ```
 
 If the store has no relevant documents, `query` returns `nil` — the LLM is never called.
@@ -408,7 +408,7 @@ loop do
   answer = Ask::RAG::Query.query(
     store: store,
     question: question,
-    model: "gpt-4o",
+    model: "deepseek-v4-flash",
     limit: 3
   )
 
@@ -453,7 +453,7 @@ end
 
 # Now your agent can search docs automatically
 session = Ask::Agent::Session.new(
-  model: "gpt-4o",
+  model: "deepseek-v4-flash",
   tools: [SearchDocs]
 )
 session.run("How do I configure authentication?")

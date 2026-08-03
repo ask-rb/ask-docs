@@ -231,12 +231,12 @@ To delegate a task to a sub-agent, use `Ask::Agent::SubAgent` from ask-agent. It
 search = Ask::Agent::SubAgent.new(
   name: "web_search",
   description: "Search the web for current information",
-  model: "gpt-4o-mini",
+  model: "deepseek-v4-flash",
   tools: [Ask::Tools::WebSearch],
   system_prompt: "You are a research assistant."
 )
 
-session = Ask::Agent::Session.new(model: "gpt-4o", tools: [search])
+session = Ask::Agent::Session.new(model: "deepseek-v4-flash", tools: [search])
 ```
 
 When the coordinator calls it, a fresh session runs with its own model, tools, and instructions. See [Sub-Agent Delegation](/ask-docs/core/agent#sub-agent-delegation) for the full picture.
@@ -297,7 +297,7 @@ chat.ask("What is the population of Tokyo? Search the web.")
 
 ```ruby
 session = Ask::Agent::Session.new(
-  model: "gpt-4o",
+  model: "deepseek-v4-flash",
   tools: [Ask::Tools::WebSearch]
 )
 

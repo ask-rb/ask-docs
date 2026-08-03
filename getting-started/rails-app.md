@@ -81,7 +81,7 @@ ask:
 ```
 
 {: .note }
-The provider is auto-detected from the model name. `"gpt-4o"` resolves to OpenAI, `"claude-sonnet-4"` resolves to Anthropic, and so on. No provider config needed.
+The provider is auto-detected from the model name. `"deepseek-v4-flash"` resolves to DeepSeek, `"claude-sonnet-4"` resolves to Anthropic, and so on. No provider config needed.
 
 ## 3. Define an agent
 
@@ -99,7 +99,7 @@ app/agents/support_bot/
 # app/agents/support_bot/agent.rb
 module SupportBot
   class Agent < ApplicationAgent
-    model "gpt-4o"
+    model "deepseek-v4-flash"
     # tools :search_knowledge_base
   end
 end
@@ -149,7 +149,7 @@ For one-off conversations without a definition file:
 
 ```ruby
 session = Ask::Agent::Session.new(
-  model: "gpt-4o",
+  model: "deepseek-v4-flash",
   system_prompt: "You are a helpful assistant."
 )
 response = session.run("Summarize this article")
@@ -225,7 +225,7 @@ Then register it with your agent:
 # app/agents/support_bot/agent.rb
 module SupportBot
   class Agent < ApplicationAgent
-    model "gpt-4o"
+    model "deepseek-v4-flash"
     tools :search_products
   end
 end

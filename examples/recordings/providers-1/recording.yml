@@ -1,6 +1,6 @@
 {
   "test": "providers-1",
-  "recorded_at": "2026-08-03T09:10:44Z",
+  "recorded_at": "2026-08-03T12:31:41Z",
   "interactions": [
     {
       "type": "provider",
@@ -13,7 +13,7 @@
       "model": "deepseek-v4-flash",
       "result": {
         "type": "message",
-        "content": "OK.",
+        "content": "OK",
         "tool_calls": null,
         "metadata": {
           "model": "deepseek-v4-flash",
@@ -22,9 +22,9 @@
           "output_tokens": 11,
           "cached_tokens": 0,
           "raw": {
-            "id": "94ec462a-40b9-40d7-8738-27ae6b81e7e2",
+            "id": "f9099977-36cb-4321-9696-e806dd13db1f",
             "object": "chat.completion",
-            "created": 1785748235,
+            "created": 1785760300,
             "model": "deepseek-v4-flash",
             "choices": [
               {
@@ -33,8 +33,8 @@
                 "logprobs": null,
                 "message": {
                   "role": "assistant",
-                  "content": "OK.",
-                  "reasoning_content": "We need answer OK in one word."
+                  "content": "OK",
+                  "reasoning_content": "We need answer in one word: OK."
                 }
               }
             ],
@@ -48,7 +48,7 @@
                 "cached_tokens": 0
               },
               "completion_tokens_details": {
-                "reasoning_tokens": 8
+                "reasoning_tokens": 9
               }
             },
             "cost": "0"

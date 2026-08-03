@@ -136,7 +136,7 @@ puts result
 
 ```ruby
 session = Ask::Agent::Session.new(
-  model: "gpt-4o",
+  model: "deepseek-v4-flash",
   tools: [Ask::Tools::WebSearch]
 )
 

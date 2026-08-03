@@ -93,18 +93,18 @@ require "ask"
 require "ask-llm-providers"  # loads the bundled model catalog
 
 # Find a model by ID
-model = Ask::ModelCatalog.find("gpt-4o")
-model.provider           # => "openai"
-model.context_window     # => 128000
-model.max_output_tokens  # => 16384
-model.supports?(:vision) # => true
+model = Ask::ModelCatalog.find("deepseek-v4-flash")
+model.provider           # => "deepseek"
+model.context_window     # => 1000000
+model.max_output_tokens  # => 384000
+model.supports?(:vision) # => false
 
 # Filter by capability
 Ask::ModelCatalog.chat_models.size       # => 388
 Ask::ModelCatalog.embedding_models.size  # => 5
 
 # Filter by metadata
-Ask::ModelCatalog.by_family("gpt").size  # => 19
+Ask::ModelCatalog.by_family("deepseek").size  # => 5
 ```
 
 Models are loaded into the catalog by `Ask::LLM::Catalog.load!` (from ask-llm-providers) or registered individually:
@@ -132,7 +132,7 @@ Immutable value object for model metadata.
 
 | Attribute | Type | Description |
 |---|---|---|
-| `id` | String | Model identifier (e.g. `"gpt-4o"`) |
+| `id` | String | Model identifier (e.g. `"deepseek-v4-flash"`) |
 | `name` | String | Human-readable name |
 | `provider` | String | Provider slug (e.g. `"openai"`) |
 | `family` | String, nil | Model family (e.g. `"gpt"`, `"claude"`) |

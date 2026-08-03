@@ -25,7 +25,7 @@ response = provider.chat(
   model: "deepseek-v4-flash"
 )
 response.content
-# => "OK."
+# => "OK"
 ```
 
 Every provider in the gem registers itself with `Ask::Provider`, so you can look one up by slug instead of hardcoding a class. The OpenAI-compatible providers read their key from the matching `*_API_KEY` env var; the canonical providers (OpenAI, Anthropic, ...) resolve theirs through `Ask::Auth`.
@@ -206,7 +206,7 @@ opencode_go: { api_base: "https://opencode.ai/zen/go/v1", api_key_env: "OPENCODE
 ```ruby
 stream = provider.chat(
   [{ role: "user", content: "Tell me a story" }],
-  model: "gpt-4o",
+  model: "deepseek-v4-flash",
   stream: true
 ) do |chunk|
   print chunk.content
@@ -228,7 +228,7 @@ tools = [{
 
 response = provider.chat(
   [{ role: "user", content: "What's the weather in NYC?" }],
-  model: "gpt-4o",
+  model: "deepseek-v4-flash",
   tools: tools
 )
 # response.tool_call? => true
@@ -277,11 +277,11 @@ The gem automatically populates `Ask::ModelCatalog` when loaded:
 ```ruby
 require "ask-llm-providers"
 
-model = Ask::ModelCatalog.find("gpt-4o")
-model.provider           # => "openai"
-model.context_window     # => 128000
-model.max_output_tokens  # => 16384
-model.supports?(:vision) # => true
+model = Ask::ModelCatalog.find("deepseek-v4-flash")
+model.provider           # => "deepseek"
+model.context_window     # => 1000000
+model.max_output_tokens  # => 384000
+model.supports?(:vision) # => false
 ```
 
 Models are defined in JSON files under `lib/ask/llm/models/` with pricing, context windows, and capabilities. Short names are resolved via aliases:
