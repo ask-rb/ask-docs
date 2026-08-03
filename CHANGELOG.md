@@ -17,8 +17,10 @@
 ### Changed
 
 - App Server guide rewritten around what the protocol is for (embedding an
-  agent in your own product), with the same framing as the Codex app-server;
-  removed mentions of niche internal/ecosystem projects (zcode-telegram-bot,
+  agent in your own product), presented as a vendor-neutral standard — Codex
+  and OpenAI's SDKs appear only as examples of existing app-server
+  implementations/clients, not as the reason ask-app-server exists; removed
+  mentions of niche internal/ecosystem projects (zcode-telegram-bot,
   ai-sdk-provider-codex-app-server) and the "drop-in replacement" framing.
 
 ## [0.9.0] — 2026-08-03

@@ -8,12 +8,18 @@ nav_order: 12
 # ask-app-server
 
 **Expose an ask-rb agent as an app-server — a long-lived process that speaks
-the standard JSON-RPC app-server protocol over stdio.** The app-server
-protocol is the interface OpenAI's Codex app-server uses to power rich
-clients: the Codex VS Code extension ships on it, and OpenAI's official
-`openai-codex` (Python) and `@openai/codex-sdk` (TypeScript) SDKs drive
-agents through it. ask-app-server speaks the same protocol, so any client
-that can drive an app-server can drive your ask-rb agent.
+the standard app-server protocol over stdio.** The app-server protocol is a
+vendor-neutral interface for driving an agent as a service: JSON-RPC 2.0 over
+newline-delimited JSON, with sessions, streamed events, approvals, and turn
+lifecycle. Any client that implements the protocol can drive your agent — an
+IDE extension, a chat UI, a bot, a CI script — and the client never needs to
+know it's talking to Ruby.
+
+The same protocol is what several coding agents use behind their own
+app-servers (OpenAI's Codex app-server is one well-known implementation), and
+existing app-server clients and SDKs understand it out of the box.
+ask-app-server isn't an extension of any of them — it simply speaks the
+standard, so whatever you build on top of it is yours.
 
 ```ruby
 gem "ask-app-server"
@@ -24,8 +30,9 @@ gem "ask-app-server"
 Because the protocol is a standard, one server unlocks every client surface
 — you don't write a separate integration per client:
 
-- **IDE extensions and editors** — the same interface that powers the Codex
-  VS Code extension; connect an editor to your agent over stdio or a socket
+- **IDE extensions and editors** — stream `model.streaming` deltas and
+  `tool.updated` events into an editor surface over stdio or a socket, the
+  same way agent–editor integrations work today
 - **Custom chat UIs and desktop apps** — stream `model.streaming` deltas and
   `tool.updated` events into your own interface, with the full turn lifecycle
 - **Bots and assistants** — drive sessions programmatically from any runtime
@@ -88,11 +95,11 @@ its own UI.
 
 ## Clients
 
-Any app-server client can connect. That includes OpenAI's official Codex
-SDKs (`openai-codex` for Python, `@openai/codex-sdk` for TypeScript), which
-spawn an app-server subprocess and drive it over stdio — or write your own
-client in any language: the protocol is documented and the wire format is
-plain JSON-RPC.
+Any client that speaks the app-server protocol can connect — including
+existing app-server SDKs, such as OpenAI's `openai-codex` (Python) and
+`@openai/codex-sdk` (TypeScript), which spawn an app-server subprocess and
+drive it over stdio. Or write your own client in any language: the protocol
+is documented and the wire format is plain JSON-RPC.
 
 ## Configuration
 
