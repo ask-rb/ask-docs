@@ -1,6 +1,6 @@
 {
   "test": "first-agent-1",
-  "recorded_at": "2026-08-03T09:08:41Z",
+  "recorded_at": "2026-08-03T12:16:51Z",
   "interactions": [
     {
       "type": "provider",
@@ -143,9 +143,39 @@
           },
           {
             "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " Let"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " me"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " do"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": " that"
+          },
+          {
+            "content": null,
+            "tool_calls": null,
+            "finish_reason": null,
+            "thinking": "."
+          },
+          {
+            "content": null,
             "tool_calls": [
               {
-                "id": "call_00_WM36V1Y29Uve5AkfR7De5281",
+                "id": "call_00_Aqw46b6K9M6Mw0CZ8qVz7783",
                 "name": "bash",
                 "arguments": "",
                 "index": 0

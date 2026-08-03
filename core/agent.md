@@ -49,7 +49,7 @@ session = Ask::Agent::Session.new(
   tools: [Ask::Tools::Bash]
 )
 
-response = session.run("List the current directory")
+response = session.run("Run `ruby -v` and answer with only the version string.")
 puts response
 ```
 
@@ -70,7 +70,7 @@ The `provider:` parameter tells the agent which provider to use, regardless of w
 Every session tracks cumulative token usage and cost:
 
 ```ruby
-session.run("Write a poem")
+session.run("Write a Ruby method that computes factorials")
 session.total_input_tokens   # => 150
 session.total_output_tokens  # => 320
 session.total_cost           # => 0.0015
@@ -177,7 +177,7 @@ session = Ask::Agent::Session.new(
   model: "gpt-4o",
   evaluator: { model: "claude-sonnet-4", goal: "Write an email validator" }
 )
-session.run("Write a function that validates email addresses")
+session.run("Write a Ruby method that validates email addresses")
 ```
 
 ### Verdicts

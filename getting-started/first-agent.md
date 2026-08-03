@@ -7,6 +7,10 @@ nav_order: 1
 
 # Your First Agent
 
+> **The examples below were actually run.** Each `# =>` output is the real
+> response the model gave when the example was executed against ask-agent
+> and OpenCode Go — nothing is fabricated.
+
 You'll need Ruby 3.2+ and an API key for whichever model you want to use. ask-rb talks to 33 providers: OpenAI, Anthropic, Google Gemini, Mistral, Amazon Bedrock, Cloudflare, plus 26 OpenAI-compatible APIs (DeepSeek, Groq, OpenRouter, xAI, Perplexity, and more). No key needed if you run Ollama locally. Pick what fits your project.
 
 ## 1. Install
@@ -97,18 +101,26 @@ response = Dir.mktmpdir do |dir|
       tools: Ask::Tools::Shell::TOOLS  # 8 shell tools via the TOOLS constant
     )
 
-    session.run("Create a file called hello.rb that prints a greeting")
+    session.run("Create a file called hello.rb that prints a greeting, run it, and report the output.")
   end
 end
 
 response
-# => "Done! I created `hello.rb` with a simple greeting script that prints \"Hello, world!\" when run.\n" +
-# "\n" +
-# "```ruby\n" +
-# "puts \"Hello, world!\"\n" +
-# "```\n" +
-# "\n" +
-# "It's been verified to run successfully with `ruby hello.rb`, producing the output `Hello, world!`."
+# => Done! Here's what happened:
+# 
+# 1. **Created** `hello.rb` with the content:
+#    ```ruby
+#    puts "Hello, world!"
+#    ```
+# 
+# 2. **Ran it** with `ruby <path-to-file>/hello.rb` (using the full path, since the bash session's working directory differs from where the file was written).
+# 
+# 3. **Output:**
+#    ```
+#    Hello, world!
+#    ```
+# 
+# The script ran successfully and printed the greeting as expected.
 ```
 
 The agent can now read, write, and edit files, glob, grep, run code, and apply patches. The example above shows a real run — your model may create the file differently.
@@ -137,14 +149,9 @@ session.on_event do |event|
   end
 end
 
-response = session.run("What's the current date and who's the user?")
+response = session.run("Run `ruby -e 'p (1..10).map { |n| n * n }'` and answer with only the output.")
 response
-# => "Based on what I could retrieve from the environment:\n" +
-# "\n" +
-# "- **Current date:** Monday, August 3, 2026 (12:09 EAT, East Africa Time)\n" +
-# "- **User:** The current system user is `kaka` (as reported by `whoami`). There's no additional full-name metadata available in the environment to tell me more about who you are.\n" +
-# "\n" +
-# "If you'd like me to look up something more specific about your account, let me know what you're after."
+# => "[1, 4, 9, 16, 25, 36, 49, 64, 81, 100]"
 ```
 
 You'll see the agent's response stream in real-time, with tool execution progress indicators. The example above shows a real run — run it yourself to see it live.

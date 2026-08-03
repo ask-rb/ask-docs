@@ -308,9 +308,17 @@ module DocsExamples
   # ------------------------------------------------------------ formatting
 
   def self.format_value(value)
-    s = value.inspect
-    s = value.pretty_inspect if s.length > 100 && value.respond_to?(:pretty_inspect)
-    s
+    # Multi-line text (model responses, file contents) renders verbatim:
+    # real newlines, one `# ` per line, no `\n` escapes or quotes. A string
+    # with a single trailing newline ("2\n") keeps inspect so the newline
+    # stays visible. Other values keep inspect/pretty_inspect.
+    if value.is_a?(String) && value.count("\n") > 1
+      value
+    else
+      s = value.inspect
+      s = value.pretty_inspect if s.length > 100 && value.respond_to?(:pretty_inspect)
+      s
+    end
   end
 
   def self.slot_replacement(value)

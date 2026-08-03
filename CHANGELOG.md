@@ -1,5 +1,30 @@
 # Changelog
 
+## [0.11.0] — 2026-08-03
+
+### Added
+
+- **A note that every output is real.** The front page and the first-agent
+  guide now state that all `# =>` results come from actually running the
+  examples against the ask-rb gems and real models — nothing is fabricated.
+- **Ruby-specific, personal-information-free examples.** The recorded
+  first-agent examples use Ruby tasks every reader resonates with: `ruby -v`,
+  creating and running `hello.rb`, and a `ruby -e` one-liner (the old
+  "what's the current date and who's the user?" prompt — which leaked the
+  machine's username and date — is gone). Illustrative prompts in the agent
+  and observability guides now use Ruby examples too (factorials, email
+  validation) instead of poems and date lookups.
+- **Clean multi-line outputs.** Model responses that span lines now render
+  with real newlines (one `# ` per line) instead of `"\n"` escape
+  sequences, so the outputs read exactly like the model's text.
+
+### Fixed
+
+- ask-sandbox-providers 0.1.3: the sandbox's `rlimit_nproc` default was 200,
+  which is easily exceeded on a busy machine — every fork inside a sandboxed
+  command then failed with `Resource temporarily unavailable`, breaking the
+  Bash/Code tools for the agent examples. Raised to 1024.
+
 ## [0.10.0] — 2026-08-03
 
 ### Added

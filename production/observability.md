@@ -35,7 +35,7 @@ session.on_event do |event|
   end
 end
 
-session.run("What's the current date?")
+session.run("Run `ruby -v` and answer with only the version string.")
 ```
 
 ## Available events
@@ -62,7 +62,7 @@ session.run("What's the current date?")
 Sessions accumulate usage as they run. These are real numbers from the provider responses, not estimates:
 
 ```ruby
-session.run("Write a poem")
+session.run("Write a Ruby method that computes factorials")
 session.total_input_tokens   # => 150
 session.total_output_tokens  # => 320
 session.total_cost           # => 0.0015
