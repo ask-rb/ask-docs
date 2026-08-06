@@ -195,7 +195,7 @@ gem "ask-tools-shell"
 require "ask-tools-shell"
 
 Ask::Tools::Shell.all.map(&:name)
-# => ["bash", "read", "write", "edit", "glob", "grep", "code", "repl", "apply_patch"]
+# => ["bash", "read", "write", "edit", "glob", "grep", "code", "apply_patch", "repl"]
 
 Ask::Tools::Bash.new.call(command: "echo hello")
 Ask::Tools::Read.new.call(path: "/etc/hosts")
@@ -257,12 +257,25 @@ RLM (recursive language model) pattern: the model composes capabilities as
 code against a working environment instead of re-bootstrapping it each time:
 
 ```ruby
-repl = Ask::Tools::Repl.new
+require "ask-tools-shell"
 
-repl.call(code: 'require "json"; data = JSON.parse(%q({"a": 1}))')
-repl.call(code: "data['a'] + 1")        # => 2 — `data` still exists
-repl.call(code: "def double(x); x * 2; end")
-repl.call(code: "double(21)")           # => 42
+# One long-lived session, many calls: the kernel remembers everything
+# between them, like a real workspace.
+repl = Ask::Tools::Repl.new
+session = "docs-rlm"
+
+File.write("scores.csv", "name,score\nada,97\nturing,88\nhopper,99\nlin,95")
+
+# Build the working context once...
+repl.call(code: 'require "csv"', session: session)
+repl.call(code: 'rows = CSV.parse(File.read("scores.csv"), headers: true).map(&:to_h)', session: session)
+repl.call(code: 'def average(rows, key) = rows.sum { |r| r[key].to_f } / rows.size', session: session)
+
+# ...then keep working. Each call below is a single line of code —
+# `rows`, `average`, and the csv require are all still there.
+repl.call(code: 'rows.size', session: session).output[:result]                                        # => "4"
+repl.call(code: 'average(rows, "score")', session: session).output[:result]                           # => "94.75"
+repl.call(code: 'rows.count { |r| r["score"].to_f > average(rows, "score") }', session: session).output[:result] # => "3"
 ```
 
 - **Sessions** are named and shared process-wide (`session:` param, default
