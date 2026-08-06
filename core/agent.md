@@ -831,6 +831,66 @@ session = Ask::Agent::Session.new(
 - `Events::ToolCallRepaired` fires with `name`, `id`, `original_arguments`,
   and `corrected_arguments`.
 
+## Todos (Task List) (v0.32.0+)
+
+{: .new }
+> New in ask-agent 0.32.0
+
+The model maintains a live task list through a `todo_write` tool — the
+externalized plan it checks against each step, and the progress surface for
+humans:
+
+```ruby
+session = Ask::Agent::Session.new(model: "gpt-4o", tools: tools, todos: true)
+
+# The model writes and updates todos as it works:
+#   todo_write(action: "add", title: "Investigate the error")
+#   todo_write(action: "update", id: "todo_1", status: "completed")
+```
+
+- Actions: `add` (with `title`), `update` (with `id` and `status`/`title`),
+  `list`, `clear`; statuses `pending`, `in_progress`, `completed`,
+  `blocked`. Every result returns the full list, so one call both mutates
+  and shows state.
+- `Events::TodoUpdated` fires with the full list on every change — the
+  contract for live progress rendering in a UI.
+- The list rides checkpoints: `rollback!` and `fork` restore it, and
+  `Session.load` re-enables todos automatically.
+
+## Plan Mode (v0.32.0+)
+
+{: .new }
+> New in ask-agent 0.32.0
+
+A phase gate: the agent researches read-only, proposes a plan, and only
+executes after a human approves it — one decision instead of approving every
+tool call:
+
+```ruby
+session = Ask::Agent::Session.new(
+  model: "gpt-4o",
+  tools: tools,
+  plan_mode: true
+  # plan_mode: { read_only_tools: %w[read glob grep web_search] } — custom
+)
+
+session.run("Investigate the outage and propose a fix")
+# In plan mode, non-read-only tools return "Plan mode: only read-only tools..."
+# The model researches, then calls:
+#   exit_plan_mode(plan: "1. Check logs  2. Fix config  3. Restart")
+session.plan_queue.pending_actions   # the plan awaits a human decision
+session.plan_queue.approve(action.id)  # plan mode off → the agent executes
+session.plan_queue.reject(action.id)   # stays in plan mode, feedback injected
+```
+
+- The gate runs before user hooks and the approval policy — in plan mode,
+  mutating tools are blocked outright, never queued.
+- Approve turns plan mode off and a follow-up turn executes the plan
+  (`Events::PlanApproved`); reject keeps plan mode on and injects the
+  rejection into the conversation (`Events::PlanRejected`).
+- `Events::PlanProposed` fires when the plan is submitted. Default
+  read-only allowlist: `read`, `glob`, `grep`, `web_search`.
+
 ## Policies (Tool-Lifecycle Extensions)
 
 Policies are opt-in, replaceable implementations of the tool-lifecycle hook

@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.19.0] — 2026-08-06
+
+### Added
+
+- **Todos + Plan mode** (ask-agent 0.32.0). `Session.new(todos: true)`
+  injects a `todo_write` tool maintaining a session-scoped task list, with
+  `Events::TodoUpdated` for live rendering and checkpoint integration
+  (rollback/fork/load restore the list). `Session.new(plan_mode: true)`
+  starts a research phase — non-read-only tools are blocked until the model
+  submits a plan via `exit_plan_mode`, which a human approves (plan mode
+  off, agent executes) or rejects (stays in research with feedback).
+  Documented in [core/agent](/ask-docs/core/agent).
+
 ## [0.18.0] — 2026-08-06
 
 ### Added
