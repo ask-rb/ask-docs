@@ -640,11 +640,96 @@ session.on(Ask::Agent::Events::CompactionEnd) do |event|
 end
 ```
 
+## Tool Approval (Human-in-the-Loop)
+
+{: .new }
+> New in ask-agent 0.27.0
+
+Give humans a review point before side-effecting tools run. A tool declared
+`approval_required` (ask-tools 0.6.0) is queued instead of executed: the agent
+gets a pending result and continues, and the tool runs only after a human
+approves it. Built on the async-tools seam (`Ask::Result.pending` →
+`register_pending_tool` → `complete_pending_tool`), so the agent never blocks
+on an approval.
+
+### Declaring a tool
+
+```ruby
+# ask-tools
+class SendEmail < Ask::Tool
+  approval_required true
+  param :to, type: :string, desc: "Recipient", required: true
+  param :body, type: :string, desc: "Body", required: true
+
+  def execute(to:, body:)
+    Ask::Result.ok(data: "Email sent to #{to}")
+  end
+end
+```
+
+### Enabling approval on a session
+
+```ruby
+session = Ask::Agent::Session.new(
+  model: "gpt-4o",
+  tools: [SendEmail],
+  approval: true                       # defaults
+)
+
+# Rule-based classification + auto-approval rules:
+session = Ask::Agent::Session.new(
+  model: "gpt-4o",
+  tools: [SendEmail, Ping],
+  approval: {
+    require_approval: ["destroy", /^admin_/],   # extra tools to gate
+    auto_approve: { "ping" => true }            # user-enabled auto-approval
+  }
+)
+
+session.run("Email bob about the launch")
+```
+
+### Deciding later
+
+```ruby
+session.approval_queue.pending_actions   # [{id: 1, tool_name: "send_email", ...}]
+session.approval_queue.approve(1)        # executes the tool, feeds result back
+session.approval_queue.reject(1)         # injects "rejected by the user"
+session.approval_queue.approve_all
+session.approval_queue.reject_all
+```
+
+- **Approving** executes the real tool call and the follow-up turn voices the
+  outcome. **Rejecting** injects a "rejected by the user" message and the
+  agent adapts. Failed applies leave the action pending for retry.
+- **Auto-approval is a dual signal**: a tool marked `auto_approvable` AND a
+  user rule enabling it (`auto_approve: { "tool_name" => true }`). Nothing is
+  silently applied past a manual (non-auto-approvable) gate — eligible actions
+  drain in id order with a single-flight guard (no double-apply).
+
+### Standalone hook
+
+`Ask::Agent::Extensions::ApprovalPolicy` works as a plain `before_tool` hook
+for full control:
+
+```ruby
+queue = Ask::Agent::ApprovalQueue.new
+policy = Ask::Agent::Extensions::ApprovalPolicy.new(
+  queue: queue, tools: [SendEmail], require_approval: :all
+)
+session = Ask::Agent::Session.new(
+  model: "gpt-4o",
+  tools: [SendEmail],
+  hooks: { before_tool: [policy.method(:before_tool_call)] }
+)
+```
+
 ## Extensions
 
 - **Permissions** — Enforce access modes (`:full_access`, `:read_only`, `:ask_before_changes`) on tool calls
 - **RateLimiter** — Prevent runaway tool calls
 - **AuditLog** — Immutable, append-only tool call log
+- **ApprovalPolicy** — Queue approval-required tool calls into an `ApprovalQueue`
 
 ## Scheduler (Recurring Agent Runs)
 

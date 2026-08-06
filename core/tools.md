@@ -60,6 +60,37 @@ Subclass `Ask::Tool` to define a tool that an LLM can call.
 - **`Ask::Tool::Halt`** — Raise inside `execute` to stop the conversation loop.
 - **`StandardError`** — Caught by `call` and returned as error `Ask::Result`.
 
+### Human Approval
+
+{: .new }
+> New in ask-tools 0.6.0
+
+Declare that a tool requires human approval before it runs. Combined with an
+`Ask::Agent::ApprovalQueue` (ask-agent 0.27.0), calls to the tool are queued
+instead of executed — the agent gets a pending result and continues, and the
+tool runs only after a human approves it.
+
+```ruby
+class SendEmail < Ask::Tool
+  approval_required true
+  def execute(to:, body:) ... end
+end
+
+class Ping < Ask::Tool
+  approval_required true
+  auto_approvable true   # may be auto-approved when a user rule enables it
+  def execute ... end
+end
+```
+
+- `approval_required` — gates the tool behind human approval.
+- `auto_approvable` — per-action verdict only; the session's user rule is
+  still the binding gate (dual signal).
+- Instance predicates: `tool.approval_required?`, `tool.auto_approvable?`.
+- Flags default to false and are **not** inherited by subclasses.
+
+See [The Agent Loop — Tool Approval](agent.md#tool-approval-human-in-the-loop).
+
 ---
 
 ## `Ask::Result` — Standardized Return Value
