@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.17.1] — 2026-08-06
+
+### Fixed
+
+- **Session load/save tool round-trip** (ask-agent 0.30.1). Persisted
+  session metadata now contains only user-supplied tools — the framework's
+  injected `load_skill` tool is re-created per session instead of being
+  stored (and failing to auto-instantiate) on load. Tool-restore failures
+  on load warn explicitly instead of failing the whole load or vanishing
+  silently.
+
 ## [0.17.0] — 2026-08-06
 
 ### Added
