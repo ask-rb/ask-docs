@@ -132,7 +132,7 @@ session = Ask::Agent::Session.new(
 |---|---|
 | `:active_record` | Writes to an `ask_audit_logs` table. Auto-creates the table on first write. For Rails: run `rails generate ask:install` for a proper migration. |
 | `:file` | Appends JSON lines to a file. Good for development. |
-| Custom | Any object implementing `#write(entry)` — see `Ask::Agent::Extensions::AuditLog::Adapter`. |
+| Custom | Any object implementing `#write(entry)` — see `Ask::Agent::Policies::AuditLog::Adapter`. |
 
 ### Logged Events
 
@@ -709,12 +709,12 @@ session.approval_queue.reject_all
 
 ### Standalone hook
 
-`Ask::Agent::Extensions::ApprovalPolicy` works as a plain `before_tool` hook
+`Ask::Agent::Policies::ApprovalPolicy` works as a plain `before_tool` hook
 for full control:
 
 ```ruby
 queue = Ask::Agent::ApprovalQueue.new
-policy = Ask::Agent::Extensions::ApprovalPolicy.new(
+policy = Ask::Agent::Policies::ApprovalPolicy.new(
   queue: queue, tools: [SendEmail], require_approval: :all
 )
 session = Ask::Agent::Session.new(
@@ -724,7 +724,16 @@ session = Ask::Agent::Session.new(
 )
 ```
 
-## Extensions
+## Policies (Tool-Lifecycle Extensions)
+
+Policies are opt-in, replaceable implementations of the tool-lifecycle hook
+seam (`before_tool` / `after_tool`). The agent loop runs without them, and
+you can swap in your own classes with the same signatures. Core mechanisms
+stay on `Session` — the approval queue, the `:pending` result status, and
+the `approval: true` option are core; `Policies::ApprovalPolicy` is the
+reference classification policy wired on top of them.
+
+Built-in policies (under `Ask::Agent::Policies`):
 
 - **Permissions** — Enforce access modes (`:full_access`, `:read_only`, `:ask_before_changes`) on tool calls
 - **RateLimiter** — Prevent runaway tool calls

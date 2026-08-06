@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.15.0] — 2026-08-06
+
+### Changed
+
+- **`Ask::Agent::Extensions` → `Ask::Agent::Policies`** (ask-agent 0.28.0).
+  The tool-lifecycle policies (ApprovalPolicy, Permissions, RateLimiter,
+  AuditLog) are renamed to match their seam, like middleware/stream
+  transforms/persistence. The agent guide now explains the taxonomy:
+  policies are opt-in, replaceable implementations of the before/after tool
+  hook seam; core mechanisms (ApprovalQueue, `:pending` results,
+  `approval: true`) stay on Session with `Policies::ApprovalPolicy` as the
+  reference policy over them. Update references:
+  `Ask::Agent::Extensions::X` → `Ask::Agent::Policies::X`.
+
 ## [0.14.0] — 2026-08-05
 
 ### Added
