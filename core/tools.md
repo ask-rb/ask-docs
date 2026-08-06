@@ -183,7 +183,7 @@ end
 
 ## ask-tools-shell
 
-**Shell, filesystem, and code execution tools.** Ships 8 tools every agent needs: Bash, Read, Write, Edit, Glob, Grep, Code, and ApplyPatch.
+**Shell, filesystem, and code execution tools.** Ships 9 tools every agent needs: Bash, Read, Write, Edit, Glob, Grep, Code, Repl, and ApplyPatch.
 
 ```ruby
 gem "ask-tools-shell"
@@ -195,14 +195,14 @@ gem "ask-tools-shell"
 require "ask-tools-shell"
 
 Ask::Tools::Shell.all.map(&:name)
-# => ["bash", "read", "write", "edit", "glob", "grep", "code", "apply_patch"]
+# => ["bash", "read", "write", "edit", "glob", "grep", "code", "repl", "apply_patch"]
 
 Ask::Tools::Bash.new.call(command: "echo hello")
 Ask::Tools::Read.new.call(path: "/etc/hosts")
 Ask::Tools::Code.new.call(code: "puts RUBY_VERSION")
 ```
 
-The tool classes live directly under `Ask::Tools` (`Ask::Tools::Bash`, `Ask::Tools::Read`, ...). The `Ask::Tools::Shell` module is the registry: `Shell::TOOLS` lists all eight classes and `Shell.all` returns instances.
+The tool classes live directly under `Ask::Tools` (`Ask::Tools::Bash`, `Ask::Tools::Read`, ...). The `Ask::Tools::Shell` module is the registry: `Shell::TOOLS` lists all nine classes and `Shell.all` returns instances.
 
 ### Sandbox Configuration (v0.2.0+)
 
@@ -245,7 +245,42 @@ of `Ask::Result.ok`.
 | **Glob** | `pattern` (req), `path` | Find files matching glob. Max 1000 results, sorted newest first |
 | **Grep** | `pattern` (req), `path`, `include` | Regex search in files. Max 100 matches, 500 chars/line. Skips .git, node_modules, etc. |
 | **Code** | `code` (req) | Execute Ruby in a subprocess. Uses available gems, passes env through |
+| **Repl** | `code` (req), `session`, `reset` | Evaluate Ruby in a persistent session. State survives across calls — see below |
 | **ApplyPatch** | `patchText` (req) | Edit files using a unified diff format. Precise, multi-file edits in one call |
+
+### Repl — Persistent Ruby Sessions (v0.4.0+)
+
+Where `Code` spawns a fresh `ruby -e` per call, `Repl` keeps a long-lived
+plain-ruby kernel subprocess and evaluates every snippet into the same
+binding. Locals, `require`s, and defined methods survive between calls, so an
+agent composes capabilities as code against a working environment instead of
+re-bootstrapping it each time:
+
+```ruby
+repl = Ask::Tools::Repl.new
+
+repl.call(code: 'require "json"; data = JSON.parse(%q({"a": 1}))')
+repl.call(code: "data['a'] + 1")        # => 2 — `data` still exists
+repl.call(code: "def double(x); x * 2; end")
+repl.call(code: "double(21)")           # => 42
+```
+
+- **Sessions** are named and shared process-wide (`session:` param, default
+  `"default"`) — any tool instance reaching the same name shares state.
+  Sessions are isolated subprocesses, so a crash in one cannot affect another.
+- **`reset: true`** discards a session's state before evaluating; use it when
+  a session is corrupted or you want a clean slate. `Repl.close_session(name)`
+  and `Repl.close_all` close sessions explicitly (kernels also clean up at
+  exit).
+- **Timeouts** — a single evaluation is capped at `Repl.eval_timeout` (default
+  30s). A timeout kills the session (state is lost) and the next call respawns
+  it fresh. Idle sessions recycle after `Repl.idle_timeout` (default 300s).
+  If a session dies unexpectedly, the next call respawns it and retries once
+  transparently.
+- **Environment** — the kernel is plain ruby: bundler env vars (RUBYOPT,
+  GEM_HOME, ...) are removed at spawn, so it sees globally installed gems
+  regardless of the agent's own Gemfile. Unlike `Bash`/`Code`, it is not
+  sandboxed — treat it as durable control environment, not a security boundary.
 
 ### Links
 

@@ -53,7 +53,7 @@ Don't add gems you don't need. `ask-agent` alone gets you a working agent; every
 | Gem | Purpose |
 |---|---|
 | **[ask-tools](https://github.com/ask-rb/ask-tools)** | The tool framework: `Ask::Tool`, `Ask::Result`, registry. No executable tools inside. [Guide](/ask-docs/core/tools) |
-| **[ask-tools-shell](https://github.com/ask-rb/ask-tools-shell)** | Eight shell and file tools: Bash, Read, Write, Edit, Glob, Grep, Code, ApplyPatch. [Guide](/ask-docs/core/tools) |
+| **[ask-tools-shell](https://github.com/ask-rb/ask-tools-shell)** | Nine shell and file tools: Bash, Read, Write, Edit, Glob, Grep, Code, Repl (persistent Ruby sessions), ApplyPatch. [Guide](/ask-docs/core/tools) |
 | **[ask-web-search](https://github.com/ask-rb/ask-web-search)** | `Ask::Tools::WebSearch`, a SearXNG-backed search tool. [Guide](/ask-docs/core/web-search) |
 
 ## Agent
