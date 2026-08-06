@@ -724,6 +724,39 @@ session = Ask::Agent::Session.new(
 )
 ```
 
+## Tool-Call Repair (v0.29.0+)
+
+Models occasionally emit tool calls that can't execute: unparseable JSON
+arguments, or a tool name that doesn't exist. Without repair, the call fails
+and the agent burns a turn seeing the error. With repair, the loop asks the
+model to re-emit the malformed calls corrected — one internal LLM
+round-trip — and executes the corrected versions:
+
+```ruby
+# Built-in repair prompt
+session = Ask::Agent::Session.new(model: "gpt-4o", tools: tools, tool_call_repair: true)
+
+# Custom repair function — receives (chat, calls, tools); return a hash of
+# corrections keyed by the original call ids
+session = Ask::Agent::Session.new(
+  model: "gpt-4o", tools: tools,
+  tool_call_repair: ->(chat, calls, tools) {
+    { calls.keys.first => Ask::Agent::ToolCallInfo.new(
+        id: calls.keys.first, name: "bash", arguments: "{}"
+      ) }
+  }
+)
+```
+
+- Corrections keep the **original call ids**, so tool results stay consistent
+  with the conversation history; the internal repair exchange is stripped
+  from history.
+- Calls the model cannot correct are dropped — it saw them in the repair
+  prompt. Repair is best-effort: a failing round-trip drops the malformed
+  calls instead of failing the turn.
+- `Events::ToolCallRepaired` fires with `name`, `id`, `original_arguments`,
+  and `corrected_arguments`.
+
 ## Policies (Tool-Lifecycle Extensions)
 
 Policies are opt-in, replaceable implementations of the tool-lifecycle hook

@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.16.0] — 2026-08-06
+
+### Added
+
+- **Tool-call repair** (ask-agent 0.29.0). Malformed tool calls (unparseable
+  JSON arguments, unknown tool names) now get one internal LLM round-trip to
+  be re-emitted corrected before execution — no more wasted turns on
+  unexecutable calls. `Session.new(tool_call_repair: true)` enables the
+  built-in repair prompt; a callable provides full control. Corrections keep
+  original call ids, the repair exchange is stripped from history, and
+  `Events::ToolCallRepaired` fires with before/after arguments. Documented
+  in [core/agent](/ask-docs/core/agent).
+
 ## [0.15.0] — 2026-08-06
 
 ### Changed
