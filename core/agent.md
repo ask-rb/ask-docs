@@ -727,6 +727,42 @@ session = Ask::Agent::Session.new(
 session.run("Email bob about the launch")
 ```
 
+### Permission Rules (v0.31.0+)
+
+{: .new }
+> New in ask-agent 0.31.0
+
+Persisted `allow` / `ask` / `deny` patterns classify every tool call before
+it executes or prompts — "approve once, remember the pattern":
+
+```ruby
+rules = Ask::Agent::Policies::PermissionRules.new do |r|
+  r.allow :bash, /^git (pull|push|status)/   # these run without asking
+  r.ask   :bash, /^rm -rf/                   # always prompt for destructive
+  r.deny  :write, %r{/\.env(\.local)?$}      # never touch secrets
+  r.ask   :destroy, :all
+end
+
+session = Ask::Agent::Session.new(
+  model: "gpt-4o",
+  tools: [Bash, Write, Destroy],
+  approval: { rules: rules }
+)
+```
+
+- Tool patterns: exact name (`"bash"`), `Symbol`, `Regexp`, or `:all`.
+  Argument patterns: `Regexp`, substring, or omitted for any arguments
+  (hashes are matched as JSON). First matching rule wins, in declaration
+  order.
+- Rules take precedence over tool declarations: `:deny` blocks outright,
+  `:allow` proceeds without the queue (even for `approval_required` tools),
+  `:ask` queues regardless of `auto_approvable`.
+- **Dangerous-rule guard**: an unrestricted `:allow` on a code-executing
+  tool (`bash`, `code`, `repl`, or `:all`) is downgraded to `:ask` — so
+  "approve once" can't become "approve anything". Opt out explicitly with
+  `PermissionRules.new(auto_allow_dangerous: true) { ... }`; `rules.dangerous_rules`
+  lists what the guard caught.
+
 ### Deciding later
 
 ```ruby

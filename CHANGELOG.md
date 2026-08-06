@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.18.0] — 2026-08-06
+
+### Added
+
+- **Permission rules** (ask-agent 0.31.0). `Policies::PermissionRules` —
+  persisted `allow`/`ask`/`deny` patterns for tool calls, wired via
+  `Session.new(approval: { rules: rules })`. First match wins; rules
+  override tool declarations; unrestricted `:allow` rules on code-executing
+  tools (bash/code/repl) downgrade to `:ask` unless
+  `auto_allow_dangerous: true`. Documented under Tool Approval in
+  [core/agent](/ask-docs/core/agent).
+
 ## [0.17.1] — 2026-08-06
 
 ### Fixed
