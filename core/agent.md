@@ -335,6 +335,44 @@ restored.run("What else should I check?")  # picks up where it left off
 A session is persisted after every LLM turn and all its metadata (model, tools,
 turn count, token usage) is preserved across loads.
 
+### Checkpoints: fork, rollback, resume (v0.30.0+)
+
+With `checkpoints: true`, every turn is snapshotted as a versioned
+checkpoint — and the session gains time travel:
+
+```ruby
+session = Ask::Agent::Session.new(
+  model: "deepseek-v4-flash",
+  tools: [Ask::Tools::Bash],
+  state: store,          # any adapter — see backends above
+  checkpoints: true
+)
+
+session.run("Investigate the error")
+session.checkpoint_history          # => [1, 2, 3, ...] seqs, oldest first
+
+# Rewind to before the bad turn — later checkpoints are kept, so the
+# session can roll forward again
+session.rollback!(turn: 1)
+
+# Branch from a checkpoint: a new session with its own history and
+# checkpoint chain; continue it with run
+forked = session.fork(at_seq: 1)
+forked.run("Try a different approach")
+```
+
+- **`rollback!(seq: / turn:)`** restores messages and turn count from the
+  snapshot; `fork(at_seq: / at_turn:)` returns a new session (same model and
+  tools) diverging from that point.
+- **`load_checkpoint(seq:)`** inspects a snapshot; `Session.load` re-enables
+  checkpointing automatically when the stored session has checkpoints.
+- **No provider mandate** — checkpoints need only the minimal KV contract
+  (`get`/`set`/`delete`), so they work with every backend above and with
+  custom adapters. No `state:` means in-memory as before; add `checkpoints:
+  true` on top of whatever store you already chose.
+- `Events::SessionRolledBack` / `Events::SessionForked` fire on rollback and
+  fork; `Session#delete` removes checkpoint keys too.
+
 ### Backward Compatibility
 
 The old `persistence:` keyword still works but is deprecated:

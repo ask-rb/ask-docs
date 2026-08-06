@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.17.0] — 2026-08-06
+
+### Added
+
+- **Session checkpoints: fork, rollback, resume** (ask-agent 0.30.0).
+  `Session.new(state: store, checkpoints: true)` snapshots every turn as a
+  versioned checkpoint; `rollback!(seq:/turn:)` rewinds while keeping later
+  checkpoints (time travel), `fork(at_seq:/at_turn:)` branches into a new
+  session with its own checkpoint chain, and `Session.load` re-enables
+  checkpointing automatically. Works on any state adapter — only the
+  minimal KV contract is needed, no provider mandate. Documented in
+  [core/agent](/ask-docs/core/agent).
+
 ## [0.16.0] — 2026-08-06
 
 ### Added
