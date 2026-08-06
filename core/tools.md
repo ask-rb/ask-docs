@@ -252,9 +252,9 @@ of `Ask::Result.ok`.
 
 Where `Code` spawns a fresh `ruby -e` per call, `Repl` keeps a long-lived
 plain-ruby kernel subprocess and evaluates every snippet into the same
-binding. Locals, `require`s, and defined methods survive between calls, so an
-agent composes capabilities as code against a working environment instead of
-re-bootstrapping it each time:
+binding. Locals, `require`s, and defined methods survive between calls — the
+RLM (recursive language model) pattern: the model composes capabilities as
+code against a working environment instead of re-bootstrapping it each time:
 
 ```ruby
 repl = Ask::Tools::Repl.new
@@ -284,12 +284,13 @@ repl.call(code: "double(21)")           # => 42
 
 ### Code vs Repl — which one to use
 
-`Code` and `Repl` both run Ruby, but they are built for different jobs.
-Think of `Code` as a notepad you throw away after each note, and `Repl` as a
-workspace you keep coming back to.
+`Code` and `Repl` both run Ruby (and only Ruby), but they are built for
+different jobs. Think of `Code` as a notepad you throw away after each note,
+and `Repl` as a workspace you keep coming back to.
 
 | | Code | Repl |
 |---|---|---|
+| Language | Ruby only | Ruby only |
 | Lifetime | One call, then the process is gone | The session stays alive between calls |
 | State | None — every call starts fresh | Variables, requires, and methods persist |
 | Safety | Runs in the sandbox (Docker/Daytona/Cloudflare available) | Not sandboxed — run only code you trust |

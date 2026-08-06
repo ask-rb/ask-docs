@@ -4,7 +4,8 @@
 
 ### Added
 
-- **`Repl` tool: persistent Ruby sessions** (ask-tools-shell 0.4.0). A
+- **`Repl` tool: persistent Ruby sessions** (ask-tools-shell 0.4.0). The
+  first RLM-style (recursive language model) tool in the ecosystem: a
   long-lived plain-ruby kernel subprocess evaluates code into a shared
   binding, so variables, requires, and defined methods survive across calls
   — the model keeps a working environment instead of starting from scratch
