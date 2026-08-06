@@ -282,6 +282,50 @@ repl.call(code: "double(21)")           # => 42
   regardless of the agent's own Gemfile. Unlike `Bash`/`Code`, it is not
   sandboxed — treat it as durable control environment, not a security boundary.
 
+### Code vs Repl — which one to use
+
+`Code` and `Repl` both run Ruby, but they are built for different jobs.
+Think of `Code` as a notepad you throw away after each note, and `Repl` as a
+workspace you keep coming back to.
+
+| | Code | Repl |
+|---|---|---|
+| Lifetime | One call, then the process is gone | The session stays alive between calls |
+| State | None — every call starts fresh | Variables, requires, and methods persist |
+| Safety | Runs in the sandbox (Docker/Daytona/Cloudflare available) | Not sandboxed — run only code you trust |
+| Result | stdout, stderr, exit code | The value of the last expression, plus stdout/stderr |
+
+**Use `Code` when:**
+
+- You need a single snippet and don't care what happens next.
+- The code is untrusted — a user's input, something pasted from a webpage.
+  The sandbox is the safety boundary.
+- You want a guaranteed clean environment, with no state leaking in from an
+  earlier run.
+
+**Use `Repl` when:**
+
+- You're doing a multi-step job: load data once, define helpers once, then
+  keep working with them — no re-bootstrapping on every step.
+- You want to see the value of the last expression, not just printed output.
+- You're iterating on the same environment: tweak a function, test it,
+  tweak again.
+
+**Same task, both tools** — counting active users from a JSON file:
+
+```ruby
+# Code — one shot, state is gone afterwards
+Ask::Tools::Code.new.call(
+  code: 'require "json"; JSON.parse(File.read("users.json")).count { |u| u["active"] }'
+)
+
+# Repl — build it up, keep it around
+repl = Ask::Tools::Repl.new
+repl.call(code: 'require "json"', session: "users")
+repl.call(code: 'users = JSON.parse(File.read("users.json"))', session: "users")
+repl.call(code: 'users.count { |u| u["active"] }', session: "users")
+```
+
 ### Links
 
 - **Source:** [github.com/ask-rb/ask-tools-shell](https://github.com/ask-rb/ask-tools-shell)
