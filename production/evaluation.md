@@ -164,6 +164,7 @@ against a variant (a changed prompt, a different model), and compare —
 like fixtures, except the items are prompts/tasks fed to a live agent, and
 the point is diffing how different configurations perform:
 
+<!-- docs-example: not-verified -->
 ```ruby
 require "ask-eval"
 
