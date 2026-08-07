@@ -935,6 +935,38 @@ session.run("Deploy the fix")
   your agent operates on, not code-specific data. Vector search (ask-rag)
   can slot in behind the same interface later, at scale.
 
+### Learning (v0.35.0+)
+
+{: .new }
+> New in ask-agent 0.35.0
+
+With `memory_learning: true`, the session **extracts durable facts
+automatically** when it ends — the model no longer has to remember to call
+`memory_write`:
+
+```ruby
+session = Ask::Agent::Session.new(
+  model: "deepseek-v4-flash",
+  memory: memory,
+  memory_learning: true   # requires memory:
+)
+
+session.run("Help me set up the deploy pipeline")
+# When the session ends, a MemoryExtractor reads the transcript, asks the
+# model for durable facts ("deploy window is Tuesday", "the team uses
+# kamal"), dedupes them against the store, and writes them with provenance.
+```
+
+- **How it works**: `MemoryExtractor` sends the memory-relevant messages
+  (user + assistant, capped — oldest dropped) to the model with a
+  configurable structured-output prompt; the returned facts are deduped
+  (exact + near-duplicate via search), stamped `extracted: true` with the
+  source session id, and capped at `max_candidates` (default 10).
+- **Best-effort**: unparseable responses and failed calls yield an empty
+  result — extraction never breaks the session.
+- **Bounded memory**: `Memory.new(max_entries: 200)` prunes the oldest
+  entries once a namespace exceeds the cap.
+
 ## Policies (Tool-Lifecycle Extensions)
 
 Policies are opt-in, replaceable implementations of the tool-lifecycle hook

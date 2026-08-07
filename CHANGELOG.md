@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.21.0] — 2026-08-07
+
+### Added
+
+- **Memory learning** (ask-agent 0.35.0). `Session.new(memory:, memory_learning: true)` extracts durable facts from the transcript automatically at session end via `MemoryExtractor` — deduped, provenance-stamped, capped. `Memory.new(max_entries:)` bounds a namespace. Documented under Durable Memory in [core/agent](/ask-docs/core/agent).
+
 ## [0.20.0] — 2026-08-06
 
 ### Added
