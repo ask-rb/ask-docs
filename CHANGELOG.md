@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.22.0] — 2026-08-07
+
+### Added
+
+- **Large-output offloading** (ask-agent 0.36.0). `Session.new(offload_large_outputs: true)` stores tool messages above a size threshold in a state-backed `ToolOutputStore`; the transcript keeps a preview + reference retrievable via the injected `output_read` tool. Documented in [core/agent](/ask-docs/core/agent).
+
 ## [0.21.0] — 2026-08-07
 
 ### Added

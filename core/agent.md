@@ -831,6 +831,39 @@ session = Ask::Agent::Session.new(
 - `Events::ToolCallRepaired` fires with `name`, `id`, `original_arguments`,
   and `corrected_arguments`.
 
+## Large-Output Offloading (v0.36.0+)
+
+{: .new }
+> New in ask-agent 0.36.0
+
+Large tool results (giant greps, diffs, stack traces) never bloat the
+transcript: they are stored separately, and the conversation keeps a short
+preview plus a reference the model can retrieve on demand:
+
+```ruby
+session = Ask::Agent::Session.new(
+  model: "deepseek-v4-flash",
+  tools: tools,
+  offload_large_outputs: true        # threshold 4000 chars; or an Integer
+)
+
+# Tool returns 50KB → transcript gets:
+#   "line xxxx...
+#    ...(output truncated: 52400 chars — full output via output_read id: \"call_123\")"
+# The model calls output_read(id: "call_123") when it actually needs the
+# full output; the web UI reads the same store.
+```
+
+- **Where it lives**: `Ask::Agent::ToolOutputStore` — pure KV on the same
+  `Ask::State::Adapter` as sessions, checkpoints, and memory
+  (`output:<session_id>:<call_id>` + JSON index), so every backend works
+  and the web UI can fetch from the store it already reads. Without a
+  `state:`, an in-process store still keeps the transcript clean.
+- **`output_read` is exempt** from offloading — its contract is to bring
+  the full output into context when the model asks for it.
+- Stored outputs are capped (`max_size:`, default 50,000 chars) and cleaned
+  up by `Session#delete`.
+
 ## Todos (Task List) (v0.32.0+)
 
 {: .new }
