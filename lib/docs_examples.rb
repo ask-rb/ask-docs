@@ -44,6 +44,12 @@
 #   FILE=core/tools.md ruby -Ilib lib/docs_examples.rb verify
 #
 # Gems are found as sibling repos (../ask-*) unless ASK_GEMS_ROOT is set.
+#
+# Verification contract: the committed `# =>` values describe RELEASED
+# behavior. CI runs verify with ASK_GEMS_ROOT pointing nowhere, so examples
+# execute against the published gems from the Gemfile. A local verify
+# against newer sibling gems may report stale outputs until the gems are
+# released and the values regenerated.
 
 require "pp"
 require "rbconfig"
