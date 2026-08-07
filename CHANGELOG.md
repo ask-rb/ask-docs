@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.25.0] — 2026-08-07
+
+### Added
+
+- **Datasets & experiment runs** (ask-eval 0.4.0). `Ask::Eval::Dataset` pins fixed inputs (persistable to JSON like fixtures); `Ask::Eval::Experiment` runs a dataset against a variant with an optional scorer and compares runs side-by-side (per-item deltas + verdict). Documented in [production/evaluation](/ask-docs/production/evaluation).
+
 ## [0.24.0] — 2026-08-07
 
 ### Added

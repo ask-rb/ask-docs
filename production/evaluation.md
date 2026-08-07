@@ -154,6 +154,57 @@ summary = runner.summary
 # => { total: 3, passed: 2, failed: 1, results: [...] }
 ```
 
+## Datasets & Experiment Runs (v0.4.0+)
+
+{: .new }
+> New in ask-eval 0.4.0
+
+The A/B-testing loop for agents. Pin a fixed set of inputs, run them
+against a variant (a changed prompt, a different model), and compare —
+like fixtures, except the items are prompts/tasks fed to a live agent, and
+the point is diffing how different configurations perform:
+
+```ruby
+require "ask-eval"
+
+# Pin the inputs once (persistable to JSON like fixtures)
+dataset = Ask::Eval::Dataset.new("support-cases")
+dataset.add(input: "The API returns 401 on stale tokens — how do I fix my auth flow?",
+            expected: "Rotate the token, then retry", tags: ["auth"])
+dataset.add(input: "Summarize this thread and suggest next steps", tags: ["support"])
+dataset.save("support-cases.json")
+# dataset = Ask::Eval::Dataset.load("support-cases.json")
+
+# Run the same dataset against two variants of your agent
+run_a = dataset.experiment(
+  runner: ->(input) { agent(input, system_prompt: OLD_PROMPT) },
+  scorer: ->(input:, output:, expected:) { output == expected ? 1.0 : 0.0 }
+).run
+run_b = dataset.experiment(
+  runner: ->(input) { agent(input, system_prompt: NEW_PROMPT) },
+  scorer: ->(input:, output:, expected:) { output == expected ? 1.0 : 0.0 }
+).run
+
+run_a.summary
+# => { total: 2, passed: 1, failed: 1, avg_score: 0.5, total_duration_ms: 1234 }
+
+run_a.compare(run_b)
+# => { deltas: [{ item_id:, input:, a: {output:, score:}, b: {...}, delta: 0.5 }],
+#      a: summary, b: summary, verdict: "b" }   # "a" | "b" | "tie"
+```
+
+- **Dataset items** carry `input` (required), plus optional `expected`
+  output, `context`, `tags`, and `metadata`. `Dataset.save` / `Dataset.load`
+  persist to JSON files.
+- **Experiments** run every item through a `runner:` callable (input →
+  output); runner errors are captured per item and the run continues. The
+  optional `scorer:` callable receives `(input:, output:, expected:)` and
+  returns a 0..1 score.
+- **`compare`** matches items by id across runs, so partial overlaps still
+  compare; the verdict is the higher average score ("tie" when equal).
+- Bring your own agent wiring in the runner — ask-eval stays decoupled
+  from ask-agent.
+
 ## CI Integration
 
 ### JUnit XML
