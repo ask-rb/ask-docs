@@ -17,14 +17,30 @@ npm install ask-ui-kit
 
 ### Rails (importmap)
 
+The canonical Rails integration is **vendoring the built bundle** into the
+app and pinning it with a cache-buster — no CDN, no node at runtime:
+
 ```ruby
 # config/importmap.rb
-pin "ask-ui-kit", to: "https://unpkg.com/ask-ui-kit@0.3.0/dist/index.js"
+pin "ask-ui-kit", to: "/ask-ui-kit.js?v=0.4.0"
 ```
 
 ```erb
 <%= javascript_import_module_tag "ask-ui-kit" %>
 ```
+
+The bundle lives at `public/ask-ui-kit.js` and is refreshed with the
+provided vendor script (builds the kit, copies `dist/index.js` into each
+consumer's `public/`, and bumps the `?v=` pin):
+
+```sh
+# from the ask-ui-kit repo
+node script/vendor.mjs [path/to/app ...]   # defaults: myrrlabs, kawibot
+```
+
+Apps talk to components through the documented contract only: data in as
+HTML attributes, interactions out as `CustomEvent`s (`bubbles + composed`).
+A tiny Stimulus controller routes the events (see [Architecture](#architecture)).
 
 ### Svelte
 
@@ -42,7 +58,7 @@ npm install ask-ui-kit
 
 ```html
 <script type="module">
-  import "https://unpkg.com/ask-ui-kit@0.3.0/dist/index.js";
+  import "https://unpkg.com/ask-ui-kit@0.4.0/dist/index.js";
 </script>
 ```
 
@@ -356,6 +372,40 @@ A sidebar conversation list with open/closed sections, search, and active highli
 
 ---
 
+### `<ask-sidebar>`
+
+A hierarchical conversation sidebar: collapsible groups (e.g. "Sites",
+"Chats"), site nodes nesting their conversations, a New-chat button, and
+active highlighting. Collapse/expand state persists across navigations via
+`sessionStorage` (keyed by `storageKey`).
+
+| Attribute | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `groups` | `string` | `""` | JSON array of `{id, label, collapsed?, nodes: SidebarNode[]}` |
+| `activeId` | `string` | `""` | ID of the currently active conversation |
+| `newChatLabel` | `string` | `"New chat"` | Label for the New-chat button |
+| `storageKey` | `string` | `"ask-sidebar"` | `sessionStorage` key for collapse state |
+
+A `SidebarNode` is `{id, label, sub?, kind?: "site" \| "chat", children?: SidebarNode[]}` — nodes with `children` render as expandable sites.
+
+| Event | Detail | Description |
+|-------|--------|-------------|
+| `ask-select` | `{ id }` | Fired when a conversation is selected |
+| `ask-new-chat` | — | Fired when the New-chat button is clicked |
+
+```html
+<ask-sidebar
+  groups='[{"id":"sites","label":"Sites","nodes":[
+    {"id":"site-1","label":"Ruby on Rails","kind":"site","sub":"rubyonrails.org","children":[
+      {"id":"chat-1","label":"Migrations help","sub":"5m ago"}
+    ]}
+  ]}]'
+  activeId="chat-1">
+</ask-sidebar>
+```
+
+---
+
 ### `<ask-voice-input>`
 
 A microphone button with recording animation and elapsed timer.
@@ -414,44 +464,69 @@ scrollBtn.addEventListener("ask-scroll", () => {
 
 ---
 
-## Dark Mode
-
-All components automatically support dark mode:
-
-| Scenario | Applied by |
-|----------|-----------|
-| System prefers dark | `@media (prefers-color-scheme: dark)` |
-| Host app has `.dark` class on `<html>` | `:host-context(.dark)` |
-| Host app has `.light` class on `<html>` | Overrides system preference |
-
 ## Theming
 
-Override colors via CSS custom properties. Each component documents its variables in the source. The naming convention is:
+All components compose **shared design tokens** (`src/styles/tokens.ts`,
+exported from the kit). Theme the whole kit by overriding the semantic
+tokens — one place, not per component:
 
-```
---ask-{component}-{property}
---ask-{component}-{property}-dark   (dark mode override)
---ask-{component}-{property}-light  (light mode override)
-```
+| Token | Light | Dark | Used for |
+|-------|-------|------|----------|
+| `--ask-surface` | `#ffffff` | `#171717` | Page/surface backgrounds |
+| `--ask-surface-muted` | `#f5f5f5` | `#1a1a1a` | Muted surfaces (code, bubbles) |
+| `--ask-surface-hover` | `#f5f5f5` | `#1a1a1a` | Hover backgrounds |
+| `--ask-surface-active` | `#e5e5e5` | `#262626` | Active/selected backgrounds |
+| `--ask-text` | `#171717` | `#e5e5e5` | Primary text |
+| `--ask-text-muted` | `#a3a3a3` | `#737373` | Secondary text |
+| `--ask-text-faint` | `#737373` | `#525252` | Tertiary text (labels, timestamps) |
+| `--ask-text-inverse` | `#fafafa` | `#171717` | Text on accent surfaces |
+| `--ask-border` | `#e5e5e5` | `#262626` | Borders, dividers |
+| `--ask-border-strong` | `#d4d4d4` | `#404040` | Strong borders (active states) |
+| `--ask-focus` | `#a3a3a3` | `#525252` | Focus rings |
+| `--ask-accent` | `#c2410c` | `#ea580c` | Brand accent |
+| `--ask-accent-text` | `#fafafa` | `#fafafa` | Text on accent |
+| `--ask-danger*` | red family | red family | Errors, destructive actions |
+| `--ask-success*` | green family | green family | Success states |
+| `--ask-radius*`, `--ask-font*`, `--ask-spacing` | — | — | Shape (unthemed; override `-app` variants) |
 
-Example — customizing `ask-message`:
+Every token also has a `-light` / `-dark` variant (`--ask-text-light`,
+`--ask-text-dark`, ...) so apps can override per mode.
+
+Example — a warm theme for the whole kit:
+
 ```css
-ask-message {
-  --ask-user-bg-light: #e5e7eb;
-  --ask-user-text-light: #111827;
-  --ask-user-bg-dark: #374151;
-  --ask-user-text-dark: #f9fafb;
+:root {
+  --ask-accent: #b45309;
+  --ask-surface-hover: #fef3c7;
 }
+```
+
+### Dark mode precedence
+
+1. `[theme="dark"]` on the component or any ancestor — explicit, wins
+2. `.dark` class on any ancestor — legacy path
+3. `prefers-color-scheme: dark` (OS) — unless `[theme="light"]`
+4. `[theme="light"]` pins light
+
+```html
+<!-- Force dark for a subtree -->
+<div theme="dark">
+  <ask-message role="assistant" content="..."></ask-message>
+</div>
 ```
 
 ## Architecture
 
-All components use Shadow DOM for style encapsulation. Each is a self-contained LitElement with no external CSS dependencies. Styles use descriptive class names and CSS custom properties for theming (not Tailwind).
+All components are self-contained LitElements using **Shadow DOM** for
+isolation ("the app never touches their internals"). Two shared pieces are
+composed into every component:
 
-```html
-<!-- Usage in any framework -->
-<ask-message role="user" content="Hello"></ask-message>
-```
+- **Tokens** (`src/styles/tokens.ts`) — the semantic CSS custom properties
+  above, with dark-mode handling in one place.
+- **The data-in/events-out contract** — attributes in, `CustomEvent`s
+  (`bubbles + composed`) out. Components are stateless and presentational;
+  state lives in the host app (Turbo/Stimulus/SSE), which is what keeps the
+  kit small and framework-agnostic.
 
 ```
 ┌────────────────────────────────┐
@@ -459,9 +534,8 @@ All components use Shadow DOM for style encapsulation. Each is a self-contained 
 │  ┌ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┐│
 │  │  #shadow-root             ││
 │  │  ┌─────────────────────┐  ││
-│  │  │  CSS custom props   │  ││
-│  │  │  + host-context     │  ││
-│  │  │  + media queries    │  ││
+│  │  │  shared tokens      │  ││  ← one theming source
+│  │  │  + component styles │  ││
 │  │  └─────────────────────┘  ││
 │  │  ┌─────────────────────┐  ││
 │  │  │  <div class="...">  │  ││
@@ -471,15 +545,38 @@ All components use Shadow DOM for style encapsulation. Each is a self-contained 
 └────────────────────────────────┘
 ```
 
+### Accessibility
+
+Components ship keyboard-accessible: interactive elements are real
+`<button>`s or `role="button"` + `tabindex` + Enter/Space handling, with
+`aria-*` attributes where relevant. The lint setup (`npm run lint`) enforces
+this via `eslint-plugin-lit-a11y` — clickable elements without keyboard
+handlers fail CI.
+
+### Markdown rendering — pick a lane
+
+The kit offers two lanes; pick one per app and stay consistent:
+
+- **Server-side** (Rails + Redcarpet/Turbo): render markdown to HTML in the
+  view and pass HTML into the message area. Best for full-stack Rails apps.
+- **Client-side** (`<ask-markdown>`): pass raw markdown text and let the
+  component render it. Best for Svelte/React/plain-HTML hosts.
+
+Mixed lanes in one app mean two rendering paths to maintain.
+
 ## Bundle size
 
 | Version | Size (uncompressed) | Size (gzip) |
 |---------|---------------------|-------------|
-| 0.3.0 | ~102 kB | ~20 kB |
+| 0.4.0 | ~94 kB | ~20 kB |
 
-All 16 components ship in one bundle. Each component registers itself via
-`customElements.define()` on load, so importing the bundle makes every
-`<ask-*>` element available.
+All 17 components ship in one self-contained bundle (Lit inlined). Each
+component registers itself via `customElements.define()` on load, so
+importing the bundle makes every `<ask-*>` element available. For apps that
+only need a few components, the package `exports` map also exposes
+per-component entry points (`ask-ui-kit/sidebar.js`, `ask-ui-kit/message.js`,
+...) — pin those individually when the bundle grows and you want to pay for
+only what you use.
 
 ## Changelog
 
