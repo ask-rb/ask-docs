@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.23.0] — 2026-08-07
+
+### Added
+
+- **Steer** (ask-agent 0.37.0). `Session#steer(message, expected_turn_id:)` — concurrency-safe injection from any thread: `:stale` when the caller's turn view is outdated, `:queued` while a turn runs (dispatched at the next turn boundary), `:steered` when idle. ask-app-server `inject_message` uses it natively. Checkpoints are now exact (no duplicate tail checkpoint). Documented in [core/agent](/ask-docs/core/agent).
+
+### Changed
+
+- **CI now verifies runnable docs examples** against the published ask gems — stale `# =>` outputs or block errors fail the build (previously errors passed silently).
+
 ## [0.22.0] — 2026-08-07
 
 ### Added

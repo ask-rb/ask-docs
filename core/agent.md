@@ -864,6 +864,36 @@ session = Ask::Agent::Session.new(
 - Stored outputs are capped (`max_size:`, default 50,000 chars) and cleaned
   up by `Session#delete`.
 
+## Steer (v0.37.0+)
+
+{: .new }
+> New in ask-agent 0.37.0
+
+Concurrency-safe message injection from any thread — a web client, the CLI,
+or another agent can redirect a running session without racing it:
+
+```ruby
+# While a turn is running:
+session.steer("Wait — use the staging database instead", expected_turn_id: 3)
+# => { status: :queued, turn_id: 3 }  — dispatched as the next user message
+# => { status: :stale,  turn_id: 4 }  — caller's view was outdated, rejected
+
+# When idle:
+session.steer("Actually, skip the report")
+# => { status: :steered, turn_id: 3 } — added to the conversation
+```
+
+- **`:stale`** — `expected_turn_id` doesn't match the current turn id: the
+  caller was looking at an older state and the message is rejected (no
+  lost updates from two clients steering at once).
+- **`:queued`** — a turn is running; the message is held and dispatched as
+  the next user message at the next turn boundary — no abort-and-retry.
+- **`:steered`** — the session is idle; the message enters the conversation
+  and the next `run` processes it. Queued leftovers drain at the next run
+  start.
+- `Session#turn_id` reports the running turn; `Session#queued_steers` the
+  pending count. ask-app-server's `inject_message` uses `steer` natively.
+
 ## Todos (Task List) (v0.32.0+)
 
 {: .new }
