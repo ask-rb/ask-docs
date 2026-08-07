@@ -16,3 +16,19 @@ jobs:
           ruby-version: "3.4"
           bundler-cache: true
       - run: bundle exec jekyll build
+
+  docs-verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+          bundler-cache: true
+      # Executes every runnable docs example against the PUBLISHED ask gems
+      # (from the Gemfile) and fails on stale # => outputs or block errors.
+      # ASK_GEMS_ROOT points nowhere so the sibling ask-rb repos are not
+      # used — the docs describe released behavior, not local development.
+      - run: bundle exec ruby -Ilib lib/docs_examples.rb verify
+        env:
+          ASK_GEMS_ROOT: /tmp/no-sibling-gems

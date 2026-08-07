@@ -530,7 +530,7 @@ module DocsExamples
     puts "#{changed.size} file(s) updated" if mode == :generate && changed.any?
     if mode == :verify
       if failures.any?
-        warn "verify failed: #{failures.size} file(s) have stale example outputs:"
+        warn "verify failed: #{failures.size} file(s) have stale or failing example outputs:"
         failures.each { |f| warn "  - #{f} (run `rake docs:generate#{filter ? " FILE=#{filter}" : ""}` to update)" }
         exit 1
       else
@@ -547,6 +547,10 @@ module DocsExamples
     original, rewritten, stats = rewrite_blocks(file, mode)
     print_stats(relative(file), stats)
     stats[:errors].each { |e| warn "  [error] #{e}" }
+
+    # Block errors fail verify too — not just stale outputs. (Generate mode
+    # keeps going so partial results can be reviewed.)
+    exit 1 if mode == :verify && stats[:errors].any?
 
     return if original == rewritten
 

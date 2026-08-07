@@ -933,6 +933,7 @@ Facts that outlive sessions — stored on the **same state adapter** as
 sessions and checkpoints, so there's no new storage layer and no new
 dependency:
 
+<!-- docs-example: not-verified -->
 ```ruby
 require "ask-agent"
 require "ask-state-providers"

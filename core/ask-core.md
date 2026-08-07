@@ -100,7 +100,7 @@ model.max_output_tokens  # => 384000
 model.supports?(:vision) # => false
 
 # Filter by capability
-Ask::ModelCatalog.chat_models.size       # => 398
+Ask::ModelCatalog.chat_models.size       # => 388
 Ask::ModelCatalog.embedding_models.size  # => 5
 
 # Filter by metadata
