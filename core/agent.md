@@ -894,6 +894,49 @@ session.steer("Actually, skip the report")
 - `Session#turn_id` reports the running turn; `Session#queued_steers` the
   pending count. ask-app-server's `inject_message` uses `steer` natively.
 
+## Artifacts (v0.38.0+)
+
+{: .new }
+> New in ask-agent 0.38.0
+
+Tool deliverables with a web-friendly home. Any tool can attach an artifact
+to its result — small text goes inline in the state store, large/binary
+files are stored as external URIs:
+
+```ruby
+session = Ask::Agent::Session.new(
+  model: "deepseek-v4-flash",
+  tools: tools,
+  artifacts: true
+)
+
+# In a tool's execute:
+Ask::Result.ok(
+  data: "Report generated",
+  metadata: { artifact: { filename: "report.csv", mime_type: "text/csv", content: "a,b\n1,2\n" } }
+)
+
+# Large/binary deliverables reference external storage instead:
+#   metadata: { artifact: { filename: "scan.pdf", mime_type: "application/pdf",
+#                           uri: "s3://bucket/scan.pdf" } }
+
+# After the run:
+session.artifacts          # => [{id:, filename:, mime_type:, size:, uri:}, ...]
+session.fetch_artifact(id) # => full record (content or uri)
+```
+
+- **Two kinds, one contract**: `content:` (small text — reports, CSVs,
+  patches — stored in the state adapter, capped at 100KB) or `uri:`
+  (large/binary — the store keeps the reference and metadata only, so the
+  database never grows beyond its comfort zone).
+- **Uploader hook** — `artifact_uploader: ->(content:, filename:, mime_type:) { uri }`
+  lifts inline content to a URI before storage: tools return content, the
+  session uploads (S3, object storage, ...), the store keeps the reference.
+- `Session#delete` cleans up artifacts. Malformed artifacts are noted in
+  the tool message, never a tool failure.
+- **ask-app-server** exposes `session/artifacts` (list) and
+  `session/artifact/get` (fetch) protocol methods.
+
 ## Todos (Task List) (v0.32.0+)
 
 {: .new }

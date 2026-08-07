@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.24.0] — 2026-08-07
+
+### Added
+
+- **Artifacts** (ask-agent 0.38.0, ask-app-server 0.1.2). Tool deliverables with a web-friendly home: `Session.new(artifacts: true)` collects `metadata[:artifact]` from tool results — inline content (small text, state store) or external URIs (large/binary, reference only), with an uploader hook to lift content to object storage. `session/artifacts` and `session/artifact/get` protocol methods expose them. Documented in [core/agent](/ask-docs/core/agent).
+
 ## [0.23.0] — 2026-08-07
 
 ### Added
