@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.20.0] — 2026-08-06
+
+### Added
+
+- **Durable memory** (ask-agent 0.33.0). `Ask::Agent::Memory` — namespaced
+  facts on the same `Ask::State::Adapter` as sessions and checkpoints (pure
+  KV, no new dependencies). `Session.new(memory: memory)` injects
+  `memory_write`/`memory_search` tools and injects relevant memories into
+  context at run start, so session B starts knowing what session A learned.
+  Documented in [core/agent](/ask-docs/core/agent).
+
 ## [0.19.0] — 2026-08-06
 
 ### Added

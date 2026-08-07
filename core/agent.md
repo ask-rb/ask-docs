@@ -891,6 +891,50 @@ session.plan_queue.reject(action.id)   # stays in plan mode, feedback injected
 - `Events::PlanProposed` fires when the plan is submitted. Default
   read-only allowlist: `read`, `glob`, `grep`, `web_search`.
 
+## Durable Memory (v0.33.0+)
+
+{: .new }
+> New in ask-agent 0.33.0
+
+Facts that outlive sessions — stored on the **same state adapter** as
+sessions and checkpoints, so there's no new storage layer and no new
+dependency:
+
+```ruby
+require "ask-agent"
+require "ask-state-providers"
+
+store = Ask::State::Providers::SQLite.new(path: "agent.db")
+memory = Ask::Agent::Memory.new(state: store, namespace: "user:42")
+
+session = Ask::Agent::Session.new(
+  model: "deepseek-v4-flash",
+  tools: tools,
+  memory: memory
+)
+
+session.run("Deploy the fix")
+# The model can call memory_write ("remember: deploy window is Tuesday")
+# and memory_search to recall facts from earlier sessions.
+```
+
+- **How it works**: `Memory#write` saves a fact (identical content is
+  deduped), `#search` does keyword substring matching ranked by matched
+  terms (queries are punctuation-stripped), `#list`/`#delete`/`#count`
+  round it out. Entries live under `memory:<namespace>:<id>` keys plus a
+  JSON index — pure KV, so every backend (SQLite/Redis/Postgres/MySQL,
+  custom adapters) works.
+- **Namespaces isolate memory** — a support agent's facts never leak into a
+  finance agent's; tenants share one backend safely.
+- **Session integration**: the session injects `memory_write` (stamping the
+  session id as provenance) and `memory_search` tools, and **injects
+  relevant memories as a system message at run start** — session B starts
+  knowing what session A learned. Agents without `memory:` are completely
+  unaffected.
+- The abstraction is domain-agnostic — memory holds facts about whatever
+  your agent operates on, not code-specific data. Vector search (ask-rag)
+  can slot in behind the same interface later, at scale.
+
 ## Policies (Tool-Lifecycle Extensions)
 
 Policies are opt-in, replaceable implementations of the tool-lifecycle hook
