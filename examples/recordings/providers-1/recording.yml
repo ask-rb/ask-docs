@@ -1,6 +1,6 @@
 {
   "test": "providers-1",
-  "recorded_at": "2026-08-03T12:31:41Z",
+  "recorded_at": "2026-08-08T16:34:06Z",
   "interactions": [
     {
       "type": "provider",
@@ -19,12 +19,12 @@
           "model": "deepseek-v4-flash",
           "finish_reason": "stop",
           "input_tokens": 89,
-          "output_tokens": 11,
+          "output_tokens": 16,
           "cached_tokens": 0,
           "raw": {
-            "id": "f9099977-36cb-4321-9696-e806dd13db1f",
+            "id": "ed919562-acf6-433f-89d4-57e5aaba56e6",
             "object": "chat.completion",
-            "created": 1785760300,
+            "created": 1786206846,
             "model": "deepseek-v4-flash",
             "choices": [
               {
@@ -34,21 +34,21 @@
                 "message": {
                   "role": "assistant",
                   "content": "OK",
-                  "reasoning_content": "We need answer in one word: OK."
+                  "reasoning_content": "We need answer user asks say OK in one word. Need comply."
                 }
               }
             ],
             "usage": {
               "prompt_tokens": 89,
-              "completion_tokens": 11,
-              "total_tokens": 100,
+              "completion_tokens": 16,
+              "total_tokens": 105,
               "prompt_cache_hit_tokens": 0,
               "prompt_cache_miss_tokens": 89,
               "prompt_tokens_details": {
                 "cached_tokens": 0
               },
               "completion_tokens_details": {
-                "reasoning_tokens": 9
+                "reasoning_tokens": 14
               }
             },
             "cost": "0"
