@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.26.0] — 2026-08-08
+
+### Changed
+
+- **Web fetch backends and content pruning** (ask-web-fetch 0.4.x).
+  Documented the new density-based content pruning pipeline
+  (`ContentFilter`, ported from crawl4ai), the shared Markdown conversion,
+  and the Browser backend — a real Chrome via Ferrum in launched mode
+  (`ASK_WEB_FETCH_CHROME_PATH`, `ASK_WEB_FETCH_PROFILE`) or attached to an
+  already-running Chrome over CDP (`ASK_WEB_FETCH_CDP_URL`) for sites whose
+  Cloudflare challenges soft-block fresh automation browsers. The chain is
+  now `Crawl4Ai, Local, Jina, Browser`. Documented in
+  [core/web-fetch](/ask-docs/core/web-fetch).
+
 ## [0.25.0] — 2026-08-07
 
 ### Added

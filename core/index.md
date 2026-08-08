@@ -22,6 +22,6 @@ The building blocks of the ask-rb ecosystem. Each component is a standalone gem 
 | [Credential Resolution](/ask-docs/core/auth) | Environment, file, Rails credentials, OAuth |
 | [MCP Client](/ask-docs/core/mcp) | Model Context Protocol client for Ruby |
 | [Web Search](/ask-docs/core/web-search) | Local SearXNG-backed web search — tool library and MCP server |
-| [Web Fetch](/ask-docs/core/web-fetch) | URL → clean markdown — pluggable backends: Crawl4AI, Local, Jina |
+| [Web Fetch](/ask-docs/core/web-fetch) | URL → clean markdown — pluggable backends: Crawl4AI, Local, Jina, Browser (launched or attached to a running Chrome) |
 | [App Server](/ask-docs/core/app-server) | JSON-RPC/stdio app server — expose your agent to any app-server client |
 | [RAG Pipeline](/ask-docs/core/rag) | Document loaders, text splitters, vector stores, MMR — full RAG pipeline |
