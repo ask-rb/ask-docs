@@ -16,6 +16,7 @@ The building blocks of the ask-rb ecosystem. Each component is a standalone gem 
 | [Tools & Execution](/ask-docs/core/tools) | Tool framework, shell tools, result types |
 | [Sandbox Providers](/ask-docs/core/sandbox) | Isolated code execution — local, Docker, Daytona, Cloudflare |
 | [The Agent Loop](/ask-docs/core/agent) | Session lifecycle, think-call-execute, compaction |
+| [Attachments & File Inputs](/ask-docs/core/attachments) | User→agent file uploads — inline bytes or context-only manifests |
 | [Workflows & Graphs](/ask-docs/core/graph) | Multi-step durable workflows with checkpointing, sub-graphs, approval, timeouts, retry |
 | [Skills](/ask-docs/core/skills) | On-demand methodology for agents |
 | [Schema & Structured Output](/ask-docs/core/schema) | JSON Schema DSL for tool params and structured output |
