@@ -98,7 +98,7 @@ GEM
       rufus-scheduler (~> 3.9)
     ask-auth (0.2.3)
       base64 (~> 0.2)
-    ask-core (0.10.0)
+    ask-core (0.11.2)
     ask-eval (0.3.0)
     ask-graph (0.7.2)
       ask-core (>= 0.7)
@@ -135,7 +135,7 @@ GEM
     ask-tools (0.6.0)
       ask-core (>= 0.9.0)
       ask-schema (>= 0.1)
-    ask-tools-shell (0.4.0)
+    ask-tools-shell (0.5.0)
       ask-sandbox-providers (>= 0.1)
       ask-tools (>= 0.1)
     ask-web-fetch (0.3.1)
@@ -573,7 +573,7 @@ CHECKSUMS
   ask-acp (0.1.2) sha256=dbc69c6493676b56c5abc78bf664e91b55691120eb1aa5a46acf91eaada7e2a3
   ask-agent (0.36.0) sha256=f8b11d00d0ffd5693f1be0a112beb9b3f9f11bccd1b6ed3f8eebc2184758ebd5
   ask-auth (0.2.3) sha256=a50c217cdaeb2a9174ef90fc0640764044519006113fff5e1b80acdd70e6ed9f
-  ask-core (0.10.0) sha256=cbac408b3f07753ba252f7ecbf42ec20ab1f12ddfa70f3343545d3618554804c
+  ask-core (0.11.2) sha256=8257539e05c7b50ff87f77b01012f75575c65cc183d1ea69d8dca14f87d6890e
   ask-eval (0.3.0) sha256=992f6e3d8e6e67fc7223439eecb613881c6667c267f00246324847a30f9cf786
   ask-graph (0.7.2) sha256=75ad5828b498ac035e385c2c5dd68f5193771a5a229433e5f2d1984345793f86
   ask-instrumentation (0.2.1) sha256=0a8d2e2d6653d1b6f551eda0fbabd068c0a9076939f36fa605cd0a13112cdba1
@@ -587,7 +587,7 @@ CHECKSUMS
   ask-skills (0.5.1) sha256=baaaf6a355ce24ec43c272580bb7ef666d980c06def8d1ac04650e1f10f69c71
   ask-state-providers (0.4.0) sha256=7ac87c34862017398d2187d02b0d9b096f6f116f7fc861467e6922b07107695b
   ask-tools (0.6.0) sha256=26a4c25a2367f49d7541b29ffc65d4efaaacec0133ea502c5aa3092f86d0966e
-  ask-tools-shell (0.4.0) sha256=45f4ead80737872a89d57adcb9941c794082a19c9c8bad819f26d244b433e6eb
+  ask-tools-shell (0.5.0) sha256=4be77ac22b86901def72fcc13f39dd1b231c27484863ff57bdd939fbe0a46545
   ask-web-fetch (0.3.1) sha256=b6eb1b81a43fe0496b7ac6c66624ebf6d2db4db3d01a7a4c47eaf78e54a45a36
   ask-web-search (0.2.3) sha256=400ce5d4bdc78846bc1e765fc40bcbf1af9aa648fc695d3649e6ee3a558a4a43
   base64 (0.3.0) sha256=27337aeabad6ffae05c265c450490628ef3ebd4b67be58257393227588f5a97b

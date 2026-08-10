@@ -239,14 +239,184 @@ of `Ask::Result.ok`.
 | Tool | Params | Description |
 |------|--------|-------------|
 | **Bash** | `command` (req), `timeout`, `workdir` | Execute shell commands in a sandboxed temp dir. Returns stdout, stderr, exit_code, timed_out. Output truncated to 100KB |
-| **Read** | `path` (req), `offset`, `limit` | Read files with line numbers or list directories. Default limit 2000 lines |
-| **Write** | `path` (req), `content` (req) | Write to files, creating parent dirs automatically. Max 500KB |
+| **Read** | `path` (req), `offset`, `limit` | Read files with line numbers or list directories. Bounded to 2000 lines / 128 KB with precomputed resume hints; one-line answers for empty, binary, and PDF files; refuses device files; repairs filenames (did-you-mean) — see below |
+| **Write** | `path` (req), `content` (req) | Write to files, creating parent dirs automatically. Max 500KB. Refuses to overwrite files only partially read |
 | **Edit** | `path` (req), `old_string` (req), `new_string` (req), `replace_all` | Replace exact text. Single replacement by default |
 | **Glob** | `pattern` (req), `path` | Find files matching glob. Max 1000 results, sorted newest first |
 | **Grep** | `pattern` (req), `path`, `include` | Regex search in files. Max 100 matches, 500 chars/line. Skips .git, node_modules, etc. |
 | **Code** | `code` (req) | Execute Ruby in a subprocess. Uses available gems, passes env through |
 | **Repl** | `code` (req), `session`, `reset` | Evaluate Ruby in a persistent session. State survives across calls — see below |
 | **ApplyPatch** | `patchText` (req) | Edit files using a unified diff format. Precise, multi-file edits in one call |
+
+### Read — Engineered for Token Budgets (v0.5.0+)
+
+Reads are the bill for building context — every edit starts with one, every
+grep hit becomes one. So `Read` treats every decision inside the tool as a
+token-budget decision, and the expensive failure modes get designed out:
+
+- **Three ceilings, not one** — a 2000-line window bounds the long file, a
+  128 KB byte budget bounds the wide file, and a 2000-char per-line clamp
+  stops a minified bundle from eating the whole budget in one line.
+- **Truncation is a fact, not an error** — reads that stop short return `ok`
+  with a precomputed resume offset. The model never does pagination
+  arithmetic (which it gets wrong often enough to cost another round trip).
+- **Silence is the most expensive thing a tool can return** — an empty
+  result is indistinguishable from a broken tool, so every dead end names
+  its own recovery: empty files, past-EOF offsets, binary files (a mime
+  note, never garbage bytes), and PDFs (a pdftotext hint).
+- **Reads stream** — a 400 MB log costs one bounded read, not one load.
+- **Inputs are repaired, not bounced** — `"2000"` and `2.0` are accepted;
+  `"2abc"` and `1.5` are rejected instead of silently reading the wrong
+  window.
+- **Some paths never open** — `/dev/zero` and friends are refused by name
+  before any I/O; a read that hangs is a denial of service.
+- **Filenames are adversarial** — NFD/NFC, narrow no-break spaces, and
+  curly quotes are invisible to the model, so the tool retries the variants
+  and then offers "did you mean?" (substring + bounded Levenshtein ≤ 2 —
+  the thing that catches `AGENT.md` → `AGENTS.md`).
+- **Re-reads of unchanged files return a stub** — the content is already in
+  context. The stub is consumed on use (a stale hit is catastrophic), only
+  fires for complete reads, and has a kill switch
+  (`ASK_TOOLS_SHELL_READ_NO_CACHE=1`).
+- **A ledger of what the model has seen** — `Read` records partial views,
+  and `Write` refuses to overwrite a partially-read unchanged file, because
+  overwriting would silently destroy the part it never saw.
+
+A truncated read carries its resume offset in the result:
+
+```ruby
+require "ask-tools-shell"
+
+File.write("app.log", (1..50).map { |i| "line #{i} " + "x" * 30 }.join("\n"))
+tool = Ask::Tools::Read.new
+tool.byte_budget = 500
+first = tool.call(path: "app.log")
+first.metadata.slice(:truncated, :partial_view, :resume_offset)
+# => {truncated: true, partial_view: true, resume_offset: 12}
+
+first.output.lines.last
+# => "... (more lines) — resume with offset=12"
+```
+
+And the resume offset actually works — pass it straight back in:
+
+```ruby
+require "ask-tools-shell"
+
+File.write("app.log", (1..50).map { |i| "line #{i} " + "x" * 30 }.join("\n"))
+tool = Ask::Tools::Read.new
+tool.byte_budget = 500
+first = tool.call(path: "app.log")
+resume = tool.call(path: "app.log", offset: first.metadata[:resume_offset], limit: 3)
+resume.output
+# => 13: line 13 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+# 14: line 14 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+# 15: line 15 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+# ... (more lines) — resume with offset=15
+```
+
+A minified single-line bundle gets clamped, not returned whole:
+
+```ruby
+require "ask-tools-shell"
+
+File.write("bundle.min.js", "a" * 5000 + "\n" + "normal line\n")
+tool = Ask::Tools::Read.new
+tool.max_line_chars = 100
+clamped = tool.call(path: "bundle.min.js")
+clamped.output
+# => "1:
+# aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+# aaaaaaaaaaaaaaaaaaaa…[clamped at 100 chars]\n" +
+# "2: normal line"
+```
+
+Boring formats get one-line answers — facts, not errors:
+
+```ruby
+require "ask-tools-shell"
+
+File.write("empty.txt", "")
+File.binwrite("logo.png", "\x89PNG\r\n\x1a\n".b + "\x00".b * 64)
+
+empty = Ask::Tools::Read.new.call(path: "empty.txt")
+empty.output
+# => "File is empty (0 lines)."
+
+binary = Ask::Tools::Read.new.call(path: "logo.png")
+binary.output
+# => "Binary file (image/png, 72 bytes) — content not shown."
+```
+
+Unchanged re-reads return a self-expiring stub — the content is already in
+the conversation, so paying for it again is pure waste:
+
+```ruby
+require "ask-tools-shell"
+
+File.write("stable.txt", "alpha\nbeta\ngamma\n")
+tool = Ask::Tools::Read.new
+
+first = tool.call(path: "stable.txt")
+second = tool.call(path: "stable.txt")
+third = tool.call(path: "stable.txt")
+
+first.output.lines.first.chomp
+# => "1: alpha"
+
+second.output
+# => "File unchanged since last read — content is already in context."
+
+third.output.lines.first.chomp
+# => "1: alpha"
+```
+
+Device files are refused by name before any I/O:
+
+```ruby
+require "ask-tools-shell"
+
+Ask::Tools::Read.new.call(path: "/dev/zero").error
+# => "Refusing to read device file: /dev/zero (can block forever)."
+```
+
+When a path doesn't exist, the tool repairs it — first the invisible
+character variants, then "did you mean?":
+
+```ruby
+require "ask-tools-shell"
+
+File.write("AGENTS.md", "agent instructions")
+suggestion = Ask::Tools::Read.new.call(path: "AGENT.md").error[/did you mean: ([^?]+)/, 1]
+File.basename(suggestion)
+# => "AGENTS.md"
+```
+
+The partial-view ledger protects the model from itself — `Write` refuses to
+overwrite a file it only saw part of, until it re-reads the whole thing:
+
+```ruby
+require "ask-tools-shell"
+
+File.write("plan.md", (1..30).map { |i| "line #{i}" }.join("\n"))
+
+reader = Ask::Tools::Read.new
+reader.max_lines = 10
+reader.call(path: "plan.md")
+
+denial = Ask::Tools::Write.new.call(path: "plan.md", content: "overwrite").error
+File.basename(denial[/Refusing to overwrite ([^:]+)/, 1])
+# => "plan.md"
+
+denial[/only part of the file has been read[^.]+/]
+# => "only part of the file has been read (lines 1–10 shown, more lines exist)"
+
+# A full read clears the block — now the write goes through.
+Ask::Tools::Read.new.call(path: "plan.md")
+rewrite = Ask::Tools::Write.new.call(path: "plan.md", content: "rewritten")
+rewrite.output[:bytes]
+# => 9
+```
 
 ### Repl — Persistent Ruby Sessions (v0.4.0+)
 

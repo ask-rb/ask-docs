@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.28.0] — 2026-08-10
+
+### Added
+
+- **Read tool engineering** (ask-tools-shell 0.5.0). Documented the
+  token-budget engineering of `Ask::Tools::Read` in
+  [core/tools](/ask-docs/core/tools): three ceilings (line window, byte
+  budget, per-line clamp), precomputed resume offsets, one-line answers for
+  empty/binary/PDF files, streaming reads, strict input repair, the device
+  blocklist, filename repair (did-you-mean), the self-expiring dedup stub,
+  and the partial-view ledger that makes Write refuse to overwrite
+  partially-read files.
+
 ## [0.27.0] — 2026-08-10
 
 ### Added
