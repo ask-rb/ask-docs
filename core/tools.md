@@ -280,7 +280,9 @@ token-budget decision, and the expensive failure modes get designed out:
   (`ASK_TOOLS_SHELL_READ_NO_CACHE=1`).
 - **A ledger of what the model has seen** — `Read` records partial views,
   and `Write` refuses to overwrite a partially-read unchanged file, because
-  overwriting would silently destroy the part it never saw.
+  overwriting would silently destroy the part it never saw. `Edit` and
+  `ApplyPatch` read files in full, so they record a full read and the
+  protection can't deadlock.
 
 A truncated read carries its resume offset in the result:
 

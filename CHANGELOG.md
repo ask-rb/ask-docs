@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.29.0] — 2026-08-10
+
+### Changed
+
+- **Ledger stays consistent after full-context edits** (ask-tools-shell
+  0.5.1). `Edit` and `ApplyPatch` read files in full, so they now record a
+  full read for the current state after writing — a later `Write` is no
+  longer denied by a stale partial view from an earlier `Read`. Noted in
+  [core/tools](/ask-docs/core/tools).
+
 ## [0.28.0] — 2026-08-10
 
 ### Added
