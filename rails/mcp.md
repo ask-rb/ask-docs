@@ -188,11 +188,9 @@ All ask-rails-harness safety features apply automatically because the tools are 
 | `query_database` | Read-only SQL queries with safety guards |
 | `read_model` | Introspect a single ActiveRecord model |
 | `route_inspector` | Parsed route table with filters by controller or path |
-| `read_log` | Read Rails log files with level/search filtering and rotated archive support |
-| `search_codebase` | Full-text grep search across your codebase |
-| `read_file` | Read any file relative to `Rails.root` |
+| `read_log` | Read log files with level/search filtering and rotated archive support |
 | `run_command` | Run shell commands from app root (with allowlist) |
-| `read_routes` | Read the raw `config/routes.rb` |
+| `run_tests` | Structured test results with failure reruns (minitest/rspec) |
 
 ## Development
 
