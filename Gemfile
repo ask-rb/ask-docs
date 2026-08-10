@@ -10,6 +10,7 @@ gem "webrick"
 # Gems the runnable docs examples execute against (CI verify runs without
 # the sibling ask-rb repos, so the examples resolve from RubyGems here).
 gem "ask"
+gem "ask-acp"
 gem "ask-auth"
 gem "ask-agent"
 gem "ask-eval"

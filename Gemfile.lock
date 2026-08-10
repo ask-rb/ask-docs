@@ -86,6 +86,8 @@ GEM
       jquery-rails
       rails (>= 3.1.0)
       rails_autolink (>= 1.0.2)
+    ask-acp (0.1.1)
+      json
     ask-agent (0.36.0)
       ask-core (>= 0.1)
       ask-instrumentation (>= 0.1)
@@ -526,6 +528,7 @@ PLATFORMS
 
 DEPENDENCIES
   ask
+  ask-acp
   ask-agent
   ask-auth
   ask-eval
@@ -567,6 +570,7 @@ CHECKSUMS
   acts_as_list (1.2.6) sha256=8345380900b7bee620c07ad00991ccee59af3d8c9e8574f426e321da2865fdc8
   addressable (2.9.0) sha256=7fdf6ac3660f7f4e867a0838be3f6cf722ace541dd97767fa42bc6cfa980c7af
   ask (0.5.3) sha256=1c56fca41086629c95d0383f0b61119106badf4f7067d3c4e2675f0c5390115b
+  ask-acp (0.1.1) sha256=6a3f73b7ae4eb43e07d5bcfcf593c0839fe746adbcd7fe9646619bf47c1d6e04
   ask-agent (0.36.0) sha256=f8b11d00d0ffd5693f1be0a112beb9b3f9f11bccd1b6ed3f8eebc2184758ebd5
   ask-auth (0.2.3) sha256=a50c217cdaeb2a9174ef90fc0640764044519006113fff5e1b80acdd70e6ed9f
   ask-core (0.10.0) sha256=cbac408b3f07753ba252f7ecbf42ec20ab1f12ddfa70f3343545d3618554804c

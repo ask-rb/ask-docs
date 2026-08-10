@@ -25,4 +25,5 @@ The building blocks of the ask-rb ecosystem. Each component is a standalone gem 
 | [Web Search](/ask-docs/core/web-search) | Local SearXNG-backed web search — tool library and MCP server |
 | [Web Fetch](/ask-docs/core/web-fetch) | URL → clean markdown — pluggable backends: Crawl4AI, Local, Jina, Browser (launched or attached to a running Chrome) |
 | [App Server](/ask-docs/core/app-server) | JSON-RPC/stdio app server — expose your agent to any app-server client |
+| [ACP Client & Server](/ask-docs/core/acp) | Agent Client Protocol — JSON-RPC 2.0 over stdio: drive coding agents or host your own |
 | [RAG Pipeline](/ask-docs/core/rag) | Document loaders, text splitters, vector stores, MMR — full RAG pipeline |
