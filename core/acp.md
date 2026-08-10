@@ -143,7 +143,7 @@ info = client.initialize!(client_name: "my-app", client_version: "0.1.0")
 info
 # => {"protocolVersion" => 1,
 #  "capabilities" => {},
-#  "serverInfo" => {"name" => "ask-acp", "version" => "0.1.1"}}
+#  "serverInfo" => {"name" => "ask-acp", "version" => "0.1.2"}}
 
 session = client.session_new(cwd: ".")
 session
@@ -255,10 +255,9 @@ The streamed events are the `PROMPT_EVENTS`:
 | `session/request_permission` | The agent needs approval to act |
 | `session/elicitation` | The agent needs input from the user |
 
-With a live `Client`, pass a block — it's a temporary notification handler
-that receives `{ method:, params: }` for each event. With the `ReplayClient`,
-events are delivered to `on_notification` handlers instead (fixtures can't
-know when your block was registered):
+Both `Client` and `ReplayClient` accept the block form — it registers a
+temporary notification handler that receives `{ method:, params: }` for each
+event and is removed when the prompt finishes:
 
 ```ruby
 require "ask-acp"
@@ -276,12 +275,14 @@ client.start
 client.initialize!(client_name: "my-app", client_version: "0.1.0")
 
 seen = []
-client.on_notification { |event| seen << event["method"] }
-
-client.session_prompt("sess_1", "Read notes.md")
+client.session_prompt("sess_1", "Read notes.md") { |event| seen << event[:method] }
 seen
 # => ["tool_use", "tool_result", "turn_complete"]
 ```
+
+For everything else the agent sends you — file access, permission requests,
+terminal control — use `on_notification` to register a permanent handler
+(see below).
 
 While a prompt is running you can interrupt it from another thread with
 `session_cancel(session_id)` — the agent decides what to do with the request,
@@ -406,10 +407,10 @@ Because the client responds in record order, a fixture can encode an entire
 session — including tricky sequences like a permission request mid-prompt —
 and the test re-runs it identically every time.
 
-To record a fixture from a real agent, the ask-acp repo ships
-`bin/record_acp` (run `ruby bin/record_acp opencode fixtures/session.jsonl`
-from a checkout) — it spawns the agent, runs a standard session flow, and
-writes every message to a fixture file.
+To record a fixture from a real agent, use the `record_acp` executable
+(installed with the gem): `record_acp opencode fixtures/session.jsonl` — it
+spawns the agent, runs a standard session flow, and writes every message to a
+fixture file.
 
 ## Errors and timeouts
 

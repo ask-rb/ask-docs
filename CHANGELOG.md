@@ -4,7 +4,7 @@
 
 ### Added
 
-- **ACP guide** (ask-acp 0.1.0). First guide for the Agent Client Protocol
+- **ACP guide** (ask-acp 0.1.x). First guide for the Agent Client Protocol
   gem — driving a coding agent (Codex, OpenCode) from Ruby, hosting your own
   Ruby agent as an ACP server, the session lifecycle, streamed prompt events,
   agent → client methods, authentication, and deterministic testing with
