@@ -49,7 +49,17 @@ browser-friendly schema over SSE:
 
 The same events drive the PWA and the `ach run` transcript.
 
-## Turns and approvals
+## Declarative agents
+
+Conversations can carry an `agent` name (ask-agent convention). The
+AgentRunner lists a workspace's agents (`agents/` + `app/agents/`
+directories with `agent.rb` + `instructions.md`) without loading them,
+and when a conversation selects one, the session is built via
+`Ask::Agent.new` — the definition's tools, skills (agent_dir), and model
+apply — with the agent's `instructions.md` as the system prompt base and
+the emitting approval queue passed through, so approvals stream as usual.
+
+Turns and approvals
 
 A turn starts on `POST /api/chat` and the SSE stream stays open until the
 turn fully settles. When a tool queues for approval, the turn pauses:

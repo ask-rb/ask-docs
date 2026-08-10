@@ -80,6 +80,29 @@ Share → Add to Home Screen. It respects safe areas, works with the
 on-screen keyboard, and the shell (UI + assets) loads offline via the
 service worker — the agent itself needs the server.
 
+## Declarative agents
+
+The harness speaks the ask-agent `agents/` convention, per workspace:
+
+```
+my-project/
+├── agents/
+│   ├── refactorer/
+│   │   ├── agent.rb          # Ask::Agent::Definition subclass
+│   │   └── instructions.md   # becomes the system prompt base
+│   └── shared/
+│       └── tools/            # tools shared by all agents
+```
+
+- The **agent picker** in the composer lists every agent in the active
+  workspace (`agents/<name>/` or `app/agents/<name>/`), plus the default.
+- Selecting one applies to the conversation: its `instructions.md`
+  becomes the system prompt base and the session is built via
+  `Ask::Agent.new`, so the definition's tools, skills (`agent_dir`), and
+  model apply.
+- Conversations remember their agent; switching the picker updates it for
+  the next turn.
+
 ## System prompts
 
 Each workspace gets a pi-style system prompt, composed from:

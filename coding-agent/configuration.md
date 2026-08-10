@@ -58,7 +58,8 @@ and the server exposes a workspace registry.
 | `GET /api/workspaces` | list known workspaces (name, root, branch, conversation count) |
 | `POST /api/workspaces` | open/register a workspace by path |
 | `GET /api/workspaces/:path/info` | info for one workspace |
-| `POST /api/chat` | accepts a `workspace` param; the conversation is created and scoped to it |
+| `POST /api/chat` | accepts `workspace` and `agent` params; the conversation is created and scoped to them |
+| `GET /api/workspaces/:path/agents` | declarative agents in a workspace (`agents/<name>/` + instructions.md) |
 
 Turns execute inside their workspace directory (serialized via a turn
 mutex, since the shell tools default to the process working directory),
