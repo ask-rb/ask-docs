@@ -31,6 +31,7 @@ gem "ask-rag"     # RAG pipeline (loaders, splitters, vector stores)
 | [Getting Started](/ask-docs/getting-started) | Your first agent, Rails integration, core concepts |
 | [Core Components](/ask-docs/core) | LLM providers, tools, sandboxes, agent loop, skills, schema, auth, RAG pipeline |
 | [Rails Integration](/ask-docs/rails) | Setup, database tools, persistence, error services |
+| [Coding Agent](/ask-docs/coding-agent) | The web coding agent: install, usage, CLI, architecture |
 | [Service Contexts](/ask-docs/services) | GitHub, Slack, Notion, Linear, Sentry, Honeybadger |
 | [Production](/ask-docs/production) | Observability, monitoring, tracing, evaluation |
 | [Extending](/ask-docs/extending) | Custom tools, providers, agents, services, skills |

@@ -16,6 +16,7 @@ Start from what you're building, not from the gem list. Every gem declares its o
 | You want to... | Add to your Gemfile |
 |---|---|
 | Run an agent in any Ruby app (chatbot, coding assistant, research) | `ask-agent` (pulls in providers, tools, skills, state) |
+| Run a general-purpose coding agent in the browser (no Rails) | `ask-coding-harness` (self-hosted web app + `ach` CLI) |
 | Add shell/file tools to that agent | `ask-agent` + `ask-tools-shell` |
 | Give your Rails users AI features (agents, actions, workflows) | `ask-rails` (+ `ask-graph` for workflows) |
 | Give an admin agent safe access to any Ruby project | `ask-ruby-harness` |
@@ -33,6 +34,12 @@ Start from what you're building, not from the gem list. Every gem declares its o
 | Build a chat UI | `ask-ui-kit` (npm) |
 
 Don't add gems you don't need. `ask-agent` alone gets you a working agent; everything else layers on.
+
+## Coding Agent
+
+| Gem | Purpose |
+|---|---|
+| **[ask-coding-harness](https://github.com/ask-rb/ask-coding-harness)** | General-purpose coding agent in the browser: self-hosted web app (Roda + PWA), SSE event stream, approvals, plan mode, todos, and the `ach` CLI for headless runs. [Guide](/ask-docs/coding-agent) |
 
 ## Foundation
 
@@ -184,7 +191,9 @@ ask-eval               ──► (no deps)
 │           ├── ask-rails            ──► ask-agent
 │           ├── ask-rails-harness    ──► ask-agent, ask-tools, ask-tools-shell, ask-auth
 │           ├── ask-rails-harness-mcp ──► ask-rails-harness, ask-mcp
-│           └── ask-app-server       ──► ask-agent, ask-state-providers
+│           ├── ask-app-server       ──► ask-agent, ask-state-providers
+│           └── ask-coding-harness   ──► ask-agent, ask-coding-providers,
+│                                        ask-tools-shell, ask-state-providers
 │
 ├── ask-web-search   ──► ask-tools
 ├── ask-rag          ──► ask-core
@@ -199,6 +208,9 @@ ask-eval               ──► (no deps)
 ```ruby
 # Single gem
 gem "ask-agent"
+
+# The web coding agent — gem install ask-coding-harness, then `ach serve`
+gem "ask-coding-harness"
 
 # For Rails apps — user-facing AI features
 gem "ask-rails"
