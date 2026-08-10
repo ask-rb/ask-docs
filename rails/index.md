@@ -11,9 +11,9 @@ The ask-rb ecosystem offers two gems for working with Rails:
 
 **`ask-rails`** — Add AI capabilities to your Rails app for your users. Provides generators, file conventions, and a railtie that make `ask-agent` and `ask-graph` feel native in Rails. Define agents in `app/agents/`, workflows in `app/workflows/`, compose tools from the ecosystem, and build user-facing AI features. [Get started](/ask-docs/getting-started/rails-app){: .btn }
 
-**`ask-rails-harness`** — An admin AI copilot mounted inside your Rails app. Gives AI agents safe, controlled access to your database, code, and logs for internal development, debugging, and ops work. Ships 9 Rails-aware tools and an admin chat UI at `/ask`. [Set up](/ask-docs/rails/setup){: .btn }
+**`ask-rails-harness`** — An admin AI copilot mounted inside your Rails app. Gives AI agents safe, controlled access to your database, code, and logs for internal development, debugging, and ops work. Ships 7 Rails-aware tools (6 from the generic `ask-ruby-harness` plus `RouteInspector`) and an admin chat UI at `/ask`. [Set up](/ask-docs/rails/setup){: .btn }
 
-Both gems build on `ask-agent`, which provides the core agent loop. You can use one, the other, or both.
+Both gems build on `ask-agent`, which provides the core agent loop. You can use one, the other, or both. The harness family also has a language edition for any Ruby project — see [Ruby Harness](/ask-docs/ruby).
 
 ## ask-rails (user-facing AI)
 

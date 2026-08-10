@@ -14,7 +14,7 @@ New to ask-rb? Start here. Pick the path that matches your use case.
 | **Use `ask-agent` when...** | **Use `ask-rails` when...** | **Use `ask-rails-harness` when...** |
 |---|---|---|
 | You want to **build AI features in any Ruby app** — not just Rails | You want to **add AI capabilities to your Rails app for your users** — chatbots, agents, natural-language features | You want to **give AI agents access to your Rails app** for internal debugging, ops, and admin work |
-| You bring your own tools, UI, and persistence | You compose tools and agents from the ask-rb ecosystem | Ships with 9 Rails-aware tools (DB, filesystem, logs) and an admin chat UI at `/ask` |
+| You bring your own tools, UI, and persistence | You compose tools and agents from the ask-rb ecosystem | Ships with 7 Rails-aware tools (DB, models, routes, logs, tests) and an admin chat UI at `/ask` |
 | Works in any Ruby app | Requires Rails 7.1+ | Requires Rails 7.1+ |
 | `gem "ask-agent"` | `gem "ask-rails"` | `gem "ask-rails-harness"` |
 

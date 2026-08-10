@@ -18,7 +18,9 @@ Start from what you're building, not from the gem list. Every gem declares its o
 | Run an agent in any Ruby app (chatbot, coding assistant, research) | `ask-agent` (pulls in providers, tools, skills, state) |
 | Add shell/file tools to that agent | `ask-agent` + `ask-tools-shell` |
 | Give your Rails users AI features (agents, actions, workflows) | `ask-rails` (+ `ask-graph` for workflows) |
-| Give an admin agent safe access to your Rails app | `ask-rails-harness` |
+| Give an admin agent safe access to any Ruby project | `ask-ruby-harness` |
+| Give an admin agent safe access to your Rails app | `ask-rails-harness` (builds on `ask-ruby-harness`) |
+| Let Claude Code / Cursor introspect any Ruby project | `ask-ruby-harness-mcp` |
 | Let Claude Code / Cursor introspect your Rails app | `ask-rails-harness-mcp` |
 | Build a deterministic multi-step pipeline | `ask-graph` |
 | Ground answers in your own documents | `ask-rag` |
@@ -68,12 +70,19 @@ Don't add gems you don't need. `ask-agent` alone gets you a working agent; every
 |---|---|
 | **[ask-graph](https://github.com/ask-rb/ask-graph)** | Deterministic, checkpointed multi-step workflows with conditions, parallelism, approval, timeouts, retries. [Guide](/ask-docs/core/graph) |
 
+## Harness
+
+| Gem | Purpose |
+|---|---|
+| **[ask-ruby-harness](https://github.com/ask-rb/ask-ruby-harness)** | Admin AI copilot for any Ruby project: 6 tools (DB, models, logs, commands, tests) with audit log and permissions. No Rails dependency. [Guide](/ask-docs/ruby/setup) |
+| **[ask-ruby-harness-mcp](https://github.com/ask-rb/ask-ruby-harness-mcp)** | Exposes the harness tools to coding agents over MCP — serves any Ruby project, monorepo-aware. [Guide](/ask-docs/ruby/mcp) |
+
 ## Rails
 
 | Gem | Purpose |
 |---|---|
 | **[ask-rails](https://github.com/ask-rb/ask-rails)** | Generators, file conventions, and a railtie for user-facing AI features in Rails. [Guide](/ask-docs/getting-started/rails-app) |
-| **[ask-rails-harness](https://github.com/ask-rb/ask-rails-harness)** | Admin AI copilot mounted at `/ask`: 9 Rails-aware tools, audit log, permissions, chat UI. [Guide](/ask-docs/rails/setup) |
+| **[ask-rails-harness](https://github.com/ask-rb/ask-rails-harness)** | Admin AI copilot mounted at `/ask`: the 6 generic tools plus `RouteInspector`, audit log, permissions, chat UI. Builds on `ask-ruby-harness`. [Guide](/ask-docs/rails/setup) |
 | **[ask-rails-harness-mcp](https://github.com/ask-rb/ask-rails-harness-mcp)** | Exposes the harness tools to coding agents over MCP. [Guide](/ask-docs/rails/mcp) |
 
 ## MCP

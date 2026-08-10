@@ -7,7 +7,7 @@ nav_order: 2
 
 # Database Tools
 
-Nine built-in tools that give your agent deep access to your Rails application. They ship with `ask-rails-harness`:
+Seven built-in tools that give your agent deep access to your Rails application. They ship with `ask-rails-harness` — the six generic tools come from `ask-ruby-harness` (usable in any Ruby project; see the [Ruby Harness guides](/ask-docs/ruby/setup)), and `RouteInspector` is Rails-native:
 
 ```ruby
 gem "ask-rails-harness"
@@ -89,17 +89,6 @@ tool.call(lines: 50, level: "ERROR", search: "timeout")
 - **Rotated archives** — automatically reads `.log.1`, `.log.2.gz`, etc.
 - **Max lines** — capped at 500 lines per call
 
-## ReadRoutes
-
-Read the complete route table.
-
-```ruby
-tool = Ask::Rails::Harness::Tools::ReadRoutes.new
-tool.call
-```
-
-Returns the raw content of `config/routes.rb`. The agent receives the route DSL source, not a parsed route table.
-
 ## RunCommand
 
 Run a shell command in the Rails application root directory.
@@ -130,7 +119,9 @@ tool.call(pattern: "admin")
 tool.call(verbose: true)
 ```
 
-Unlike the old `ReadRoutes` (which returns the raw routes.rb file), `RouteInspector` returns structured data the agent can filter and reason about.
+Unlike a raw read of `config/routes.rb`, `RouteInspector` returns structured
+data the agent can filter and reason about — including routes split across
+`draw` files and engines.
 
 ## SchemaGraph
 
@@ -181,35 +172,20 @@ end
 - If both are `nil` (default), all commands are allowed
 - Blocked commands return an error and are recorded in the audit log
 
-## SearchCodebase
-
-Full-text code search using grep.
-
-```ruby
-tool = Ask::Rails::Harness::Tools::SearchCodebase.new
-tool.call(pattern: "class User", path: "app/models")
-```
-
-## ReadFile
-
-Read any file from the Rails application.
-
-```ruby
-tool = Ask::Rails::Harness::Tools::ReadFile.new
-tool.call(path: "app/models/user.rb")
-# => { path: "app/models/user.rb", content: "...", size: 1234 }
-```
-
-Paths are relative to `Rails.root`.
-
 ## What the Agent Can Do With These
 
 With the Rails toolset, an agent can:
 
-- **Debug errors** — ReadLog for errors → ReadModel on relevant models → QueryDatabase for data state → SearchCodebase for related code
-- **Explore unfamiliar code** — ReadRoutes → ReadModel → SearchCodebase → ReadFile
+- **Debug errors** — ReadLog for errors → ReadModel on relevant models → QueryDatabase for data state → RunCommand for the failing path
+- **Explore unfamiliar code** — RouteInspector → ReadModel → QueryDatabase
 - **Answer business questions** — QueryDatabase with aggregations
-- **Audit security** — SearchCodebase for patterns, ReadModel for validations
+- **Audit security** — ReadModel for validations, QueryDatabase for sensitive data exposure
+
+## Running tests
+
+`RunTests` runs the suite with structured results and failure reruns — see
+[Running Tests](/ask-docs/ruby/tests) in the Ruby Harness guides (runner
+detection covers `bin/rails test`, rspec, and rake).
 
 ## Next Steps
 

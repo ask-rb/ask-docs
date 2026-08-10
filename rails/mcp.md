@@ -20,7 +20,7 @@ This page covers:
 
 The [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) is an open standard for connecting AI agents to external tools. When you mount an MCP endpoint in your Rails app, any MCP-compatible coding agent can connect to it and discover your app's tools automatically.
 
-ask-rails-harness already has 9 built-in tools for schema introspection, database queries, model inspection, route parsing, log reading, code search, file reading, and command execution. `ask-rails-harness-mcp` exposes these tools as MCP tools, so coding agents can use them without any manual configuration.
+ask-rails-harness already has 7 built-in tools for schema introspection, database queries, model inspection, route parsing, log reading, guarded command execution, and structured test runs. The six generic tools come from `ask-ruby-harness` (usable in any Ruby project — see [Agent Integration (MCP)](/ask-docs/ruby/mcp)); `RouteInspector` is Rails-native. `ask-rails-harness-mcp` exposes these tools as MCP tools, so coding agents can use them without any manual configuration.
 
 The agent connects to your app, discovers all available tools, and uses them to understand your codebase. This means:
 
