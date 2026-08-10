@@ -26,7 +26,9 @@ of the box. Programmatic use is available for embedding.
 | `ACH_MAX_TURNS` | `25` | max turns per run (alias: `ASK_AGENT_MAX_TURNS`) |
 | `ACH_TURN_TIMEOUT` | `600` | seconds a turn may wait for approvals before aborting |
 | `ACH_DB_PATH` | `./data/ask-coding-harness.db` | conversation database |
-| `ACH_SYSTEM_PROMPT` | — | extra system prompt lines appended to the workspace prompt |
+| `ACH_SYSTEM_PROMPT` | — | extra system prompt lines (append section) |
+| `system_prompt` (config) | — | custom base prompt replacing the default |
+| `system_prompt_guidelines` (config) | — | extra guideline bullets |
 | `ACH_MODELS` | — | comma-separated model list offered in Settings |
 | `ASK_AGENT_LLM_PROVIDER` | `opencode_go` | provider slug for the `ask_agent` adapter |
 
@@ -46,6 +48,22 @@ External adapters receive the approval mode and degrade gracefully when
 they lack approval controls (the controls become no-ops and the turn
 never blocks).
 
+## Workspaces
+
+The harness is universal: conversations carry their workspace directory,
+and the server exposes a workspace registry.
+
+| Endpoint | Purpose |
+|---|---|
+| `GET /api/workspaces` | list known workspaces (name, root, branch, conversation count) |
+| `POST /api/workspaces` | open/register a workspace by path |
+| `GET /api/workspaces/:path/info` | info for one workspace |
+| `POST /api/chat` | accepts a `workspace` param; the conversation is created and scoped to it |
+
+Turns execute inside their workspace directory (serialized via a turn
+mutex, since the shell tools default to the process working directory),
+and each session gets its workspace's system prompt.
+
 ## Programmatic API
 
 ```ruby
@@ -56,6 +74,9 @@ Ask::CodingHarness.configure do |c|
   c.model = "claude-sonnet-4"
   c.approval = :require
   c.plan_mode = true
+  c.system_prompt = "You are a Rails expert."        # custom base prompt
+  c.system_prompt_append = "Prefer the ask-rb conventions."
+  c.system_prompt_guidelines = ["Always run tests"]
 end
 
 # Blocking web server
