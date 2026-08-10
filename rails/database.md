@@ -52,6 +52,23 @@ tool.call(sql: "SELECT * FROM users", limit: 10)
 - Binary columns replaced with `[BINARY DATA]`
 - Returns an `Ask::Result` with `data` containing column names and rows
 
+### Multi-database apps
+
+Multi-DB Rails apps (e.g. SolidQueue on a `queue` database) can target any
+named database from `database.yml` with the `database:` param — resolved
+through the app's own configurations registry, so credential-based configs
+work:
+
+```ruby
+tool.call(sql: "SELECT * FROM solid_queue_jobs", database: "queue")
+# => { columns: [...], rows: [...], count: 0, truncated: false, database: "queue" }
+```
+
+The result reports which database was queried, and the write guards apply
+to every database. Full URL values are also accepted. See
+[Multi-database apps](/ask-docs/ruby/database#multi-database-apps) for
+details.
+
 ## ReadModel
 
 Introspect an ActiveRecord model — columns, associations, validators, and scopes.

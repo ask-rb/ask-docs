@@ -65,6 +65,25 @@ Returns columns and rows — for example `{ columns: ["id", "email", ...], rows:
   (detected from `RAILS_ENV`/`RACK_ENV`/`APP_ENV`)
 - Binary columns replaced with `[BINARY DATA]`
 
+### Multi-database apps
+
+Multi-database projects (Rails 6+ `database.yml` with named sections like
+`primary`, `queue`, `cache`) can target any database with the `database:`
+param — a config key or a full connection URL:
+
+```ruby
+tool.call(sql: "SELECT * FROM solid_queue_jobs", database: "queue")
+tool.call(sql: "SELECT count(*) FROM users", database: "cache")
+tool.call(sql: "SELECT 1", database: "postgres://user:pass@localhost:5432/other_db")
+```
+
+Named keys resolve first through the host app's own configurations registry
+(so Rails apps get credential-resolved configs), then from
+`config/database.yml`. The result reports which database was queried
+(`"database": "queue"`), and the write guards apply to every database. A
+name that exists nowhere returns a clear failure. Each named database gets
+its own connection pool (established lazily on first use).
+
 ## ReadModel
 
 Introspect an ActiveRecord model — columns, associations, validators, and
