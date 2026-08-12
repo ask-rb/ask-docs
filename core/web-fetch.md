@@ -20,7 +20,7 @@ success:
                             │ tries in order, first success wins
                     ┌───────▼────────┐     ┌──────────────────────┐
                     │ Crawl4AI       │────▶│ Local (Ruby)         │
-                    │ self-hosted,   │     │ Net::HTTP + Nokogiri │
+                    │ self-hosted,   │     │ httpx + Nokogiri     │
                     │ if CRAWL4AI_URL│     │ + content pruning    │
                     └───────┬────────┘     └───────────┬──────────┘
                             │                         │
@@ -41,17 +41,26 @@ real browser for the sites nothing plain-HTTP can read.
    renderer that executes JavaScript and returns clean fit-markdown, so it
    handles the SPA pages the Local backend can't. If the service is down or
    unreachable it fails fast and the chain falls through.
-2. **Local** — pure Ruby (`Net::HTTP` + Nokogiri + reverse_markdown), zero
-   external services. Converts through the shared Markdown pipeline with a
-   default adaptive `ContentFilter` (see [Content pruning](#content-pruning)),
-   so the returned content is the density-scored "fit" of the page: chrome,
-   navs, and link-farms pruned; article prose, tables, and code kept.
+2. **Local** — pure Ruby (`httpx` + Nokogiri + reverse_markdown), zero
+   external services. One pooled keep-alive connection per thread, so
+   repeated fetches cost a TLS handshake at most. Converts through the
+   shared Markdown pipeline with a default adaptive `ContentFilter` (see
+   [Content pruning](#content-pruning)), so the returned content is the
+   density-scored "fit" of the page: chrome, navs, and link-farms pruned;
+   article prose, tables, and code kept. A **JS-shell completeness signal**
+   fails client-rendered apps through: if the server HTML shows a framework
+   footprint (React/Vue/Next/Nuxt) or a big HTML page renders almost no
+   text, Local reports the shell instead of silently returning a truncated
+   page, and the chain moves to a rendering backend.
 3. **Jina** — Jina Reader free tier (`https://r.jina.ai/<url>`), no key for
    ~20 req/min per IP; a last-resort fallback for JS-rendered pages.
 4. **Browser** — real Chrome via Ferrum, appended when a Chrome/Chromium
    binary is found **or** `ASK_WEB_FETCH_CDP_URL` is set. Renders JavaScript
    and lets Cloudflare-style managed challenges that auto-solve complete
-   themselves. Slowest, so it always sits last (see
+   themselves. Waits for real network idle (CDP Network events, so lazy
+   SPAs render their later waves), and on a challenge page warms the domain
+   root first — earning the clearance cookie in the persistent profile —
+   then retries the URL once. Slowest, so it always sits last (see
    [Real Chrome (Browser)](#real-chrome-browser)).
 
 With nothing else configured the chain is `Local, Jina` — no behavior change
@@ -112,14 +121,23 @@ Two modes, controlled by environment:
 
 - **Launched** (default when a binary is found): the backend starts its own
   headless Chrome. Handles SPAs and client-side pages, and lets managed
-  challenges that auto-solve for real browsers complete themselves.
+  challenges that auto-solve for real browsers complete themselves. A
+  **warm-and-retry** pass handles the rest: on a challenge page it visits
+  the domain root first (where the managed challenge auto-solves for a
+  trusted browser), earning the domain's clearance cookie in the persistent
+  profile, then retries the URL once — one warm per domain per process, one
+  retry per fetch, so a DataDome-class wall still fails fast.
 - **Attached** (`ASK_WEB_FETCH_CDP_URL`): drives a Chrome that is *already
   running* with `--remote-debugging-port` — the same connect-to-9222 pattern
   the chrome-devtools MCP uses. That browser is a **trusted context**: a
   long-lived profile with any cookies it has already earned (e.g.
   `cf_clearance`), so sites whose invisible challenges soft-block a fresh
   automation browser load normally. Each fetch uses its own tab, created and
-  closed by the backend; existing tabs are never touched.
+  closed by the backend; existing tabs are never touched. The backend waits
+  for real **network idle** (CDP Network events subscribed before
+  navigation), so lazy SPAs render their later waves before the page is
+  read — and on macOS the frontmost app gets its focus back when the tab
+  closes.
 
 Honest limitation, measured in the wild: freshly launched automation browsers
 are soft-blocked by aggressive bot protection (patronview.com, npmjs.com,
@@ -140,13 +158,37 @@ To use the MCP server through an attached browser:
 
 ## Failure semantics
 
-Every failure — network errors, timeouts, non-HTML responses, anti-bot
-challenge pages, thin JS-shell extractions, auth errors (401/403), an
-unsolved browser challenge, an unreachable CDP endpoint — raises
-`Ask::WebFetch::Error` (`FetchError` hard failure, `EmptyContentError` page
-fetched but nothing usable, `TimeoutError` transient, `ServerError`
-service-side). The chain collects each backend's error and returns a failure
-result listing them all, so callers know exactly what was tried and why.
+Every backend failure raises a subclass of `Ask::WebFetch::Error`:
+
+| Error | Means | Retry? |
+|---|---|---|
+| `ParkedDomainError` | registrar parking ad (GoDaddy/Namecheap) — the domain is for sale, not a site | never |
+| `EmptyContentError` | page fetched, nothing usable (JS shell, noise-only, empty) | no — re-render sometimes |
+| `FetchError` | deterministic hard failure — 4xx, challenge page, non-HTML, auth | no |
+| `TimeoutError` | network-level — timeout, refused, reset | yes |
+| `ServerError` | service-side — Jina/Crawl4AI 5xx or rate limit | yes |
+
+A registrar parking page is rejected on **every** backend (the shared
+detector matches GoDaddy's parking-lander, Namecheap's parking app, and the
+static registrar phrases in the raw HTML *and* in rendered markdown), so the
+ad is never returned as the site's content.
+
+When the whole chain fails, the tool collapses every backend's error into
+one whose class carries the best explanation (`Ask::Tools::WebFetch.collapse`),
+most definitive first: **`ParkedDomainError`** beats **`EmptyContentError`**
+beats a deterministic **`FetchError`** (every backend failed dead), and any
+transient failure in the mix keeps the retryable base **`Error`**. The
+message still lists every backend and what it said, e.g.:
+
+```
+Error: WebFetch raised Ask::WebFetch::ParkedDomainError: all web fetch
+backends failed for https://ayur.ai/ (Local: no readable content at ...;
+Jina: Jina access error (403); Browser: parked domain at ... — registrar
+parking page, not site content)
+```
+
+Clients read the class: the terminal verdicts are never retried, transient
+failures recover on retry.
 
 ## Extending
 

@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.30.0] — 2026-08-12
+
+### Changed
+
+- **Web fetch hardened for the crawl economy** (ask-web-fetch 0.6.1,
+  ask-web-fetch-mcp 0.5.0). Documented in
+  [core/web-fetch](/ask-docs/core/web-fetch): the parked-domain detector now
+  runs on **every** backend — a GoDaddy/Namecheap registrar ad is rejected,
+  never returned as the site's content; the Local backend's JS-shell
+  completeness signal fails client-rendered apps through to a rendering
+  backend instead of silently storing a truncated page; the attached Chrome
+  waits for real network idle and warms challenge-gated domain roots; and
+  the **failure collapse** — when the whole chain fails, the tool raises the
+  most definitive error class (`ParkedDomainError` beats `EmptyContentError`
+  beats a deterministic `FetchError`; any transient failure in the mix keeps
+  the retryable base `Error`), so callers stop retrying the unretryable.
+
 ## [0.29.0] — 2026-08-10
 
 ### Changed
