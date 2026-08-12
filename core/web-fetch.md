@@ -168,10 +168,12 @@ Every backend failure raises a subclass of `Ask::WebFetch::Error`:
 | `TimeoutError` | network-level — timeout, refused, reset | yes |
 | `ServerError` | service-side — Jina/Crawl4AI 5xx or rate limit | yes |
 
-A registrar parking page is rejected on **every** backend (the shared
-detector matches GoDaddy's parking-lander, Namecheap's parking app, and the
-static registrar phrases in the raw HTML *and* in rendered markdown), so the
-ad is never returned as the site's content.
+A registrar parking page is rejected on **every** backend by one shared
+page guard (`Backend#guard_page!`, called at the same point in each
+backend's flow): the detector matches GoDaddy's parking-lander, Namecheap's
+parking app, and the static registrar phrases — in the raw HTML where the
+backend saw it (Local, Browser) and in the rendered markdown everywhere
+else (Jina, Crawl4AI) — so the ad is never returned as the site's content.
 
 When the whole chain fails, the tool collapses every backend's error into
 one whose class carries the best explanation (`Ask::Tools::WebFetch.collapse`),
