@@ -8,9 +8,11 @@ nav_order: 9
 # Web Fetch
 
 Fetch a URL and get clean, LLM-ready markdown. The ask-rb web fetch stack
-is `ask-web-fetch` — a Ruby tool (`Ask::Tools::WebFetch`) with a pluggable
+is `ask-web-fetch` — a library (`Ask::WebFetch.fetch`) with a pluggable
 backend chain that tries each backend in order and returns the first
-success:
+success. Tool framing lives with the consumers: agent frameworks use the
+native `Ask::Tools::WebFetch` tool (registered when ask-tools is
+present), and MCP clients use ask-web-fetch-mcp:
 
 ```
 ┌─────────────┐     ┌───────────────────────────────────────────┐
@@ -73,15 +75,19 @@ binary or `ASK_WEB_FETCH_CDP_URL` appends Browser to the back.
 ```ruby
 require "ask/web_fetch"
 
-tool = Ask::Tools::WebFetch.new
-result = tool.execute(url: "https://www.ruby-lang.org/en/")
-puts result
+markdown = Ask::WebFetch.fetch("https://www.ruby-lang.org/en/")
+puts markdown
 # # Ruby Programming Language
 # Source: https://www.ruby-lang.org/en/
 # Ruby is a dynamic, open-source programming language...
 ```
 
-Cap the output with `max_chars` (default 20000).
+Cap the output with `max_chars` (default 20000); the raw page hash (with
+`outlinks`, `redirected`, license signals) is `Ask::WebFetch.fetch_page`.
+The native agent tool — `Ask::Tools::WebFetch`, registered in the
+`Ask::Tools` registry when ask-tools is present — wraps this entry for
+ask-agent and friends; MCP clients use the ask-web-fetch-mcp stdio server
+(see the configuration block in [Real Chrome](#real-chrome-browser)).
 
 ## Content pruning
 
@@ -176,7 +182,7 @@ backend saw it (Local, Browser) and in the rendered markdown everywhere
 else (Jina, Crawl4AI) — so the ad is never returned as the site's content.
 
 When the whole chain fails, the tool collapses every backend's error into
-one whose class carries the best explanation (`Ask::Tools::WebFetch.collapse`),
+one whose class carries the best explanation (`Ask::WebFetch.collapse`),
 most definitive first: **`ParkedDomainError`** beats **`EmptyContentError`**
 beats a deterministic **`FetchError`** (every backend failed dead), and any
 transient failure in the mix keeps the retryable base **`Error`**. The
@@ -198,7 +204,7 @@ Backends subclass `Ask::WebFetch::Backend`, implement `#fetch(url)`
 returning `{ title:, content: }`, and register:
 
 ```ruby
-Ask::Tools::WebFetch.backends = [MyBackend, Ask::WebFetch::Backends::Local]
+Ask::WebFetch.backends = [MyBackend, Ask::WebFetch::Backends::Local]
 ```
 
 Useful for tests (swap the chain) and for future self-hosted backends — the

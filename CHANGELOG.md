@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.31.0] — 2026-08-12
+
+### Changed
+
+- **Web fetch and web search are libraries now; tools live with their
+  consumers** (ask-web-fetch 0.7.1, ask-web-search 0.3.0,
+  ask-web-fetch-mcp 0.6.0, ask-web-search-mcp 0.4.0). The capability
+  lives at the module level — `Ask::WebFetch.fetch` /
+  `Ask::WebSearch.search` — and the ask-tools / ask-core / ask-schema
+  dependency chain is gone from both library gems. The native agent
+  tools (`Ask::Tools::WebFetch` / `WebSearch`) remain, as **optional
+  integrations** that register only when ask-tools is present, so
+  backend-only consumers (crawlers, pipelines) pay nothing while
+  ask-agent users keep `tool: :web_fetch` resolution. The MCP servers
+  own their duck-typed tool shells and no longer pull the ask-tools
+  chain. Documented in [core/web-fetch](/ask-docs/core/web-fetch) and
+  [core/web-search](/ask-docs/core/web-search): library usage first,
+  native tool for agents, MCP server for MCP clients.
+
 ## [0.30.0] — 2026-08-12
 
 ### Changed

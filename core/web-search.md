@@ -106,7 +106,10 @@ both use the JSON API.
 ## The Tool Library: `ask-web-search`
 
 [`ask-web-search`](https://github.com/ask-rb/ask-web-search) wraps SearXNG's JSON
-API into an `Ask::Tools::WebSearch` tool that any ask-rb agent can call.
+API into a library: `Ask::WebSearch.search(query)` returns the results as
+clean numbered markdown. Tool framing lives with the consumers — agent
+frameworks use the native `Ask::Tools::WebSearch` tool (registered when
+ask-tools is present), and MCP clients use the server below.
 
 ### Installation
 
@@ -120,9 +123,7 @@ gem "ask-web-search"
 ```ruby
 require "ask/web_search"
 
-tool = Ask::Tools::WebSearch.new
-result = tool.execute(query: "ruby programming language")
-puts result
+puts Ask::WebSearch.search("ruby programming language")
 # => 1. Ruby Programming Language
 #    https://www.ruby-lang.org/en/
 #    Ruby is a dynamic, open-source programming language…
@@ -132,7 +133,14 @@ puts result
 #    Ruby is a general-purpose programming language…
 ```
 
+The raw result list is `Ask::WebSearch.search_results(query)` — `{ url:,
+title:, content: }` entries, deduplicated by url.
+
 ### With ask-agent
+
+Agent frameworks resolve tools by name from the `Ask::Tools` registry; the
+native tool registers itself when ask-tools is present (ask-agent ships
+it), so no extra step:
 
 ```ruby
 session = Ask::Agent::Session.new(
@@ -174,7 +182,7 @@ export SEARXNG_URL=http://localhost:8888
 Or in Ruby:
 
 ```ruby
-Ask::Tools::WebSearch.searxng_url = "http://localhost:8888"
+Ask::WebSearch.searxng_url = "http://localhost:8888"
 ```
 
 Defaults to `http://localhost:8888`.
