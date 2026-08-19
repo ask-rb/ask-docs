@@ -11,9 +11,9 @@ If you're building an AI product, you'll eventually need to answer a deceptively
 
 Every LLM call burns tokens. Every document render takes work. Every API endpoint has a real cost behind it. If you charge for usage — or even if you just want to understand it — you need a way to measure, price, and track what your users consume.
 
-That's what `ask-token-usage` does. It counts real tokens (via tiktoken), prices them at whatever rate you set, and gives each user a wallet with a balance, a ledger, and the ability to spend, grant, and adjust. It works anywhere Ruby runs. Pair it with `ask-token-usage-rails` for ActiveRecord persistence.
+That's what `ask-token-usage` does. It counts real tokens (via tiktoken), prices them at whatever rate you set, and gives each user a wallet with a balance, a ledger, and the ability to spend, grant, and adjust.
 
-**Use ask-token-usage when** you want to track how many tokens your users consume, charge for usage, or just understand where your LLM budget is going. It's the accounting layer — billing sits on top.
+**Use ask-token-usage when** you want to track how many tokens your users consume, charge for usage, or just understand where your LLM budget is going.
 
 **Use ask-token-usage-rails when** you're in a Rails app and want wallets backed by ActiveRecord, a `has_token_wallet` concern, install generators, and an expiry sweep job.
 
@@ -35,23 +35,20 @@ Wallet checks balance →  Enough? Deduct and do the thing.
 
 ```ruby
 # Gemfile
-gem "ask-token-usage-rails"
+gem "ask-token-usage"
 ```
 
 ```sh
 bundle install
-rails g ask_token_usage:install
-rails db:migrate
 ```
 
-The generator creates two tables — `token_wallets` (one per user, with a cached balance) and `token_transactions` (an append-only ledger of every grant, spend, and adjustment).
+That's all you need to get started. No generators, no migrations, no Rails required.
 
 ## Setting a price
 
 First, tell the gem what a token is worth to you. This is your internal rate — what you charge per token, or what a token costs you. You set it once, and everything derives from it:
 
 ```ruby
-# config/initializers/ask_token_usage.rb
 Ask::TokenUsage.configure do |c|
   c.price_per_token = 0.0001  # $0.0001 per token
 end
@@ -62,35 +59,27 @@ Why `0.0001`? Because 1,000,000 tokens at that rate costs $100. You can set any 
 Once set, you can query the price at any scale:
 
 ```ruby
-Ask::TokenUsage.price_per_token   # => Money($0.0001)
-Ask::TokenUsage.price_per(1_000)  # => Money($0.10)
-Ask::TokenUsage.price_per(1_000_000)  # => Money($100.00)
+Ask::TokenUsage.price_per_token        # => Money($0.0001)
+Ask::TokenUsage.price_per(1_000)       # => Money($0.10)
+Ask::TokenUsage.price_per(1_000_000)   # => Money($100.00)
 ```
 
 This is useful for dashboards, invoices, top-up pages — anywhere you need to show what tokens cost in real currency.
 
-## Giving users a wallet
+## Counting tokens
 
-In your model:
-
-```ruby
-class User < ApplicationRecord
-  has_token_wallet
-end
-```
-
-That's it. The user now has a `token_balance`, a transaction history, and the full wallet API:
+The gem wraps tiktoken — the same tokenizer OpenAI uses. Count real tokens in any text:
 
 ```ruby
-user.token_balance  # => 0
-
-user.grant_tokens!(10_000, reason: :signup_bonus)
-user.token_balance  # => 10_000
+Ask::TokenUsage.count_tokens("hello world")                # => 2
+Ask::TokenUsage.count_tokens(text, model: "gpt-4o")        # model-aware encoding
 ```
 
-## Charging for things
+This is how you turn a page of text, a chat message, or a document into a countable, billable number.
 
-The heart of it. Every action that costs tokens follows the same pattern: declare the cost, then spend.
+## Activities
+
+Before you can spend tokens, you need to declare what things cost. An activity is a named action with a token price.
 
 ### Fixed costs
 
@@ -112,127 +101,88 @@ Ask::TokenUsage.activity(:chat_message) do |params|
 end
 ```
 
-`count_tokens` uses tiktoken under the hood — the same tokenizer OpenAI uses. It counts real tokens, not a guess.
+### Estimating cost
 
-### Spending
-
-The key pattern: **charge only when the work succeeds**.
+You can check what an activity would cost without spending anything:
 
 ```ruby
-user.spend_tokens_on!(:chat_message, input: "hi", output: "yo") do
-  LLM.chat(messages: [...])
-end
-```
-
-If the block raises — LLM timeout, API error, whatever — no tokens are deducted. The user isn't charged for failures. This is important: in the real world, LLM calls fail, and you don't want to bill for them.
-
-If you just need a plain deduction (no block):
-
-```ruby
-user.deduct_tokens!(100, reason: :manual_adjustment)
-```
-
-### Checking before spending
-
-Sometimes you want to check first, show a message, or offer a top-up:
-
-```ruby
-user.has_tokens_for?(1_000)                     # => true/false
-user.sufficient_balance?(500)                    # => true/false
-
-# Or estimate without spending:
 Ask::TokenUsage.estimate(:chat_message, input: "hello", output: "world")
-# => 6 (token count for the input + output)
+# => 6
 ```
 
-## Granting tokens
+## The wallet
+
+A wallet is where tokens live. It has a balance, a history, and methods to spend and grant.
+
+### Creating a wallet
+
+Wallets are keyed by an owner — any identifier you choose:
+
+```ruby
+wallet = Ask::TokenUsage.wallet_for("user:42")
+```
+
+In plain Ruby, the owner can be a string, an ID, or any object. The gem doesn't care — it just uses it as a key.
+
+### Granting tokens
 
 Tokens enter the system through grants:
 
 ```ruby
-user.grant_tokens!(10_000, reason: :trial)
-user.grant_tokens!(5_000, reason: :referral, expires_at: 30.days.from_now)
+wallet.grant!(10_000, reason: :signup_bonus)
+wallet.grant!(5_000, reason: :referral, expires_at: 30.days.from_now)
 ```
 
-The `expires_at` is optional. If you set it, the tokens expire — the sweep job removes them when the time comes.
+The `expires_at` is optional. If you set it, the tokens will expire.
 
-## Monthly resets and rollover
-
-This is a business decision, not a technical one. The gem gives you two primitives and lets you decide:
-
-**Reset (no rollover):** Each billing cycle, set the balance to the allowance.
+### Checking balance
 
 ```ruby
-user.adjust_balance_to!(plan.token_allowance, reason: :monthly_reset)
+wallet.balance    # => 15_000
+wallet.has?(1_000)  # => true
 ```
 
-**Rollover:** Each cycle, add the allowance on top of whatever's left.
+### Spending tokens
+
+The key pattern: **charge only when the work succeeds**.
 
 ```ruby
-user.grant_tokens!(plan.token_allowance, reason: :subscription_renewed)
+wallet.spend!(:chat_message, input: "hi", output: "yo") do
+  LLM.chat(messages: [...])
+end
 ```
 
-Pick the one that fits your business model. The gem doesn't care.
+If the block raises — LLM timeout, API error, whatever — no tokens are deducted. The user isn't charged for failures.
 
-## Expired tokens
-
-If tokens should expire — trial bonuses, promotional credits — set an expiry when granting:
+If you just need a plain deduction:
 
 ```ruby
-user.grant_tokens!(10_000, reason: :trial, expires_at: 7.days.from_now)
+wallet.deduct!(100, reason: :manual_adjustment)
 ```
 
-The `SweepExpiredTokensJob` (shipped with ask-token-usage-rails) runs on a schedule and removes expired grants. Set it up in your job scheduler:
+### Adjusting balance
 
-```yaml
-# config/recurring.yml (Solid Queue)
-ask_token_usage_sweep:
-  class: Ask::TokenUsage::Rails::SweepExpiredTokensJob
-  schedule: "every 1 hour"
+Sometimes you need to set an exact balance — monthly resets, corrections, admin overrides:
+
+```ruby
+wallet.adjust_balance_to!(0, reason: :monthly_reset)
+wallet.adjust_balance_to!(50_000, reason: :admin_correction)
 ```
 
-## The ledger
+This records an adjustment entry in the ledger showing the delta.
+
+### Transaction history
 
 Every grant, spend, and adjustment is recorded in an append-only ledger. You can't edit or delete these entries — they're the source of truth.
 
 ```ruby
-user.token_transactions            # all entries, oldest first
-user.token_transactions.debits     # just the spends
-user.token_transactions.grants     # just the grants
-user.token_transactions.since(30.days.ago)  # this month's activity
+wallet.entries                    # all entries, oldest first
+wallet.entries(kind: :debit)     # just the spends
+wallet.entries(kind: :grant)     # just the grants
+wallet.used_since(30.days.ago)   # total spent this month
 ```
 
-Each entry has a `kind` (grant, debit, adjustment, expiry), an `amount` (signed — positive for grants, negative for spends), a `reason`, and a `metadata` hash where you can stuff anything (model ID, provider, input/output token counts, etc.).
-
-## Connecting to LLM calls
-
-If you use ask-instrumentation, the gem can auto-deduct from every LLM call:
-
-```ruby
-require "ask/token_usage/instrumentation"
-
-Ask::TokenUsage::Instrumentation.install do |payload|
-  User.find_by(id: payload[:user_id])
-end
-```
-
-Every `chat.ask` / `chat.stream.ask` event automatically deducts the measured token cost from the wallet. No manual wiring needed — just install the hook and it works.
-
-## Billing integration
-
-The gem is the accounting layer. It doesn't know about Stripe, PayPal, or any payment system. That's by design.
-
-Your billing code calls `grant_tokens!` when the user buys tokens or subscribes:
-
-```ruby
-# Stripe webhook handler
-workspace.grant_tokens!(10_000, reason: :top_up)
-
-# Subscription renewal
-workspace.grant_tokens!(plan.allowance, reason: :subscription_renewed)
-```
-
-This separation means you can swap payment providers without touching your token logic. The gem only knows about tokens in and tokens out.
+Each entry has a `kind`, `amount` (signed), `reason`, `metadata` hash, and timestamps.
 
 ## Callbacks
 
@@ -241,44 +191,44 @@ Want to send a Slack message when someone runs low on tokens? Fire a webhook whe
 ```ruby
 Ask::TokenUsage.configure do |c|
   c.on_insufficient = ->(ctx) {
-    AdminNotification.low_balance(user: ctx.owner, balance: ctx.previous_balance)
+    puts "#{ctx.owner} needs more tokens (has #{ctx.previous_balance})"
   }
 
   c.on_spend = ->(ctx) {
-    Rails.logger.info "[Billing] #{ctx.owner} spent #{ctx.amount.abs} tokens: #{ctx.reason}"
+    puts "#{ctx.owner} spent #{ctx.amount.abs} tokens: #{ctx.reason}"
   }
 end
 ```
 
-The callback receives a `CallbackContext` with the owner, event type, amount, reason, metadata, and the entry that was written.
+The callback receives a `CallbackContext` with the owner, event type, amount, reason, and the entry that was written.
 
-## What about pricing models?
+## Pricing models
 
-The gem handles the *measurement* side — counting tokens and tracking balances. Your pricing model (per-seat, per-token, freemium, tiered) lives in your billing code.
+The gem handles the *measurement* side — counting tokens and tracking balances. Your pricing model (per-seat, per-token, freemium, tiered) lives in your code.
 
-A common pattern:
+A common pattern — each billing cycle, set the balance to the allowance:
 
 ```ruby
-# Plan determines allowance
-class Plan < ApplicationRecord
-  def token_allowance
-    details["token_allowance"].to_i
-  end
-end
-
-# Billing code grants tokens on subscription
-Pay::Subscription.include(Module.new {
-  def after_subscription_active
-    workspace.grant_tokens!(plan.token_allowance, reason: :subscription)
-  end
-})
+wallet.adjust_balance_to!(plan.token_allowance, reason: :monthly_reset)
 ```
 
-The gem provides `grant!`, `deduct!`, `adjust_balance_to!`, and `spend!`. How you combine them is up to you.
+Or add the allowance on top (rollover):
 
-## Pure Ruby, no Rails required
+```ruby
+wallet.grant!(plan.token_allowance, reason: :subscription_renewed)
+```
 
-The core gem (`ask-token-usage`) works without Rails. Use it in scripts, background jobs, Sinatra apps, or anywhere:
+Pick the one that fits your business. The gem doesn't care.
+
+## Billing integration
+
+The gem is the accounting layer. It doesn't know about Stripe, PayPal, or any payment system. That's by design.
+
+Your billing code calls `grant!` when the user buys tokens or subscribes. The gem just tracks what goes in and out.
+
+## Pure Ruby
+
+The core gem works without Rails. Use it in scripts, background jobs, Sinatra apps, or anywhere:
 
 ```ruby
 require "ask-token-usage"
@@ -291,7 +241,109 @@ wallet.spend!(:chat_message, input: "hi") { "hello from the API" }
 wallet.balance  # => 9_998
 ```
 
-The in-memory store is built in. Swap it for ActiveRecord (via ask-token-usage-rails) when you need persistence.
+An in-memory store is built in. It's perfect for scripts, tests, and demos.
+
+---
+
+## Rails
+
+If you're in a Rails app, `ask-token-usage-rails` adds ActiveRecord persistence on top of the core gem. Wallets are backed by database rows, transactions are real records, and you get a generator to set it all up.
+
+### Installation
+
+```ruby
+# Gemfile
+gem "ask-token-usage-rails"
+```
+
+```sh
+bundle install
+rails g ask_token_usage:install
+rails db:migrate
+```
+
+The generator creates two tables:
+
+- **token_wallets** — one row per user, with a cached balance and a polymorphic owner reference
+- **token_transactions** — the append-only ledger (every grant, spend, adjustment, and expiry)
+
+### Adding a wallet to a model
+
+```ruby
+class User < ApplicationRecord
+  has_token_wallet
+end
+```
+
+This adds:
+
+```ruby
+user.token_balance                                   # current balance
+user.grant_tokens!(10_000, reason: :trial)           # add tokens
+user.deduct_tokens!(500, reason: :render)             # remove tokens
+user.spend_tokens_on!(:chat_message, input: "hi") { LLM.chat(...) }  # spend on success
+user.has_tokens_for?(1_000)                           # check balance
+user.token_usage_since(30.days.ago)                   # usage report
+user.token_transactions                               # AR scope for the ledger
+```
+
+All the same wallet methods from the core gem — just accessible as model methods.
+
+### Connecting to LLM calls
+
+If you use ask-instrumentation, the gem can auto-deduct from every LLM call:
+
+```ruby
+# config/initializers/ask_token_usage.rb
+require "ask/token_usage/instrumentation"
+
+Ask::TokenUsage::Instrumentation.install do |payload|
+  User.find_by(id: payload[:user_id])
+end
+```
+
+Every `chat.ask` / `chat.stream.ask` event automatically deducts the measured token cost from the wallet. No manual wiring needed.
+
+### Expired tokens
+
+If tokens should expire — trial bonuses, promotional credits — set an expiry when granting:
+
+```ruby
+user.grant_tokens!(10_000, reason: :trial, expires_at: 7.days.from_now)
+```
+
+The `SweepExpiredTokensJob` runs on a schedule and removes expired grants:
+
+```yaml
+# config/recurring.yml (Solid Queue)
+ask_token_usage_sweep:
+  class: Ask::TokenUsage::Rails::SweepExpiredTokensJob
+  schedule: "every 1 hour"
+```
+
+### What the generator creates
+
+```ruby
+# Migration
+create_table :token_wallets do |t|
+  t.string :owner_type, null: false
+  t.bigint :owner_id, null: false
+  t.bigint :balance, null: false, default: 0
+  t.timestamps
+end
+add_index :token_wallets, [:owner_type, :owner_id], unique: true
+
+create_table :token_transactions do |t|
+  t.references :token_wallet, null: false, foreign_key: true
+  t.string :entry_type, null: false
+  t.bigint :amount, null: false
+  t.string :reason, null: false
+  t.json :metadata, null: false, default: {}
+  t.bigint :balance, null: false
+  t.datetime :expires_at
+  t.datetime :created_at, null: false
+end
+```
 
 ## Next steps
 
