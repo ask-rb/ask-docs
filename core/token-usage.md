@@ -17,6 +17,28 @@ That's what `ask-token-usage` does. It counts real tokens (via tiktoken), prices
 
 **Use ask-token-usage-rails when** you're in a Rails app and want wallets backed by ActiveRecord, a `has_token_wallet` concern, install generators, and an expiry sweep job.
 
+## What is a token?
+
+When you send text to an AI model — a chat message, a document, a prompt — the model doesn't read words the way you do. It breaks your text into small pieces called *tokens*. A token might be a word, half a word, a punctuation mark, or even a single character, depending on the language and the model.
+
+For example, "Hello world" is two tokens. "artificial intelligence" might be three or four, depending on the model. A full page of English text is typically around 1,000 tokens. Code tends to use more tokens per line because of all the symbols and indentation.
+
+AI companies charge by the token. OpenAI, Anthropic, Google — they all price their APIs based on how many tokens go in (your prompt) and how many come out (the model's response). A conversation that uses 10,000 input tokens and 2,000 output tokens costs you real money, calculated from those numbers and the model's per-token price.
+
+This is why tokens matter to you. If your product sends text to an LLM — for chat, search, summarization, code generation, anything — each request has a token cost. And if your users are the ones driving those requests, you need to know who used how many, so you can bill for it, budget for it, or just understand where your money is going.
+
+## Why tokens, not credits?
+
+Some billing systems use abstract "credits" — you buy 1,000 credits for $10, and each action costs some number of credits. The problem is that credits are made up. There's no direct connection between "1 credit" and the actual cost of the work. The mapping is arbitrary, and it changes whenever you adjust pricing.
+
+Tokens are different. They're a real, measurable unit. When a model processes text, it produces a specific, countable number of tokens. You can verify it. You can reproduce it. When OpenAI charges you $2.50 per million input tokens, you know exactly what you're paying for.
+
+Using tokens as your currency means your pricing stays honest. If a chat message uses 500 tokens and you charge $0.0001 per token, that's $0.05 — and you can show your users exactly that math. No mysterious credit exchange rates. No "this action costs 47 credits" where nobody knows what a credit is worth.
+
+Tokens also scale naturally with the work. A short message costs less than a long one. A complex document costs more than a simple one. The price follows the effort, automatically. With credits, you'd have to guess how many credits each action "should" cost, and you'd almost certainly get it wrong.
+
+That's why this gem uses tokens as its currency. What you measure is what you charge. What you charge is what it costs. The numbers line up.
+
 ## How it works
 
 Think of it like a prepaid phone plan. Each user gets a wallet with a balance. Every action that costs something — an LLM call, a document render, a search query — deducts tokens from that wallet. You decide what things cost. The gem handles the math, the ledger, and the balance.
