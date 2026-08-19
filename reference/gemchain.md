@@ -108,7 +108,7 @@ This outputs the `Gemfile` block that points each gem to its local directory, so
 
 ## How it fits with ask-rb
 
-The ask-rb ecosystem has 30+ gems. When `ask-core` changes, a dozen downstream gems might need updates. Without gemchain, that's a manual, error-prone process. With it, a single command handles the entire cascade — correctly, every time.
+The ask-rb ecosystem has 40+ gems. When `ask-core` changes, a dozen downstream gems might need updates. Without gemchain, that's a manual, error-prone process. With it, a single command handles the entire cascade — correctly, every time.
 
 ## Next steps
 

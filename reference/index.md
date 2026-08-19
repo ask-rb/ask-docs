@@ -11,7 +11,7 @@ Complete reference documentation for the ask-rb ecosystem.
 
 | Page | What's covered |
 |---|---|
-| [Gem Index](/ask-docs/reference/gems) | All 30+ gems with descriptions and dependencies |
+| [Gem Index](/ask-docs/reference/gems) | All 40+ gems with descriptions and dependencies |
 | [API Reference](/ask-docs/reference/api) | Key classes and methods by gem |
 | [Design & Philosophy](/ask-docs/reference/design) | Architecture, design decisions, lessons learned |
 | [Architecture & Ownership](/ask-docs/reference/architecture) | Gem layering and who owns a constant |
