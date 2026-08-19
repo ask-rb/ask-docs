@@ -27,3 +27,4 @@ The building blocks of the ask-rb ecosystem. Each component is a standalone gem 
 | [App Server](/ask-docs/core/app-server) | JSON-RPC/stdio app server — expose your agent to any app-server client |
 | [ACP Client & Server](/ask-docs/core/acp) | Agent Client Protocol — JSON-RPC 2.0 over stdio: drive coding agents or host your own |
 | [RAG Pipeline](/ask-docs/core/rag) | Document loaders, text splitters, vector stores, MMR — full RAG pipeline |
+| [Token Usage](/ask-docs/core/token-usage) | Token counting, pricing, wallet engine, ledger — usage-based billing |
