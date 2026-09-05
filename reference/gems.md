@@ -16,7 +16,7 @@ Start from what you're building, not from the gem list. Every gem declares its o
 | You want to... | Add to your Gemfile |
 |---|---|
 | Run an agent in any Ruby app (chatbot, coding assistant, research) | `ask-agent` (pulls in providers, tools, skills, state) |
-| Run a general-purpose coding agent in the browser (no Rails) | `ask-coding-harness` (self-hosted web app + `ach` CLI) |
+| ~~Run a general-purpose coding agent in the browser (no Rails)~~ | ~~`ask-coding-harness`~~ — deprecated; build on `ask-app-server` + `ask-session-protocol` instead |
 | Add shell/file tools to that agent | `ask-agent` + `ask-tools-shell` |
 | Give your Rails users AI features (agents, actions, workflows) | `ask-rails` (+ `ask-graph` for workflows) |
 | Give an admin agent safe access to any Ruby project | `ask-ruby-harness` |
@@ -39,7 +39,7 @@ Don't add gems you don't need. `ask-agent` alone gets you a working agent; every
 
 | Gem | Purpose |
 |---|---|
-| **[ask-coding-harness](https://github.com/ask-rb/ask-coding-harness)** | General-purpose coding agent in the browser: self-hosted web app (Roda + PWA), SSE event stream, approvals, plan mode, todos, and the `ach` CLI for headless runs. [Guide](/ask-docs/coding-agent) |
+| **[ask-coding-harness](https://github.com/ask-rb/ask-coding-harness)** | **Deprecated (maintenance mode).** General-purpose coding agent in the browser: self-hosted web app (Roda + PWA), SSE event stream, approvals, plan mode, todos, and the `ach` CLI for headless runs. Superseded by the canonical host + thin-client architecture ([Guide](/ask-docs/coding-agent)) |
 
 ## Foundation
 

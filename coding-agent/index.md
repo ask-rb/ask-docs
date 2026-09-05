@@ -7,6 +7,17 @@ has_children: true
 
 # Coding Agent
 
+> **Deprecated.** `ask-coding-harness` is deprecated and in maintenance
+> mode — bug fixes only, no further development. The browser-client role it
+> played is now served by the canonical ask-rb architecture:
+> [ask-app-server](https://github.com/ask-rb/ask-app-server) is the session
+> host, and thin clients speaking
+> [ask-session-protocol](https://github.com/ask-rb/ask-session-protocol)
+> attach to it ([ask-terminal](https://github.com/ask-rb/ask-terminal) is
+> the first shipped client). An internal successor continues this gem's
+> work privately. The rest of this section is kept as a reference for
+> existing installs.
+
 **`ask-coding-harness`** — a general-purpose coding agent in the browser,
 built on the ask-rb ecosystem. Install it, point it at any project, and the
 agent fires away: reading, writing, and running commands while you watch
