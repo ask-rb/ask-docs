@@ -114,7 +114,34 @@ Ask::Instrumentation.instrument("chat.ask", provider: "openai", model: "deepseek
 end
 ```
 
-The `ask-monitoring` Rails engine subscribes to these events for its dashboard, and `ask-opentelemetry` turns them into spans. Both work with any provider.
+The `ask-monitoring` Rails engine subscribes to these events for its dashboard, `ask-opentelemetry` turns them into spans, and `ask-observability` turns them into Prometheus metrics. They all work with any provider.
+
+## Prometheus metrics with ask-observability
+
+`ask-observability` is the infra-observability twin of the dashboard — where the dashboard answers "what is the app spending?" inside the product, metrics answer "is the service healthy?" in Prometheus, OpenObserve, or Grafana.
+
+```ruby
+gem "ask-observability"
+```
+
+```ruby
+require "ask/observability"
+
+Ask::Observability.install  # in plain Ruby; the Rails railtie does it for you
+```
+
+Every instrumentation event then maintains:
+
+```
+ask_llm_calls_total{provider,model,kind}
+ask_llm_tokens_total{provider,model,kind,direction}
+ask_llm_duration_seconds{provider,model,kind}
+ask_llm_errors_total{provider,kind}
+```
+
+Rails auto-mounts `/metrics` (tune with `metrics_path`), bootstraps OpenTelemetry export to the OTLP endpoint, and switches logs to JSON. Run `rails generate ask:observability:install` for a config file.
+
+For the full setup — configuration, `with_context` correlation, and how the four gems compose (`ask-instrumentation` → `ask-opentelemetry` / `ask-observability` / `ask-monitoring`) — see [ask-observability on GitHub](https://github.com/ask-rb/ask-observability).
 
 ## Telemetry
 

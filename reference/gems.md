@@ -7,7 +7,7 @@ nav_order: 1
 
 # Gem Index
 
-The complete ask-rb ecosystem: 30+ Ruby gems, plus one npm package for UI components. All gems are independently versioned and released on RubyGems. Each gem's README is the front door; the guides below go deep.
+The complete ask-rb ecosystem: 40+ Ruby gems, plus one npm package for UI components. All gems are independently versioned and released on RubyGems. Each gem's README is the front door; the guides below go deep.
 
 ## Which gems do you need?
 
@@ -16,7 +16,6 @@ Start from what you're building, not from the gem list. Every gem declares its o
 | You want to... | Add to your Gemfile |
 |---|---|
 | Run an agent in any Ruby app (chatbot, coding assistant, research) | `ask-agent` (pulls in providers, tools, skills, state) |
-| ~~Run a general-purpose coding agent in the browser (no Rails)~~ | ~~`ask-coding-harness`~~ — deprecated; build on `ask-app-server` + `ask-session-protocol` instead |
 | Add shell/file tools to that agent | `ask-agent` + `ask-tools-shell` |
 | Give your Rails users AI features (agents, actions, workflows) | `ask-rails` (+ `ask-graph` for workflows) |
 | Give an admin agent safe access to any Ruby project | `ask-ruby-harness` |
@@ -26,8 +25,14 @@ Start from what you're building, not from the gem list. Every gem declares its o
 | Build a deterministic multi-step pipeline | `ask-graph` |
 | Ground answers in your own documents | `ask-rag` |
 | Talk to a specific LLM API without an agent | `ask-llm-providers` |
+| Let an agent use your desktop apps | `ask-computer` |
 | Call GitHub, Slack, Notion, Linear, Sentry, Honeybadger from an agent | the matching `ask-*` service gem |
-| Monitor cost and latency in production | `ask-monitoring` (+ `ask-instrumentation`) |
+| Fetch a URL as clean markdown | `ask-web-fetch` |
+| Bill for token usage | `ask-tokens` (+ `ask-tokens-rails` for ActiveRecord) |
+| Give every app a stable `https://<app>.localhost` URL | `ask-local` (+ `ask-local-rails` for Rails) |
+| Expose the agent over the session protocol | `ask-app-server` + `ask-session-protocol` |
+| Drive the agent from a terminal | `ask-terminal` |
+| Monitor cost and latency in production | `ask-monitoring` (+ `ask-observability` for Prometheus/OTel) |
 | Trace requests with OpenTelemetry | `ask-opentelemetry` |
 | Test LLM outputs in Minitest | `ask-eval` |
 | Expose your Ruby tools to any MCP client | `ask-mcp` |
@@ -39,7 +44,12 @@ Don't add gems you don't need. `ask-agent` alone gets you a working agent; every
 
 | Gem | Purpose |
 |---|---|
-| **[ask-coding-harness](https://github.com/ask-rb/ask-coding-harness)** | **Deprecated (maintenance mode).** General-purpose coding agent in the browser: self-hosted web app (Roda + PWA), SSE event stream, approvals, plan mode, todos, and the `ach` CLI for headless runs. Superseded by the canonical host + thin-client architecture ([Guide](/ask-docs/coding-agent)) |
+| **[ask-app-server](https://github.com/ask-rb/ask-app-server)** | JSON-RPC/stdio app server exposing an ask-rb agent over the standard app-server protocol. [Guide](/ask-docs/core/app-server) |
+| **[ask-session-protocol](https://github.com/ask-rb/ask-session-protocol)** | The canonical wire protocol for ask sessions: canonical events, resolvable interactions, versioned JSON Schema. [Guide](/ask-docs/core/session-protocol) |
+| **[ask-terminal](https://github.com/ask-rb/ask-terminal)** | Terminal thin client for the session protocol: spawns or attaches to the host over stdio or a unix socket. [Guide](/ask-docs/core/terminal) |
+| **[ask-coding-providers](https://github.com/ask-rb/ask-coding-providers)** | Registry of coding-agent adapters: `:acp`, `:ask_agent`, `:claude`, `:codex`. |
+
+> `ask-coding-harness` is **deprecated** (maintenance mode). Build on `ask-app-server` + `ask-session-protocol` instead — [guide](/ask-docs/coding-agent).
 
 ## Foundation
 
@@ -55,7 +65,7 @@ Don't add gems you don't need. `ask-agent` alone gets you a working agent; every
 
 | Gem | Purpose |
 |---|---|
-| **[ask-llm-providers](https://github.com/ask-rb/ask-llm-providers)** | All 33 providers in one gem: 7 canonical + 26 OpenAI-compatible, with a 402-model catalog. [Guide](/ask-docs/core/providers) |
+| **[ask-llm-providers](https://github.com/ask-rb/ask-llm-providers)** | All providers in one gem: canonical + OpenAI-compatible, with a bundled model catalog. [Guide](/ask-docs/core/providers) |
 
 ## Tools
 
@@ -64,6 +74,8 @@ Don't add gems you don't need. `ask-agent` alone gets you a working agent; every
 | **[ask-tools](https://github.com/ask-rb/ask-tools)** | The tool framework: `Ask::Tool`, `Ask::Result`, registry. No executable tools inside. [Guide](/ask-docs/core/tools) |
 | **[ask-tools-shell](https://github.com/ask-rb/ask-tools-shell)** | Nine shell and file tools: Bash, Read, Write, Edit, Glob, Grep, Code, Repl (persistent Ruby sessions), ApplyPatch. [Guide](/ask-docs/core/tools) |
 | **[ask-web-search](https://github.com/ask-rb/ask-web-search)** | `Ask::Tools::WebSearch`, a SearXNG-backed search tool. [Guide](/ask-docs/core/web-search) |
+| **[ask-web-fetch](https://github.com/ask-rb/ask-web-fetch)** | `Ask::WebFetch.fetch` — URL → clean markdown with pluggable backends (Local, Crawl4AI, Jina, Browser). [Guide](/ask-docs/core/web-fetch) |
+| **[ask-computer](https://github.com/ask-rb/ask-computer)** | Drive desktop apps via Cua Driver: screenshots, clicks, typing, sandboxed VMs, encrypted Computer History. [Guide](/ask-docs/core/computer) |
 
 ## Agent
 
@@ -98,14 +110,15 @@ Don't add gems you don't need. `ask-agent` alone gets you a working agent; every
 |---|---|
 | **[ask-mcp](https://github.com/ask-rb/ask-mcp)** | MCP client and server for Ruby: stdio, SSE, Streamable HTTP, OAuth 2.1. [Guide](/ask-docs/core/mcp) |
 | **[ask-web-search-mcp](https://github.com/ask-rb/ask-web-search-mcp)** | MCP server exposing `ask_web_search` over stdio for any MCP client. [Guide](/ask-docs/core/web-search) |
+| **[ask-web-fetch-mcp](https://github.com/ask-rb/ask-web-fetch-mcp)** | MCP server exposing `ask_web_fetch` over stdio for any MCP client. [Guide](/ask-docs/core/web-fetch) |
+| **[ask-computer-mcp](https://github.com/ask-rb/ask-computer-mcp)** | MCP server for `ask-computer` tools over stdio — use computer-use from any MCP client. [Guide](/ask-docs/core/computer) |
 
-## Agent Infrastructure
+## Session Protocol & Clients
 
 | Gem | Purpose |
 |---|---|
-| **[ask-app-server](https://github.com/ask-rb/ask-app-server)** | JSON-RPC/stdio app server exposing an ask-rb agent over the standard app-server protocol. [Guide](/ask-docs/core/app-server) |
-| **[ask-acp](https://github.com/ask-rb/ask-acp)** | Agent Client Protocol in Ruby: JSON-RPC 2.0 over stdio, client and server. [Guide](/ask-docs/core/acp) |
-| **[ask-coding-providers](https://github.com/ask-rb/ask-coding-providers)** | Registry of coding-agent adapters: `:acp`, `:ask_agent`, `:claude`, `:codex`. |
+| **[ask-session-protocol](https://github.com/ask-rb/ask-session-protocol)** | Canonical wire protocol for ask sessions: events, interactions, methods, versioning, JSON Schema. [Guide](/ask-docs/core/session-protocol) |
+| **[ask-terminal](https://github.com/ask-rb/ask-terminal)** | Terminal client for the session protocol (command `ask`). Spawns or attaches to the host. [Guide](/ask-docs/core/terminal) |
 
 ## Instrumentation & Observability
 
@@ -113,6 +126,7 @@ Don't add gems you don't need. `ask-agent` alone gets you a working agent; every
 |---|---|
 | **[ask-instrumentation](https://github.com/ask-rb/ask-instrumentation)** | `ActiveSupport::Notifications` events for every LLM operation. [Guide](/ask-docs/production/observability) |
 | **[ask-opentelemetry](https://github.com/ask-rb/ask-opentelemetry)** | OpenTelemetry spans from instrumentation events. [Guide](/ask-docs/production/opentelemetry) |
+| **[ask-observability](https://github.com/ask-rb/ask-observability)** | Prometheus metrics + OTel/logging bootstrap + `/metrics` endpoint. [Guide](/ask-docs/production/observability) |
 | **[ask-monitoring](https://github.com/ask-rb/ask-monitoring)** | Rails engine dashboard for cost, throughput, error rate, response time, with alerts. [Guide](/ask-docs/production/monitoring) |
 
 ## Service Contexts
@@ -147,6 +161,20 @@ Service gems provide an authenticated client plus system-prompt metadata and err
 |---|---|
 | **[ask-rag](https://github.com/ask-rb/ask-rag)** | RAG pipeline: loaders, splitters, vector stores (InMemory, PGVector), retrieval, one-shot query. [Guide](/ask-docs/core/rag) |
 
+## Tokens
+
+| Gem | Purpose |
+|---|---|
+| **[ask-tokens](https://github.com/ask-rb/ask-tokens)** | Token accounting: count real tokens (tiktoken), price them, and run a wallet/ledger engine with a pluggable store. [Guide](/ask-docs/core/token-usage) |
+| **[ask-tokens-rails](https://github.com/ask-rb/ask-tokens-rails)** | ActiveRecord store, `has_token_wallet`, install generator, and expiry sweep job for `ask-tokens`. [Guide](/ask-docs/core/token-usage) |
+
+## Local Development
+
+| Gem | Purpose |
+|---|---|
+| **[ask-local](https://github.com/ask-rb/ask-local)** | Stable named `https://<app>.localhost` URLs for Ruby development. Zero runtime dependencies. [Guide](/ask-docs/core/local) |
+| **[ask-local-rails](https://github.com/ask-rb/ask-local-rails)** | Rails integration for `ask-local`: Railtie, install generator, and `Ask::Local::Rails` helpers. [Guide](/ask-docs/core/local) |
+
 ## Evaluation
 
 | Gem | Purpose |
@@ -175,6 +203,7 @@ ask-eval               ──► (no deps)
 ├── ask-graph           ──► ask-core, ask-state-providers
 ├── ask-instrumentation ──► (no ask deps)
 │     ├── ask-opentelemetry ──► ask-instrumentation
+│     ├── ask-observability ──► ask-instrumentation  (also Prometheus, OTel bootstrap, /metrics)
 │     └── ask-monitoring    ──► ask-instrumentation
 │
 ├── ask-github       ──► ask-auth
@@ -192,15 +221,26 @@ ask-eval               ──► (no deps)
 │           ├── ask-rails-harness    ──► ask-agent, ask-tools, ask-tools-shell, ask-auth
 │           ├── ask-rails-harness-mcp ──► ask-rails-harness, ask-mcp
 │           ├── ask-app-server       ──► ask-agent, ask-state-providers
-│           └── ask-coding-harness   ──► ask-agent, ask-coding-providers,
+│           │     └── ask-terminal        ──► ask-session-protocol  (client; also uses ask-app-server as host)
+│           ├── ask-session-protocol ──► (no deps)  (used by ask-app-server + ask-terminal)
+│           └── ask-coding-harness   ──► ask-agent, ask-coding-providers,  (deprecated)
 │                                        ask-tools-shell, ask-state-providers
 │
 ├── ask-web-search   ──► ask-tools
+│     └── ask-web-search-mcp ──► ask-mcp, ask-web-search
+├── ask-web-fetch    ──► ask-tools
+│     └── ask-web-fetch-mcp  ──► ask-mcp, ask-web-fetch
+├── ask-computer     ──► ask-core, ask-mcp, ask-tools
+│     └── ask-computer-mcp ──► ask-computer, ask-mcp
+├── ask-tokens       ──► (no deps)
+│     └── ask-tokens-rails  ──► ask-tokens, activerecord
+├── ask-local        ──► (no deps)
+│     └── ask-local-rails ──► ask-local
 ├── ask-rag          ──► ask-core
 │
 └── ask-mcp          ──► (no ask deps)
-      ├── ask-web-search-mcp ──► ask-mcp, ask-web-search
-      └── ask-acp            ──► (no ask deps)
+      ├── ask-acp            ──► (no ask deps)
+      └── ask-channel-providers ──► ask-auth
 ```
 
 ## Installation
