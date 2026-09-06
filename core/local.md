@@ -70,27 +70,26 @@ Child processes receive `ASK_LOCAL_URL` (the stable URL — use it for OAuth cal
 
 ## Rails integration
 
-In a Rails app, use [ask-local-rails](https://github.com/ask-rb/ask-local-rails) so hosts and cable origins are wired for you.
-
-```ruby
-gem "ask-local-rails"
-```
+Rails apps need **no extra gem**. ask-local injects
+`RAILS_DEVELOPMENT_HOSTS=<hostname>` into each spawned process, so the
+proxied `.localhost` host is allowed automatically — no `config.hosts`
+patch, no initializer. Boot a Rails app the same way as anything else:
 
 ```bash
-rails generate ask_local:install
+ask-local init   # detects Rails, writes config/local.yml with bundle exec puma
+ask-local        # boots it behind https://<app>.localhost
 ```
 
-The generator creates an initializer, allows `.localhost` hosts and Cable origins in `development.rb`, rewrites hardcoded `-p 3000` to `-p $PORT` in `Procfile.dev`, and creates an empty `ask-local.json`.
-
-Helpers pick the right URL wherever you need one:
+Read the injected URL wherever app code needs its own address — never
+hardcode `localhost:3000`:
 
 ```ruby
-Ask::Local::Rails.url     # => "https://fix-ui.myapp.localhost" (or fallback)
-Ask::Local::Rails.host    # => "fix-ui.myapp.localhost"
-Ask::Local::Rails.proxied? # => true when booted through ask-local
+ENV.fetch("ASK_LOCAL_URL", "http://localhost:3000")
 ```
 
-Use `url` for mailer hosts, OmniAuth callbacks, and webhook targets — never hardcode `localhost:3000`.
+(The former `ask-local-rails` gem is deprecated — its hosts patch became
+the env injection, and its remaining Cable-origins helper is an optional
+convenience.)
 
 ## Agent skill
 
@@ -99,4 +98,4 @@ The gem ships `local_dev` under `ask/skills/`, auto-discovered by `ask-skills`. 
 ## Next steps
 
 - [ask-local on GitHub](https://github.com/ask-rb/ask-local) — routing, TLS, and worktree details
-- [ask-local-rails on GitHub](https://github.com/ask-rb/ask-local-rails) — Rails helpers and generator
+- ask-local-rails — deprecated (moved to ask-deprecated/), superseded by `RAILS_DEVELOPMENT_HOSTS` injection

@@ -29,7 +29,7 @@ Start from what you're building, not from the gem list. Every gem declares its o
 | Call GitHub, Slack, Notion, Linear, Sentry, Honeybadger from an agent | the matching `ask-*` service gem |
 | Fetch a URL as clean markdown | `ask-web-fetch` |
 | Bill for token usage | `ask-tokens` (+ `ask-tokens-rails` for ActiveRecord) |
-| Give every app a stable `https://<app>.localhost` URL | `ask-local` (+ `ask-local-rails` for Rails) |
+| Give every app a stable `https://<app>.localhost` URL | `ask-local` |
 | Expose the agent over the session protocol | `ask-app-server` + `ask-session-protocol` |
 | Drive the agent from a terminal | `ask-terminal` |
 | Monitor cost and latency in production | `ask-monitoring` (+ `ask-observability` for Prometheus/OTel) |
@@ -173,7 +173,7 @@ Service gems provide an authenticated client plus system-prompt metadata and err
 | Gem | Purpose |
 |---|---|
 | **[ask-local](https://github.com/ask-rb/ask-local)** | Stable named `https://<app>.localhost` URLs for Ruby development. Zero runtime dependencies. [Guide](/ask-docs/core/local) |
-| **[ask-local-rails](https://github.com/ask-rb/ask-local-rails)** | Rails integration for `ask-local`: Railtie, install generator, and `Ask::Local::Rails` helpers. [Guide](/ask-docs/core/local) |
+| ask-local-rails (deprecated) | Rails integration for `ask-local` — superseded by `RAILS_DEVELOPMENT_HOSTS` injection in core. Moved to ask-deprecated/. |
 
 ## Evaluation
 
