@@ -98,4 +98,4 @@ The gem ships `local_dev` under `ask/skills/`, auto-discovered by `ask-skills`. 
 ## Next steps
 
 - [ask-local on GitHub](https://github.com/ask-rb/ask-local) — routing, TLS, and worktree details
-- ask-local-rails — deprecated (moved to ask-deprecated/), superseded by `RAILS_DEVELOPMENT_HOSTS` injection
+- ask-local-rails — deprecated (moved to deprecated/), superseded by `RAILS_DEVELOPMENT_HOSTS` injection

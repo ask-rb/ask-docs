@@ -173,7 +173,7 @@ Service gems provide an authenticated client plus system-prompt metadata and err
 | Gem | Purpose |
 |---|---|
 | **[ask-local](https://github.com/ask-rb/ask-local)** | Stable named `https://<app>.localhost` URLs for Ruby development. Zero runtime dependencies. [Guide](/ask-docs/core/local) |
-| ask-local-rails (deprecated) | Rails integration for `ask-local` — superseded by `RAILS_DEVELOPMENT_HOSTS` injection in core. Moved to ask-deprecated/. |
+| ask-local-rails (deprecated) | Rails integration for `ask-local` — superseded by `RAILS_DEVELOPMENT_HOSTS` injection in core. Moved to deprecated/. |
 
 ## Evaluation
 
