@@ -285,27 +285,26 @@ results = store.similarity_search("How do I configure auth?", limit: 5)
 
 ### PGVector (PostgreSQL)
 
-Production-grade vector store using PostgreSQL's `pgvector` extension. Requires the `pgvector` gem and ActiveRecord.
+Production-grade vector store using PostgreSQL's `pgvector` extension. Requires the `pgvector` gem and ActiveRecord — in a Rails app, add the `neighbor` gem (which registers the vector column type) and run `bin/rails generate ask_rag:install` to get the migration below. See [Rails](#rails) for the full setup.
 
 ```ruby
-# Migration first:
-#   create_table :embeddings do |t|
+# Migration (written by the install generator):
+#   create_table :ask_rag_embeddings do |t|
 #     t.text :content
 #     t.jsonb :metadata
 #     t.vector :embedding, limit: 1536
 #   end
-#   add_index :embeddings, :embedding, using: :ivfflat, opclass: :vector_cosine_ops
+#   add_index :ask_rag_embeddings, :embedding, using: :hnsw, opclass: :vector_cosine_ops
+#   add_index :ask_rag_embeddings, "(to_tsvector('english', content))", using: :gin
+#   add_index :ask_rag_embeddings, "(metadata ->> 'id')", unique: true
 
-store = Ask::RAG::VectorStore::PGVector.new(
-  table_name: :embeddings,
-  embedding_column: :embedding
-)
+store = Ask::RAG::VectorStore::PGVector.new
 
 store.add(chunks, model: "text-embedding-3-small")
 results = store.similarity_search("query", limit: 5)
 ```
 
-The PGVector adapter auto-loads when the `pgvector` gem is installed. If the gem isn't available, the adapter is skipped silently.
+`PGVector.new` with no arguments connects to the configured table (default `ask_rag_embeddings`) — pass `table_name:` and friends explicitly to override. Building a `PGVector` without ActiveRecord raises `Ask::RAG::EmbeddingError` with instructions instead of failing deep in the stack.
 
 ### Similarity Search Options
 
@@ -332,7 +331,32 @@ results = store.similarity_search(
   diversity_bonus: 0.3
 )
 # With MMR, results include both :score and :mmr_score in metadata
+
+# Relevance floor — return nothing rather than irrelevant context
+results = store.similarity_search("query", limit: 5, min_score: 0.35)
+# => [] when nothing clears the bar
 ```
+
+For anything a person or an agent reads, prefer `hybrid_search`: dense retrieval misses exact terms (error codes, method names, identifiers) while keyword search misses paraphrase. Hybrid runs both and fuses the ranked lists with Reciprocal Rank Fusion, so a document both halves find outranks one only a single half found.
+
+```ruby
+results = store.hybrid_search("ERR_4021", limit: 5, min_score: 0.35)
+# results carry :rrf_score alongside :score
+```
+
+### Re-indexing
+
+`add` is an upsert — re-running an indexing job replaces rather than duplicates. Documents without an id get a stable one derived from their source, chunk index, and content, so an unchanged file reproduces its ids while an edited file yields new ones. Clear the stale chunks first:
+
+```ruby
+store.add(chunks, model: "text-embedding-3-small")  # first run
+store.add(chunks, model: "text-embedding-3-small")  # no-op, not a duplicate
+
+store.delete_by(source: "docs/config.md")           # drop stale chunks
+store.add(reloaded_chunks, model: "text-embedding-3-small")
+```
+
+Pass an explicit `id:` on the `Ask::Document` to control identity yourself.
 
 ### Search by Vector
 
@@ -376,6 +400,65 @@ puts answer.metadata[:model]   # "deepseek-v4-flash"
 ```
 
 If the store has no relevant documents, `query` returns `nil` — the LLM is never called.
+
+---
+
+## Rails
+
+Rails support lives in the `ask-rag` gem itself — there is no separate wrapper gem. The gem ships a Railtie (guarded: it loads only where `rails/railtie` exists, and `railties` is a development dependency, never a runtime one), so plain Ruby behavior is unchanged.
+
+```bash
+bundle add ask-rag neighbor
+bin/rails generate ask_rag:install
+bin/rails db:migrate
+```
+
+The generator writes a migration for the `ask_rag_embeddings` table (content, metadata, embedding, plus the HNSW, full-text, and upsert indexes the stores assume) and a commented initializer at `config/initializers/ask_rag.rb`.
+
+### Configuration
+
+Configure once — via `config.ask_rag` or `Ask::RAG.configure` — instead of threading the same arguments through every call. Every setting stays overridable per call.
+
+```ruby
+# config/application.rb (or the generated initializer)
+config.ask_rag.embedding_model = "text-embedding-3-small"
+config.ask_rag.chat_model = "gpt-4o"
+config.ask_rag.table_name = :ask_rag_embeddings
+```
+
+| Setting | Default | Description |
+|---|---|---|
+| `embedding_model` | `"text-embedding-3-small"` | Model used by `add` when `model:` is omitted |
+| `chat_model` | `nil` | Model used by `Query.query` when `model:` is omitted |
+| `table_name` | `:ask_rag_embeddings` | PGVector table |
+| `content_column` | `:content` | Column holding chunk text |
+| `metadata_column` | `:metadata` | Column holding JSON metadata |
+| `embedding_column` | `:embedding` | Column holding the vector |
+| `text_search_config` | `"english"` | Postgres text-search configuration for hybrid search |
+| `embedding_dimensions` | `1536` | Vector width recorded in the migration |
+
+### Credentials
+
+Provider API keys resolve from Rails credentials first, then the same environment variables plain Ruby uses — no code changes either way.
+
+```yaml
+# config/credentials.yml.enc (bin/rails credentials:edit)
+ask:
+  openai_api_key: sk-...
+```
+
+Keys are looked up under `ask.<provider>_<key>` (falling back to `llm.<provider>_<key>`), then `OPENAI_API_KEY`, then bare `API_KEY`.
+
+### Usage
+
+With configuration and credentials in place, the call sites shrink to their essence:
+
+```ruby
+store = Ask::RAG::VectorStore::PGVector.new
+store.add(chunks)
+
+answer = Ask::RAG::Query.query(store: store, question: "How do I reset my password?")
+```
 
 ---
 
@@ -505,8 +588,14 @@ gem "nokogiri"
 # Optional: for PDF loading
 gem "pdf-reader"
 
-# Optional: for PostgreSQL vector storage
+# Optional: for PostgreSQL vector storage (plain Ruby)
 gem "pgvector"
+
+# Rails apps: neighbor registers the vector column type with
+# ActiveRecord, and railties powers the ask_rag:install generator
+# (development only — plain Ruby never needs it)
+gem "neighbor"
+gem "railties", ">= 7.0", group: :development
 ```
 
 ---
