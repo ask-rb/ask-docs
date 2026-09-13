@@ -112,7 +112,6 @@ merged). `--dry-run` prints the plan before anything happens.
 | Command | What it does |
 |---|---|
 | `yamine` | Boot every process in `config/local.yml` behind the proxy |
-| `yamine run -- <cmd>` | Run an explicit command through the proxy |
 | `yamine get <name>` | Print the URL for cross-service wiring |
 | `yamine alias <name> <port>` | Static route (e.g. a Docker container) |
 | `yamine list` | Show active routes and liveness |
