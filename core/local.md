@@ -151,11 +151,20 @@ convenience.)
 
 ## Agent skill
 
-The gem ships a `yamine` skill under `ask/skills/`, auto-discovered by
-`ask-skills`. Agents boot with `yamine start --json` (one flushed event
-per phase, payload last, failures carrying the log tail), wire URLs via
-`yamine get`, stop via `yamine stop`'s exit codes, and finish worktree
-branches with `yamine worktree clean --dry-run` first.
+The gem ships a `yamine` skill — the playbook for booting, wiring URLs,
+and cleaning worktrees. With ask-skills / ask-agent it is auto-discovered
+from the gem at `lib/ask/skills/yamine/SKILL.md`.
+
+Without them, give the harness something it already knows where to look:
+
+```bash
+yamine skills install           # -> ~/.agents/skills/yamine/SKILL.md (default)
+yamine skills install --local   # -> .agents/skills/yamine/SKILL.md (this repo)
+yamine skills install --dir <path>  # any directory you choose
+```
+
+Most harnesses (including ZCode) discover `~/.agents/skills/` out of the box.
+`yamine skills --help` shows the other forms, including uninstall.
 
 ## Next steps
 
