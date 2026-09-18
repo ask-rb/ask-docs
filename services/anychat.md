@@ -40,6 +40,14 @@ client.update_workspace_agent("anywaye", "support", display_name: "Help desk")
 
 # Delete an agent (frees the address)
 client.destroy_workspace_agent("anywaye", "support")
+
+# List the sources an agent may read
+client.agent_sources("anywaye", "support")
+# => [{"handle"=>"website", "kind"=>"site", "name"=>"Example", ...}]
+
+# Read one page from a source, as clean markdown
+page = client.agent_source_page("anywaye", "support", "website", "/pricing")
+page["content"]  # => "# Pricing\n\nPlans start at $9/mo."
 ```
 
 ## Authentication
@@ -86,6 +94,23 @@ All read methods return hashes with this shape:
 The `handle` is the URL-safe address the agent answers on within a workspace.
 The `address` is the full path customers visit.
 
+## Source Shape
+
+Source hashes returned by `agent_sources` and `agent_source`:
+
+```ruby
+{
+  "handle"         => "website",
+  "kind"           => "site",
+  "name"           => "Example",
+  "address"        => "/anywaye/support/website",
+  "excluded_paths" => []
+}
+```
+
+The `kind` is `"site"` for a connected website or `"corpus"` for an uploaded
+knowledge base. The `address` is the full path the agent reads from.
+
 ## API
 
 | Method | HTTP | Path | Description |
@@ -95,6 +120,11 @@ The `address` is the full path customers visit.
 | `create_workspace_agent(workspace, **attrs)` | POST | `/api/v1/workspaces/{workspace}/agents` | Create an agent |
 | `update_workspace_agent(workspace, handle, **attrs)` | PATCH | `/api/v1/workspaces/{workspace}/agents/{handle}` | Update an agent |
 | `destroy_workspace_agent(workspace, handle)` | DELETE | `/api/v1/workspaces/{workspace}/agents/{handle}` | Delete an agent |
+| `agent_sources(workspace, agent)` | GET | `.../agents/{agent}/sources` | List sources an agent reads |
+| `agent_source(workspace, agent, source)` | GET | `.../agents/{agent}/sources/{source}` | Show one source and its grant |
+| `agent_source_pages(workspace, agent, source)` | GET | `.../agents/{agent}/sources/{source}/pages` | List pages in a source |
+| `agent_source_page(workspace, agent, source, ref)` | GET | `.../agents/{agent}/sources/{source}/pages/{ref}` | Read one page as markdown |
+| `agent_source_search(workspace, agent, source, q)` | GET | `.../agents/{agent}/sources/{source}/search` | Search pages in a source |
 
 **Create attributes:**
 

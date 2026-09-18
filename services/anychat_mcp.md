@@ -7,10 +7,10 @@ nav_order: 10
 
 
 
-**MCP server for Anychat.** Exposes the agents a workspace owns as callable
-tools over stdio — list them, read one, bring a new one into being, change one,
-or retire one. Built on `ask-mcp` and `ask-anychat`. Designed for clients that
-speak MCP: ZCode, Claude Code, Cursor, and the like.
+**MCP server for Anychat.** Exposes a workspace's agents, sources, and pages as
+callable tools over stdio — list agents, create one, manage what it reads, browse
+its pages, or search through them. Built on `ask-mcp` and `ask-anychat`. Designed
+for clients that speak MCP: ZCode, Claude Code, Cursor, and the like.
 
 ```ruby
 gem "ask-anychat-mcp"
@@ -56,12 +56,12 @@ ask-anychat          HTTP client — Faraday calls to the Anychat REST API
 ```
 
 `ask-anychat-mcp` depends on both `ask-mcp` (>= 0.5.0) and `ask-anychat`
-(>= 0.1.0). It wires five tools into `Ask::MCP::Server.start_stdio` and
+(>= 0.1.0). It wires ten tools into `Ask::MCP::Server.start_stdio` and
 delegates to the HTTP client. You never touch Faraday or the REST API directly.
 
 ## Tools
 
-All five tools require a `workspace` argument (the workspace username). Tool
+All tools require a `workspace` argument (the workspace username). Tool
 names are prefixed `ask_anychat_` to avoid collisions with other MCP tools.
 
 ### `ask_anychat_list_agents`
@@ -137,6 +137,99 @@ Retire an agent. The address becomes free for reuse.
 | `agent` | Yes | Agent handle to delete |
 
 Returns: `Retired the agent at /anywaye/support. The address is free again.`
+
+### `ask_anychat_list_sources`
+
+List the sources an agent may read — websites the workspace connected or corpora
+it holds.
+
+| Argument | Required | Description |
+|----------|----------|-------------|
+| `workspace` | Yes | Workspace username |
+| `agent` | Yes | Agent handle |
+
+Returns human-readable lines:
+
+```
+Example at /anywaye/support/website (site)
+Documentation at /anywaye/support/docs (corpus) — set aside: /internal
+```
+
+Or: `This agent has no sources yet.`
+
+### `ask_anychat_get_source`
+
+Show one source an agent reads, by the handle `list_sources` returns.
+
+| Argument | Required | Description |
+|----------|----------|-------------|
+| `workspace` | Yes | Workspace username |
+| `agent` | Yes | Agent handle |
+| `source` | Yes | Source handle (e.g. `website`) |
+
+Returns name, kind, address, and which pages were set aside.
+
+### `ask_anychat_browse_pages`
+
+List every page an agent may read in a source — the manifest — with set-aside
+pages already left out.
+
+| Argument | Required | Description |
+|----------|----------|-------------|
+| `workspace` | Yes | Workspace username |
+| `agent` | Yes | Agent handle |
+| `source` | Yes | Source handle |
+
+Returns:
+
+```
+2 pages:
+/pricing — Pricing
+/features — Features
+```
+
+Or: `This source has no pages yet.`
+
+### `ask_anychat_read_page`
+
+Read one page an agent may read, by its reference, as clean markdown.
+
+| Argument | Required | Description |
+|----------|----------|-------------|
+| `workspace` | Yes | Workspace username |
+| `agent` | Yes | Agent handle |
+| `source` | Yes | Source handle |
+| `reference` | Yes | Page path (e.g. `/pricing`) |
+
+Returns the page title and markdown content:
+
+```
+Pricing
+
+# Pricing
+
+Plans start at $9/mo.
+```
+
+### `ask_anychat_search_pages`
+
+Search the pages an agent may read in a source. Returns references, titles,
+and snippets — read one by reference for the whole page.
+
+| Argument | Required | Description |
+|----------|----------|-------------|
+| `workspace` | Yes | Workspace username |
+| `agent` | Yes | Agent handle |
+| `source` | Yes | Source handle |
+| `query` | Yes | What to look for |
+
+Returns:
+
+```
+/pricing — Pricing: Plans start at...
+```
+
+Or: `Nothing found for pricing.`
 
 ## Configuration
 
