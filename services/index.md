@@ -18,4 +18,6 @@ Pre-built integrations for the services your agents need to interact with. Each 
 | [Sentry](/ask-docs/services/sentry) | ask-sentry | Error tracking |
 | [Honeybadger](/ask-docs/services/honeybadger) | ask-honeybadger | Error tracking |
 | [SolidErrors](/ask-docs/services/solid_errors) | ask-solid_errors | Database-backed error tracking |
+| [Anychat](/ask-docs/services/anychat) | ask-anychat | Agent management API client |
+| [Anychat MCP](/ask-docs/services/anychat_mcp) | ask-anychat-mcp | MCP server for Anychat agents |
 | [Building a Service Gem](/ask-docs/services/custom) | — | Create your own service context |
