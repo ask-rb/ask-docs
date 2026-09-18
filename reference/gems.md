@@ -24,6 +24,7 @@ Start from what you're building, not from the gem list. Every gem declares its o
 | Let Claude Code / Cursor introspect your Rails app | `ask-rails-harness-mcp` |
 | Build a deterministic multi-step pipeline | `ask-graph` |
 | Ground answers in your own documents | `ask-rag` |
+| Route, guard, or score with a decision model instead of an LLM | `ask-decisions` |
 | Talk to a specific LLM API without an agent | `ask-llm-providers` |
 | Let an agent use your desktop apps | `ask-computer` |
 | Call GitHub, Slack, Notion, Linear, Sentry, Honeybadger from an agent | the matching `ask-*` service gem |
@@ -160,6 +161,12 @@ Service gems provide an authenticated client plus system-prompt metadata and err
 | Gem | Purpose |
 |---|---|
 | **[ask-rag](https://github.com/ask-rb/ask-rag)** | RAG pipeline: loaders, splitters, vector stores (InMemory, PGVector), retrieval, one-shot query. [Guide](/ask-docs/core/rag) |
+
+## Decisions
+
+| Gem | Purpose |
+|---|---|
+| **[ask-decisions](https://github.com/ask-rb/ask-decisions)** | Decision primitives (Choice, Score, Noul) with calibrated probabilities, a TypeSafe/Jev provider, and higher-level components: Gate, OutputJudge, Triage, ConfidencePolicy, Compactor. [Guide](/ask-docs/core/decisions) |
 
 ## Tokens
 
