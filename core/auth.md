@@ -27,6 +27,9 @@ token = Ask::Auth.resolve(:github_token)
 
 # With a user context (for per-user providers like Database)
 token = Ask::Auth.resolve(:openai_api_key, user: current_user)
+
+# Nothing has it? resolve raises MissingCredential; lookup answers nil
+token = Ask::Auth.lookup(:github_token)
 ```
 
 ## Resolution Chain
@@ -115,6 +118,7 @@ Automatically calls `refresh!` when a token has expired and a refresh token is a
 ```ruby
 provider = Ask::Auth::Providers::OAuth.new(
   client_id: "your-client-id",
+  client_secret: "your-client-secret",   # when the provider issues one (e.g. GitHub)
   authorize_url: "https://provider.com/oauth/authorize",
   token_url: "https://provider.com/oauth/token"
 )
@@ -124,6 +128,11 @@ url = provider.authorize_url(user: current_user)
 # Step 2: Exchange code for token
 provider.authorize!(user: current_user, code: params[:code])
 ```
+
+The token exchange asks for JSON (`Accept: application/json`) and includes the
+client secret when one was given — what providers that default to form-encoded
+replies (GitHub among them) need to answer with something parseable. State kept
+in a cookie session round-trips as strings; the verifier lookup tolerates that.
 
 ## Custom Providers
 

@@ -126,7 +126,7 @@ token = Ask::MCP::Auth::Token.new("my-token")
 headers = token.apply({})  # => { "Authorization" => "Bearer my-token" }
 ```
 
-**OAuth 2.1:**
+**OAuth 2.1 (a machine credential):**
 ```ruby
 oauth = Ask::MCP::Auth::OAuth.new(
   client_id: "my-client",
@@ -136,6 +136,43 @@ oauth = Ask::MCP::Auth::OAuth.new(
 oauth.authenticate!
 headers = oauth.apply({})
 ```
+
+**Browser OAuth — `Ask::MCP::Auth::Connect`:**
+
+For servers a *person* signs into, `Connect` walks the chain MCP defines and hands
+your host two steps to run in a browser — it keeps no state of its own, so the
+host carries the `state` and the PKCE verifier between them.
+
+<!-- docs-example: not-verified -->
+```ruby
+flow = Ask::MCP::Auth::Connect.new(endpoint: "https://mcp.example.com/mcp")
+
+# 1. Send the browser here, and keep the verifier until the callback
+outcome = flow.authorization_url(
+  redirect_uri: "https://app.example.com/callback", state: state
+)
+# => { url: "https://auth.example.com/authorize?...", code_verifier: "..." }
+
+# 2. Redeem the code the server redirected back with
+tokens = flow.exchange(
+  code: params[:code],
+  verifier: outcome[:code_verifier],
+  redirect_uri: "https://app.example.com/callback"
+)
+# => { access_token:, refresh_token:, expires_at:, scope: }
+
+# Later, without a browser
+tokens = flow.refresh(refresh_token: stored_refresh_token)
+```
+
+How it finds the door: the resource server's
+`/.well-known/oauth-protected-resource` names its authorization servers
+(RFC 9728), their metadata names the endpoints (RFC 8414 or OIDC discovery), and
+when the server allows dynamic client registration the client is registered on
+the spot — `flow.registered_client` is exposed so you can persist it rather than
+asking twice. PKCE (S256) is always used, the scope comes from the server's own
+advertisement, and the HTTP client is injectable (`http:`) for hosts that want
+their own. Errors are `Ask::MCP::Auth::Connect::Error`.
 
 For details, see the [Auth Setup Guide](https://github.com/ask-rb/ask-mcp/blob/master/docs/auth-setup.md).
 
