@@ -1147,16 +1147,47 @@ module HealthCheck
 end
 ```
 
-Create sessions from definitions:
+### Creating Sessions from Definitions
+
+`Session.build_from_definition` is the unified entry point — used by `Agent.new`, `Session.new(name:)`, and `Ask.chat(name:)`:
 
 ```ruby
+# Via Agent.new (convenience shorthand)
 agent = Ask::Agent.new("health_check")
 agent.run("Check server health")
+
+# Via Session.build_from_definition (explicit)
+session = Ask::Agent::Session.build_from_definition(
+  HealthCheck::Agent, "agents/health_check"
+)
 
 # List all discovered definitions
 Ask::Agent.definitions.each do |name, (klass, dir)|
   puts "#{name}: #{klass.model}"
 end
+```
+
+### Overriding Definition Config
+
+Any explicit option overrides the definition's value:
+
+```ruby
+# Override model from a definition
+agent = Ask::Agent.new("health_check", model: "claude-sonnet-4")
+
+# Use definition for model/tools, but override system prompt
+agent = Ask::Agent.new("health_check", system_prompt: "Custom instructions")
+```
+
+### One-Shot Chat with Definitions
+
+`Ask.chat` accepts a `name:` parameter to look up a definition:
+
+```ruby
+Ask.chat("Check server health", name: "health_check")
+
+# With overrides
+Ask.chat("Check health", name: "health_check", model: "claude-sonnet-4")
 ```
 
 ### CLI

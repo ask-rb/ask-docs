@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.32.0] — 2026-09-19
+
+### Changed
+
+- **Unified Agent API** (ask-agent 0.40.18). `Session.build_from_definition`
+  is the single source of truth for creating sessions from agent definitions.
+  `Agent.new(name)` delegates to it. `Session.new` supports definition lookup
+  via the class method. `Ask.chat` accepts `name:` for definition lookup.
+  Explicit options always override definition values. Removed duplicate
+  `build_session_from_definition` and `resolve_definition_tools` from the
+  Agent module — all definition logic lives on Session now. Documented in
+  [core/agent](/ask-docs/core/agent).
+
 ## [0.31.0] — 2026-08-12
 
 ### Changed
