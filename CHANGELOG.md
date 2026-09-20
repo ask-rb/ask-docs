@@ -13,6 +13,13 @@
   Agent module — all definition logic lives on Session now. Documented in
   [core/agent](/ask-docs/core/agent).
 
+- **agent.build_agents skill** (ask-agent 0.40.19). Bundled SKILL.md teaches
+  building agents with ask-rb — definitions, sessions, tools, configuration,
+  and common patterns. Auto-discovered via `Gem.find_files` when ask-skills
+  is present. Installable via `askr skills install [--global|--local]` for
+  harnesses that don't use ask-skills. Auto-syncs managed copies on CLI
+  invocation. Documented in [core/agent](/ask-docs/core/agent).
+
 ## [0.31.0] — 2026-08-12
 
 ### Changed
