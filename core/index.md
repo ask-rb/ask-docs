@@ -14,6 +14,7 @@ The building blocks of the ask-rb ecosystem. Each component is a standalone gem 
 | [LLM Providers](/ask-docs/core/providers) | OpenAI, Anthropic, Google, Ollama, Bedrock, Mistral, Cloudflare |
 | [UI Kit](/ask-docs/core/ui-kit) | 16 Web Components for AI chat — Lit, Shadow DOM |
 | [Tools & Execution](/ask-docs/core/tools) | Tool framework, shell tools, result types |
+| [Execution Runtime](/ask-docs/core/runtime) | Shared tool-call contract, lifecycle events, cancellation, and adapters |
 | [Sandbox Providers](/ask-docs/core/sandbox) | Isolated code execution — local, Docker, Daytona, Cloudflare |
 | [The Agent Loop](/ask-docs/core/agent) | Session lifecycle, think-call-execute, compaction |
 | [Attachments & File Inputs](/ask-docs/core/attachments) | User→agent file uploads — inline bytes or context-only manifests |

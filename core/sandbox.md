@@ -54,6 +54,31 @@ Result = Data.define(:stdout, :stderr, :exit_code, :timed_out)
 result.success?  # exit_code == 0
 ```
 
+## Use the runtime contract
+
+When a sandbox is one backend in a larger agent system, wrap it in
+`Ask::Sandbox::RuntimeExecutor`. The wrapper turns provider results into
+`Ask::Runtime::ToolResult` values and emits the same lifecycle events as the
+agent and MCP executors.
+
+```ruby
+require "ask-sandbox-providers"
+
+executor = Ask::Sandbox::RuntimeExecutor.new
+call = Ask::Runtime::ToolCall.new(
+  tool_name: "sandbox.execute",
+  input: { command: ["ruby", "-e", "puts 1 + 1"] }
+)
+result = executor.execute(call)
+
+result.success?        # => true
+result.output[:stdout] # => "2\n"
+```
+
+Pass an `ExecutionContext` when the host needs a workspace, correlation IDs,
+cancellation, or event observation. See the [Execution Runtime guide](/ask-docs/core/runtime)
+for the complete journey and the adapter testing contract.
+
 ---
 
 ## Providers
@@ -133,3 +158,12 @@ Cloudflare.new(
 - **Source:** [github.com/ask-rb/ask-sandbox-providers](https://github.com/ask-rb/ask-sandbox-providers)
 - **Rubygems:** [rubygems.org/gems/ask-sandbox-providers](https://rubygems.org/gems/ask-sandbox-providers)
 - **Changelog:** [CHANGELOG.md](https://github.com/ask-rb/ask-sandbox-providers/blob/master/CHANGELOG.md)
+
+## Next steps
+
+- [Execution Runtime](/ask-docs/core/runtime) — carry tool calls through a
+  shared execution contract.
+- [Tools & Execution](/ask-docs/core/tools) — add shell and file tools that
+  can use a sandbox provider.
+- [The Agent Loop](/ask-docs/core/agent) — let an agent choose when to run a
+  sandbox command.

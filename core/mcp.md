@@ -192,6 +192,35 @@ wrapped = Ask::MCP::Adapters::AskTool.wrap(client.tools)
 wrapped.each { |name, adapter| agent.register_tool(adapter.to_ask_tool) }
 ```
 
+### Execute MCP tools through the runtime
+
+If you are building your own executor pipeline, use
+`Ask::MCP::RuntimeExecutor`. It preserves the MCP tool name and arguments,
+normalizes MCP content and errors into `Ask::Runtime::ToolResult`, and emits
+the standard runtime lifecycle events.
+
+<!-- docs-example: not-verified -->
+```ruby
+require "ask/mcp"
+
+client = Ask::MCP.from_stdio("my-mcp-server")
+client.start
+executor = Ask::MCP::RuntimeExecutor.new(client)
+call = Ask::Runtime::ToolCall.new(
+  tool_name: "search",
+  input: { query: "Ruby" },
+  session_id: "session_42",
+  turn: 1
+)
+
+result = executor.execute(call)
+result.success? # => true when the MCP server returns a normal result
+```
+
+Use this path when your host owns the execution loop. If you are building an
+Ask agent, register the MCP tools with `Ask::Agent` and let its loop manage the
+conversation; the same runtime contract is available underneath.
+
 ## Expose your own tools as a server
 
 Ask::MCP also runs the other way. `Ask::MCP::Adapters::ToolServer` wraps any
@@ -212,6 +241,14 @@ Any MCP client — Claude Code, Cursor, ZCode, your own `Ask::MCP::Client` — c
 now discover and call those tools. This is exactly how
 [ask-web-search-mcp](/ask-docs/core/web-search) and
 [ask-rails-harness-mcp](/ask-docs/rails/mcp) are built.
+
+## Next steps
+
+- [Execution Runtime](/ask-docs/core/runtime) — understand calls, contexts,
+  results, cancellation, and lifecycle events.
+- [The Agent Loop](/ask-docs/core/agent) — let an Ask agent select MCP tools.
+- [Sandbox Providers](/ask-docs/core/sandbox) — run local or remote commands
+  through the same runtime seam.
 
 ## Architecture
 

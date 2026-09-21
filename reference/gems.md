@@ -59,6 +59,7 @@ Don't add gems you don't need. `ask-agent` alone gets you a working agent; every
 | **[ask-core](https://github.com/ask-rb/ask-core)** | Zero-dependency foundation: conversations, messages, streaming, provider interface, model catalog, result types, errors. [Guide](/ask-docs/core/ask-core) |
 | **[ask-schema](https://github.com/ask-rb/ask-schema)** | Ruby DSL for JSON Schema, used by tool params and structured output. [Guide](/ask-docs/core/schema) |
 | **[ask-auth](https://github.com/ask-rb/ask-auth)** | Credential resolution chain: env, files, Rails credentials, database, OAuth. [Guide](/ask-docs/core/auth) |
+| **[ask-runtime](https://github.com/ask-rb/ask-runtime)** | Shared tool-call execution kernel: calls, contexts, normalized results, cancellation, lifecycle events, and adapter conformance tests. [Guide](/ask-docs/core/runtime) |
 | **[ask-sandbox-providers](https://github.com/ask-rb/ask-sandbox-providers)** | Four sandbox backends for code execution: Local, Docker, Daytona, Cloudflare. [Guide](/ask-docs/core/sandbox) |
 | **[ask-state-providers](https://github.com/ask-rb/ask-state-providers)** | State backends for sessions and checkpoints: Memory, SQLite, Redis, PostgreSQL, MySQL. [Reference](/ask-docs/reference/api#ask-state-providers) |
 
@@ -200,7 +201,8 @@ Service gems provide an authenticated client plus system-prompt metadata and err
 ask-core               ──► (no deps)
 ask-schema             ──► (no deps)
 ask-auth               ──► (no ask deps)
-ask-sandbox-providers  ──► (no deps)
+ask-runtime            ──► ask-core
+ask-sandbox-providers  ──► ask-runtime
 ask-state-providers    ──► ask-core
 ask-skills             ──► (no deps)
 ask-eval               ──► (no deps)
@@ -208,7 +210,7 @@ ask-eval               ──► (no deps)
 ├── ask-llm-providers   ──► ask-core, ask-auth
 ├── ask-tools           ──► ask-schema
 ├── ask-graph           ──► ask-core, ask-state-providers
-├── ask-instrumentation ──► (no ask deps)
+├── ask-instrumentation ──► ask-runtime
 │     ├── ask-opentelemetry ──► ask-instrumentation
 │     ├── ask-observability ──► ask-instrumentation  (also Prometheus, OTel bootstrap, /metrics)
 │     └── ask-monitoring    ──► ask-instrumentation
@@ -222,7 +224,7 @@ ask-eval               ──► (no deps)
 ├── ask-solid_errors ──► ask-core
 │
 ├── ask-tools-shell  ──► ask-tools, ask-sandbox-providers
-│     └── ask-agent  ──► ask-core, ask-llm-providers, ask-tools, ask-skills,
+│     └── ask-agent  ──► ask-core, ask-runtime, ask-llm-providers, ask-tools, ask-skills,
 │                        ask-state-providers, ask-instrumentation
 │           ├── ask-rails            ──► ask-agent
 │           ├── ask-rails-harness    ──► ask-agent, ask-tools, ask-tools-shell, ask-auth
