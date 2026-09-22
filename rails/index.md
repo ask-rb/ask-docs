@@ -29,5 +29,5 @@ Both gems build on `ask-agent`, which provides the core agent loop. You can use 
 | [Setup & Generators](/ask-docs/rails/setup) | Install, configure, and generate |
 | [Database Tools](/ask-docs/rails/database) | SchemaGraph, RouteInspector, QueryDatabase, and more |
 | [Persistence](/ask-docs/rails/persistence) | ActiveRecord-backed agent sessions |
-| [Error Services](/ask-docs/rails/errors) | SolidErrors, Sentry, and Honeybadger integration |
+| [Error Services](/ask-docs/rails/errors) | SolidErrors, plus legacy Sentry and Honeybadger guidance |
 | [Agent Integration (MCP)](/ask-docs/rails/mcp) | Connect Claude Code, Cursor, and MCP agents to your Rails app |

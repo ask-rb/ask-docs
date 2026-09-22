@@ -7,65 +7,49 @@ nav_order: 2
 
 
 
-**Slack service context for the ask-rb ecosystem.** Provides an authenticated Slack Web API client,
-context metadata, and structured error guidance for AI agents.
+**Slack integration for AI agents.** The `ask-slack` gem is **deprecated and unsupported** — do not add it to new projects.
 
-```ruby
-gem "ask-slack"
-```
+## Recommendation
 
-## Quick Start
+Prefer Slack's official MCP server for agent access to Slack. It is the supported path for agents working with messaging, channels, files, and workspace management, and it replaces `ask-slack` entirely.
+
+## Legacy Integration (Unsupported)
+
+`ask-slack` is documented here only for teams that already depend on it. It receives no maintenance, and its installation instructions are obsolete.
+
+What it provided:
+
+- An authenticated `Slack::Web::Client` (`Ask::Slack.client`)
+- Context constants for system prompts (`DESCRIPTION`, `DOCS_URL`, `AUTH_NAME`)
+- Structured error guidance (`Ask::Slack::Errors`) for common Slack API errors
+- Credential resolution through `ask-auth`
+
+### Legacy Client Usage
 
 <!-- docs-example: not-verified -->
 ```ruby
-require "ask-slack"
-
 client = Ask::Slack.client
 client.chat_postMessage(channel: "#general", text: "Hello from ask-rb!")
 client.conversations_list
+client.conversations_history(channel: "C123456")
 client.users_list
 ```
 
-## Context Metadata
+The client proxy converted authentication errors (`NotAuthed`, `InvalidAuth`, `TokenRevoked`, `TokenExpired`, `AccountInactive`) into `Ask::Auth::InvalidCredential` for consistent error handling.
 
-Available constants for AI system prompts:
+### Legacy Credentials
 
-| Constant | Value |
-|----------|-------|
-| `Ask::Slack::DESCRIPTION` | "Slack — messaging, channels, files, search, workspace management" |
-| `Ask::Slack::DOCS_URL` | <https://api.slack.com/methods> |
-<!-- OPENAPI_URL removed: Slack no longer serves the OpenAPI spec at a stable URL -->
-| `Ask::Slack::AUTH_NAME` | `:slack_token` |
-| `Ask::Slack::AUTH_HOW` | Create a Slack app at <https://api.slack.com/apps> |
-| `Ask::Slack::GEM_NAME` | `slack-ruby-client` |
-| `Ask::Slack::GEM_VERSION` | `~> 3.1` |
-| `Ask::Slack::GEM_DOCS` | <https://rubydoc.info/gems/slack-ruby-client> |
-| `Ask::Slack::QUICK_START` | Ruby code snippet with common client calls |
+Existing installs resolved a Bot User OAuth Token via `ask-auth`: the `SLACK_TOKEN` environment variable or `~/.ask/credentials.yml` (`slack_token`).
 
-## Client
+### Legacy Error Guidance
 
-`Ask::Slack.client` returns an authenticated `Slack::Web::Client`:
-
+<!-- docs-example: not-verified -->
 ```ruby
-client = Ask::Slack.client
-client.conversations_list
-client.conversations_history(channel: "C123456")
-```
-
-The client proxy converts authentication errors (`NotAuthed`, `InvalidAuth`,
-`TokenRevoked`, `TokenExpired`, `AccountInactive`) into
-`Ask::Auth::InvalidCredential` for consistent error handling.
-
-## Error Guide
-
-`Ask::Slack::Errors` provides structured knowledge for agents:
-
-```ruby
-# Look up guidance by error string
+# Guidance by error string
 Ask::Slack::Errors.for("rate_limited")
 # => { message: "Slack API rate limit exceeded.", action: "..." }
 
-# HTTP status code descriptions
+# HTTP status meaning
 Ask::Slack::Errors.status_code_description(429)
 # => "Too Many Requests — Rate limit exceeded. Use Retry-After header."
 
@@ -73,31 +57,6 @@ Ask::Slack::Errors.status_code_description(429)
 Ask::Slack::Errors.exception_class("invalid_auth")
 # => "Slack::Web::Api::Errors::InvalidAuth"
 ```
-
-## Authentication
-
-Set your Slack Bot User OAuth Token:
-
-```bash
-export SLACK_TOKEN=xoxb-your-bot-token-here
-```
-
-Or add it to `~/.ask/credentials.yml`:
-
-```yaml
-slack_token: xoxb-your-bot-token-here
-```
-
-## Dependencies
-
-- **Runtime:** `ask-auth ~> 0.1`, `slack-ruby-client ~> 3.1`
-- **Development:** minitest, mocha, rake
-
-## Links
-
-- **Source:** [github.com/ask-rb/ask-slack](https://github.com/ask-rb/ask-slack)
-- **Issues:** [github.com/ask-rb/ask-slack/issues](https://github.com/ask-rb/ask-slack/issues)
-- **RubyGems:** [rubygems.org/gems/ask-slack](https://rubygems.org/gems/ask-slack)
 
 ## Next Steps
 

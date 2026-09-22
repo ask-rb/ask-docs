@@ -189,7 +189,7 @@ When you install ask-rails-harness, these components are activated:
 
 ## Service Discovery
 
-ask-rails-harness automatically discovers installed service gems. If you add `ask-github` to your Gemfile, the agent knows how to interact with GitHub without additional configuration.
+ask-rails-harness automatically discovers installed service gems. The built-in GitHub, Slack, Notion, Linear, Sentry, and Honeybadger service gems are deprecated — prefer each company's official MCP server for those services instead of adding the gem.
 
 ## Next Steps
 

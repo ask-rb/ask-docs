@@ -27,7 +27,7 @@ Start from what you're building, not from the gem list. Every gem declares its o
 | Route, guard, or score with a decision model instead of an LLM | `ask-decisions` |
 | Talk to a specific LLM API without an agent | `ask-llm-providers` |
 | Let an agent use your desktop apps | `ask-computer` |
-| Call GitHub, Slack, Notion, Linear, Sentry, Honeybadger from an agent | the matching `ask-*` service gem |
+| Call GitHub, Slack, Notion, Linear, Sentry, Honeybadger from an agent | each company's official MCP server (the matching `ask-*` service gems are deprecated) |
 | Fetch a URL as clean markdown | `ask-web-fetch` |
 | Bill for token usage | `ask-tokens` (+ `ask-tokens-rails` for ActiveRecord) |
 | Give every app a stable `https://<app>.localhost` URL | `yamine` |
@@ -135,14 +135,16 @@ Don't add gems you don't need. `ask-agent` alone gets you a working agent; every
 
 Service gems provide an authenticated client plus system-prompt metadata and error guidance for AI agents.
 
+> **Deprecated:** `ask-github`, `ask-slack`, `ask-notion`, `ask-linear`, `ask-sentry`, and `ask-honeybadger` are deprecated and unsupported. Prefer each company's official MCP server for those services; the guides below are legacy reference only.
+
 | Gem | Purpose |
 |---|---|
-| **[ask-github](https://github.com/ask-rb/ask-github)** | Authenticated Octokit client for issues, PRs, repos, search. [Guide](/ask-docs/services/github) |
-| **[ask-slack](https://github.com/ask-rb/ask-slack)** | Slack Web API client for messaging and workspace management. [Guide](/ask-docs/services/slack) |
-| **[ask-notion](https://github.com/ask-rb/ask-notion)** | Notion API client for pages, databases, blocks, search. [Guide](/ask-docs/services/notion) |
-| **[ask-linear](https://github.com/ask-rb/ask-linear)** | GraphQL client for Linear issue tracking. [Guide](/ask-docs/services/linear) |
-| **[ask-sentry](https://github.com/ask-rb/ask-sentry)** | Sentry error tracking API client. [Guide](/ask-docs/services/sentry) |
-| **[ask-honeybadger](https://github.com/ask-rb/ask-honeybadger)** | Honeybadger fault tracking API client. [Guide](/ask-docs/services/honeybadger) |
+| **[ask-github](https://github.com/ask-rb/ask-github)** (deprecated) | Authenticated Octokit client for issues, PRs, repos, search. [Guide](/ask-docs/services/github) |
+| **[ask-slack](https://github.com/ask-rb/ask-slack)** (deprecated) | Slack Web API client for messaging and workspace management. [Guide](/ask-docs/services/slack) |
+| **[ask-notion](https://github.com/ask-rb/ask-notion)** (deprecated) | Notion API client for pages, databases, blocks, search. [Guide](/ask-docs/services/notion) |
+| **[ask-linear](https://github.com/ask-rb/ask-linear)** (deprecated) | GraphQL client for Linear issue tracking. [Guide](/ask-docs/services/linear) |
+| **[ask-sentry](https://github.com/ask-rb/ask-sentry)** (deprecated) | Sentry error tracking API client. [Guide](/ask-docs/services/sentry) |
+| **[ask-honeybadger](https://github.com/ask-rb/ask-honeybadger)** (deprecated) | Honeybadger fault tracking API client. [Guide](/ask-docs/services/honeybadger) |
 | **[ask-solid_errors](https://github.com/ask-rb/ask-solid_errors)** | Database-backed error tracking via the solid_errors gem, no API key. [Guide](/ask-docs/services/solid_errors) |
 
 ## Channels
@@ -215,12 +217,12 @@ ask-eval               ──► (no deps)
 │     ├── ask-observability ──► ask-instrumentation  (also Prometheus, OTel bootstrap, /metrics)
 │     └── ask-monitoring    ──► ask-instrumentation
 │
-├── ask-github       ──► ask-auth
-├── ask-slack        ──► ask-auth
-├── ask-notion       ──► ask-auth
-├── ask-linear       ──► ask-auth
-├── ask-honeybadger  ──► ask-core, ask-auth
-├── ask-sentry       ──► ask-core, ask-auth
+├── ask-github       ──► ask-auth            (deprecated)
+├── ask-slack        ──► ask-auth            (deprecated)
+├── ask-notion       ──► ask-auth            (deprecated)
+├── ask-linear       ──► ask-auth            (deprecated)
+├── ask-honeybadger  ──► ask-core, ask-auth  (deprecated)
+├── ask-sentry       ──► ask-core, ask-auth  (deprecated)
 ├── ask-solid_errors ──► ask-core
 │
 ├── ask-tools-shell  ──► ask-tools, ask-sandbox-providers

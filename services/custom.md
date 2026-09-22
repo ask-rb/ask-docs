@@ -7,7 +7,7 @@ nav_order: 8
 
 # Building a Service Gem
 
-Create a service integration gem using the three-file pattern that all ask-rb service gems follow. This is the same pattern used by ask-github, ask-slack, ask-notion, and all other service gems.
+Create a service integration gem using the three-file pattern that all ask-rb service gems follow. This is the same pattern used by ask-solid_errors, ask-anychat, and the other maintained service gems.
 
 ## The Pattern
 

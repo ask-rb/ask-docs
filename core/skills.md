@@ -130,6 +130,8 @@ The ask-rb ecosystem ships 13+ skills across its gems. Each skill provides domai
 | `rails.route_trouble` | ask-rails-harness | Debugging routing issues |
 | `shell.patterns` | ask-tools-shell | Shell tool composition patterns |
 
+> **Deprecated:** the `github.use_github`, `slack.use_slack`, `notion.use_notion`, `linear.use_linear`, `sentry.use_sentry`, and `honeybadger.use_honeybadger` skills ship from deprecated, unsupported service gems. Prefer each company's official MCP server for those services.
+
 ## Skill Resolution (Progressive Disclosure)
 
 When the agent initializes:

@@ -7,7 +7,7 @@ nav_order: 4
 
 # Error Services
 
-Three error-tracking integrations — SolidErrors, Sentry, and Honeybadger — give your agent visibility into application errors.
+SolidErrors gives your agent visibility into application errors. Sentry and Honeybadger are covered as legacy reference only — their service gems are deprecated and unsupported; prefer each company's official MCP server for those services.
 
 ## SolidErrors
 
@@ -59,14 +59,11 @@ Ask::SolidErrors.occurrence_count(error)
 
 ## Sentry
 
-**Cloud-based error tracking.** Requires a Sentry API token.
+**Cloud-based error tracking.** Prefer Sentry's official MCP server for agent access — the `ask-sentry` gem is deprecated and unsupported.
 
-```ruby
-gem "ask-sentry"
-```
+For teams still on the legacy gem (no maintenance, do not add it to new apps):
 
-Then use:
-
+<!-- docs-example: not-verified -->
 ```ruby
 # Recent errors
 Ask::Sentry.recent_errors(organization: "myorg", project: "myapp", limit: 10)
@@ -75,12 +72,10 @@ Ask::Sentry.recent_errors(organization: "myorg", project: "myapp", limit: 10)
 Ask::Sentry.issue_events(12345, limit: 10)
 ```
 
-### Authentication
+### Authentication (legacy)
 
-Generate a token at [sentry.io/settings/account/api/auth-tokens/](https://sentry.io/settings/account/api/auth-tokens/).
-
-The Sentry client resolves credentials through the `ask-auth` chain —
-any of these will work:
+The Sentry client resolved credentials through the `ask-auth` chain —
+any of these will work on existing installs:
 
 1. **Environment variable:** `SENTRY_TOKEN`
 2. **Credentials file:** `~/.ask/credentials.yml` with `sentry_token: <value>`
@@ -90,14 +85,11 @@ any of these will work:
 
 ## Honeybadger
 
-**Cloud-based error tracking.** Requires a Honeybadger API token.
+**Cloud-based error tracking.** Prefer Honeybadger's official MCP server for agent access — the `ask-honeybadger` gem is deprecated and unsupported.
 
-```ruby
-gem "ask-honeybadger"
-```
+For teams still on the legacy gem (no maintenance, do not add it to new apps):
 
-Then use:
-
+<!-- docs-example: not-verified -->
 ```ruby
 # List all projects
 Ask::Honeybadger.projects
@@ -112,12 +104,10 @@ Ask::Honeybadger.fault_summary(project_id: "PROJECT_ID")
 Ask::Honeybadger.fault(project_id: "PROJECT_ID", fault_id: 42)
 ```
 
-### Authentication
+### Authentication (legacy)
 
-Get your token at [app.honeybadger.io/users/edit](https://app.honeybadger.io/users/edit).
-
-The Honeybadger client resolves credentials through the `ask-auth` chain —
-any of these will work:
+The Honeybadger client resolved credentials through the `ask-auth` chain —
+any of these will work on existing installs:
 
 1. **Environment variable:** `HONEYBADGER_TOKEN`
 2. **Credentials file:** `~/.ask/credentials.yml` with `honeybadger_token: <value>`
@@ -151,6 +141,6 @@ response = session.run(
 
 ## Links
 
-- [Sentry service gem](/ask-docs/services/sentry) — Full API reference for Ask::Sentry
-- [Honeybadger service gem](/ask-docs/services/honeybadger) — Full API reference for Ask::Honeybadger
+- [Sentry service guide](/ask-docs/services/sentry) — Legacy reference for the deprecated ask-sentry gem
+- [Honeybadger service guide](/ask-docs/services/honeybadger) — Legacy reference for the deprecated ask-honeybadger gem
 - [SolidErrors service gem](/ask-docs/services/solid_errors) — Full API reference for Ask::SolidErrors

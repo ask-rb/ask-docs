@@ -1,5 +1,13 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+
+- GitHub, Slack, Notion, Linear, Sentry, and Honeybadger guides now mark the
+  corresponding ask gems deprecated, recommend the companies' official MCP
+  servers, and label retained details as legacy.
+
 ## [0.32.0] — 2026-09-19
 
 ### Changed
