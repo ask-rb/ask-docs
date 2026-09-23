@@ -110,10 +110,14 @@ or touches a key — and provisions every database with schema: each name
 gains a collision-guarded per-worktree suffix, the test database is
 created and schema-prepared (so `rails test` runs as-is), and the claim
 records all names plus server coordinates. It also writes the
-worktree's environment files — `.env` / `.env.development` (the
-development set: `DATABASE_URL` plus one `NAME_DATABASE_URL` per
-configuration) and `.env.test` (the test URL under
-`PRIMARY_DATABASE_URL`) — mode 0600, git-excluded automatically. The
+worktree's environment files — `.env.development` (the development
+set: `DATABASE_URL` plus one `NAME_DATABASE_URL` per configuration)
+and `.env.test` (the test URL under `PRIMARY_DATABASE_URL`) — mode
+0600, git-excluded automatically. Only these environment-scoped names
+are ever written, **never plain `.env`** (kamal, docker `--env-file`,
+and dotenv-in-production all read that name), so a production boot
+can never see a worktree's database URLs; existing keys in the files
+are upserted, never clobbered. The
 next step is just `yamine start` in it. `clean` is the done-and-merged
 sweep: it never touches uncommitted work, and unmerged branches survive
 everything except `remove --force` (`git branch -d` refuses what git
@@ -123,7 +127,7 @@ happens.
 Boot injects `DATABASE_URL` plus one `NAME_DATABASE_URL` per database
 configuration (Rails' own convention), so every supervised process is
 isolated. **Hand-run commands** (`rails console`, `rails test`,
-`db:migrate` in your own shell) read the `.env` files instead — which
+`db:migrate` in your own shell) read these env files instead — which
 takes two one-time things, both boring:
 
 1. **Component-form development/test config** — `database:` keys, never
@@ -151,7 +155,7 @@ yamine db create      # re-probe + provision (after the app grows a database)
 Teardown drops the entire set as a unit — including from an orphaned
 claim whose directory is already gone, without booting the app — and
 never leaves a suffixed test database behind. The main checkout never
-gets `.env` files: its databases are its databases, untouched.
+gets these env files: its databases are its databases, untouched.
 
 ## Commands
 
