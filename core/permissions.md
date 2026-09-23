@@ -384,7 +384,7 @@ apply the scopes the queue records:
 ```ruby
 adapter.approve_action(sid, action_id, scope: :once)    # this call only
 adapter.approve_action(sid, action_id, scope: :session) # this tool, this session
-adapter.approve_all(scope: :session)                    # drain the pending queue
+adapter.approve_all(sid, scope: :session)               # drain the pending queue
 ```
 
 `scope:` accepts `:once` or `:session`. `:project` is unsupported and
