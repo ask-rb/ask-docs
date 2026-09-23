@@ -107,26 +107,42 @@ Ask::Agent::Session.new(
   `:allow` proceeds without the queue (even for `approval_required` tools),
   and `:ask` queues regardless of `auto_approvable`.
 
-## Using ApprovalPolicy standalone
+## Using ApprovalPolicy in another host
 
-For full control, drop the policy on the hook seam yourself — the session's
-`approval:` option is only sugar over the same wiring:
+The gem does not execute tools or pause a session. In another agent or tool
+runner, adapt its call object to the policy interface, then handle the
+decision in the host. The callbacks connect queue resolution to your review
+UI and execution lifecycle:
 
 ```ruby
-queue = Ask::Permissions::ApprovalQueue.new
+queue = Ask::Permissions::ApprovalQueue.new(
+  on_submit:  ->(action) { review_ui.enqueue(action) },
+  on_approve: ->(action) { executor.resume(action.tool_call_id) },
+  on_reject:  ->(action) { executor.reject(action.tool_call_id) }
+)
 policy = Ask::Permissions::ApprovalPolicy.new(
-  queue: queue, tools: [SendEmail], require_approval: :all
+  queue: queue,
+  rules: rules,
+  tools: tool_registry
 )
-session = Ask::Agent::Session.new(
-  model: "gpt-4o",
-  tools: [SendEmail],
-  hooks: { before_tool: [policy.method(:before_tool_call)] }
-)
+
+decision = policy.before_tool_call(tool_call, context)
+case decision[:action]
+when :proceed then executor.run(tool_call)
+when :block   then executor.refuse(decision[:reason])
+when :pending then executor.pause(tool_call, decision[:action_id])
+end
 ```
 
-The approval queue, the `:pending` result status, and the `approval:` option
-are core Session mechanisms; `ApprovalPolicy` is the reference classification
-policy that runs on top of them.
+When a reviewer responds, resolve the queue action by its id:
+
+```ruby
+queue.approve(decision[:action_id]) # or queue.reject(decision[:action_id])
+```
+
+The host owns the implementations of `review_ui` and `executor`, including
+how it stores suspended calls and resumes or rejects them. This boundary
+lets the same rules and queue work without depending on ask-agent.
 
 ## Resolving the queue
 
@@ -185,7 +201,7 @@ record of what was approved and what ran.
 
 ## Permissions gate vs ApprovalPolicy
 
-ask-agent also ships a much simpler gate:
+ask-permissions also includes a much simpler gate:
 **`Ask::Permissions::Permissions`**. Where `ApprovalPolicy` classifies
 individual calls, the Permissions gate only asks which mode the environment
 is in:
@@ -197,7 +213,8 @@ is in:
 | `:ask_before_changes` | Write/edit/bash/destroy require approval |
 
 - **Permissions gate** — pick a mode and every tool call is checked against
-  it: no argument patterns, no memory of past decisions. This is the policy
+  it: no argument patterns, with approvals sticky only for the same
+  `tool_call_id`. This is the policy
   `agent_session` creates automatically when a harness sets `env.mode` (see
   [per-environment permissions](/ask-docs/rails/setup#per-environment-permissions)).
 - **ApprovalPolicy** — classifies each call by pattern: `:deny` blocks,
