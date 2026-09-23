@@ -66,9 +66,13 @@ Subclass `Ask::Tool` to define a tool that an LLM can call.
 > New in ask-tools 0.6.0
 
 Declare that a tool requires human approval before it runs. Combined with an
-`Ask::Agent::ApprovalQueue` (ask-agent 0.27.0), calls to the tool are queued
-instead of executed — the agent gets a pending result and continues, and the
-tool runs only after a human approves it.
+`Ask::Permissions::ApprovalQueue` (ask-permissions; shipped with ask-agent
+0.27.0), calls to the tool are queued instead of executed — the agent gets a
+pending result and continues, and the tool runs only after a human approves
+it. The approval classes (`ApprovalQueue`, `ApprovalPolicy`,
+`PermissionRules`) live in the ask-permissions gem under `Ask::Permissions::*`;
+ask-agent depends on it at runtime, but projects referencing them directly
+must declare `gem "ask-permissions"`.
 
 ```ruby
 class SendEmail < Ask::Tool
