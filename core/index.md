@@ -34,3 +34,4 @@ The building blocks of the ask-rb ecosystem. Each component is a standalone gem 
 | [Decisions](/ask-docs/core/decisions) | Jev-scored decisions — route, filter, guard, compact with calibrated probabilities |
 | [Token Usage](/ask-docs/core/token-usage) | Token counting, pricing, wallet engine, ledger — usage-based billing |
 | [Local Development](/ask-docs/core/local) | Stable `https://<app>.localhost` URLs — zero dependencies, worktree-aware, per-host TLS |
+| [Permissions](/ask-docs/core/permissions) | Allow/ask/deny rules, approval queue, access modes — human-in-the-loop tool gating |
