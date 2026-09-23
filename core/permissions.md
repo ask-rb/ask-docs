@@ -19,8 +19,8 @@ The stack is three classes in the **ask-permissions** gem, all under
 
 | Class | Job |
 |---|---|
-| `PermissionRules` | Persisted `allow` / `ask` / `deny` patterns — "approve once, remember the pattern" |
-| `ApprovalQueue` | Holds pending actions until a human drains them |
+| `PermissionRules` | Ordered `allow` / `ask` / `deny` patterns, evaluated on each call — never persisted |
+| `ApprovalQueue` | Stores pending `Action`s and resolves their approved / rejected callbacks |
 | `ApprovalPolicy` | The `before_tool` hook that applies the rules and enqueues what needs review |
 
 {: .note }
@@ -47,7 +47,7 @@ ask-agent.
 ## Setting up rules and an approval policy
 
 Declare which tools deserve a human gate, write down the patterns you want
-remembered, and hand both to the session:
+matched, and hand both to the session:
 
 ```ruby
 # ask-tools
@@ -66,7 +66,7 @@ rules = Ask::Permissions::PermissionRules.new do |r|
   r.allow :bash, /^git (pull|push|status)/   # these run without asking
   r.ask   :bash, /^rm -rf/                   # always prompt for destructive
   r.deny  :write, %r{/\.env(\.local)?$}      # never touch secrets
-  r.ask   :destroy, :all
+  r.ask   :destroy
 end
 
 session = Ask::Agent::Session.new(
@@ -82,7 +82,7 @@ The session wires an `ApprovalPolicy` over your rules and its own
 `ApprovalQueue`. Calls classified `:ask` land in the queue; the session
 keeps running and you resolve them whenever you are ready.
 
-If you do not need remembered patterns, the simpler option shapes still work:
+If you do not need custom patterns, the simpler option shapes still work:
 
 ```ruby
 Ask::Agent::Session.new(model: "gpt-4o", tools: [SendEmail], approval: true)
@@ -177,17 +177,18 @@ to mean "it cannot run."
 ### The queue is in-memory
 
 `ApprovalQueue` holds pending actions in process memory. Restart the process
-and they are gone; a second process cannot see or drain them. Drain the
-queue — or accept losing pending approvals — before shutdown, and pair it
+and they are gone; a second process cannot see or resolve them. Resolve
+pending approvals — or accept losing them — before shutdown, and pair it
 with an append-only audit trail (the `AuditLog` policy, or the
 [Rails audit log](/ask-docs/rails/setup#audit-log)) if you need a durable
 record of what was approved and what ran.
 
 ## Permissions gate vs ApprovalPolicy
 
-ask-agent also ships a much simpler gate under `Ask::Agent::Policies`:
-**Permissions**. Where `ApprovalPolicy` classifies individual calls, the
-Permissions gate only asks which mode the environment is in:
+ask-agent also ships a much simpler gate:
+**`Ask::Permissions::Permissions`**. Where `ApprovalPolicy` classifies
+individual calls, the Permissions gate only asks which mode the environment
+is in:
 
 | Mode | Effect |
 |---|---|
