@@ -329,9 +329,11 @@ turn `:project` into a session grant.
 Ask Agent includes session grants in both `Session.persist!` / `Session.load`
 and `SessionAdapter` snapshots / resume. Other hosts using
 `ApprovalPolicy` directly must persist and restore
-`SessionPermissionGrants#snapshot` themselves. The app-server offers only
-`once` and `session` in `approval.required`; it rejects a `project` request
-until it has a project-scoped store to honor it.
+`SessionPermissionGrants#snapshot` themselves. The app-server offers
+`project` only when a workspace identity is available; it stores those
+grants by a hashed canonical workspace identity in its configured
+`ask-state-providers` backend. Without a workspace it offers only `once` and
+`session`, and rejects a project request instead of silently downgrading it.
 
 ## 7. What the host owns
 
@@ -368,8 +370,8 @@ Start here, then relax deliberately:
    to strengthen ordinary modes; remember that `:full_access` and an
    explicit `:allow` rule bypass ordinary risk checks.
    Remember `:unknown` means most restrictive.
-5. Offer session/project scopes only when the host can apply and retain those
-   grants; otherwise offer `once` only.
+5. Offer `session` and `project` scopes only when the host can apply and retain
+   those grants; otherwise offer only the scopes it actually supports.
 6. Resolve or snapshot pending approvals before shutdown. Accept that an
    unsnapshotted restart loses the queue.
 7. Log every decision. Classification without an audit trail is not a safety
@@ -384,12 +386,13 @@ To avoid surprises, the gem deliberately does not:
   boot. `SessionPermissionGrants` holds whole-tool grants in memory and
   exposes a versioned snapshot. Ask Agent persists that snapshot as session
   state; hosts using the permissions gem directly must persist and restore it.
-* Store project grants. The protocol can carry `once`, `session`, and
+* Persist project grants. The protocol can carry `once`, `session`, and
   `project` resolution choices, and the queue records the selected choice on
-  its resolved `Action`; the host must decide which scopes it can honor and
-  apply the matching grant. The gem has no project-grant backing store. This
-  is distinct from a tool's `side_effect_scope`, which describes its impact
-  rather than how long an approval lasts.
+  its resolved `Action`; the host decides which scopes it can honor and
+  applies the matching grant. Ask App Server provides a workspace-scoped
+  store backed by `ask-state-providers`; other hosts must provide their own.
+  This is distinct from a tool's `side_effect_scope`, which describes its
+  impact rather than how long an approval lasts.
 * Execute tools, pause sessions, or render UI. Those are host
   responsibilities (see section 7).
 
