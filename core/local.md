@@ -87,25 +87,56 @@ Child processes receive `YAMINE_URL` (the stable URL — use it for OAuth callba
 
 Linked git worktrees get a branch prefix automatically
 (`feature-login.myapp.localhost`); the main checkout keeps the bare name.
-Each worktree also gets its own database — injected as `DATABASE_URL` —
-so concurrent agents never share tables or migrations.
+Each worktree also gets its own databases — the **whole set** a
+multi-database app declares — so concurrent agents never share tables,
+migrations, jobs, or test runs.
 
 yamine owns the whole lifecycle:
 
 ```bash
-yamine worktree add feature/login     # worktree + config + database, ready to boot
+yamine worktree add feature/login     # worktree + config + databases, ready to boot
 yamine worktree list                  # every worktree: db, dirty, merged
-yamine worktree remove feature/login  # stop, drop db, remove worktree
+yamine worktree remove feature/login  # stop, drop every db, remove worktree
 yamine worktree clean                 # tear down everything already merged
 ```
 
 `add` lands the worktree beside the repo, copies the gitignored
-per-checkout config (`config/local.yml`, `config/local.secrets`), runs
-`bundle install`, and pre-creates the database — the next step is just
-`yamine start` in it. `clean` is the done-and-merged sweep: it never
-touches uncommitted work, and unmerged branches survive everything
-except `remove --force` (`git branch -d` refuses what git has not seen
-merged). `--dry-run` prints the plan before anything happens.
+per-checkout config (`config/local.yml`, `config/local.secrets`,
+`config/master.key`, `config/credentials/*.key`), runs
+`bundle install`, **asks the app what databases it has** — one
+`bin/rails runner` probe resolves database.yml and credentials inside
+the app process, so yamine never parses config or touches a key — and
+provisions every database with schema: each name gains a
+collision-guarded per-worktree suffix, the test database is created and
+schema-prepared (so `rails test` runs as-is), and the claim records all
+names plus server coordinates. The next step is just `yamine start` in
+it. `clean` is the done-and-merged sweep: it never touches uncommitted
+work, and unmerged branches survive everything except `remove --force`
+(`git branch -d` refuses what git has not seen merged). `--dry-run`
+prints the plan before anything happens.
+
+Boot injects `DATABASE_URL` plus one `NAME_DATABASE_URL` per database
+configuration (Rails' own convention), so every supervised process is
+isolated. **Hand-run commands** (`rails console`, `rails test`,
+`db:migrate` in your own shell) read your environment, not yamine's —
+opt the app in once with the `.yamine-db-suffix` hook at the top of
+`config/database.yml` (copy it from the
+[yamine README](https://github.com/ask-rb/yamine#multi-database-apps)).
+`worktree add` writes the token and confirms the hook with
+`database.yml reads .yamine-db-suffix`; without the hook it warns
+exactly what the hand-run gap is, while supervised boots stay isolated
+via env either way.
+
+```bash
+yamine db describe    # what this checkout resolves to (passwords masked)
+yamine db list        # every claim, every database under it
+yamine db create      # re-probe + provision (after the app grows a database)
+```
+
+Teardown drops the entire set as a unit — including from an orphaned
+claim whose directory is already gone, without booting the app — and
+never leaves a suffixed test database behind. The main checkout has no
+marker file: its databases are its databases, untouched.
 
 ## Commands
 
@@ -121,7 +152,7 @@ merged). `--dry-run` prints the plan before anything happens.
 | `yamine trust` | Add the local CA to the system trust store |
 | `yamine stop` | Stop this app's backends and routes (machine-readable exit codes) |
 | `yamine status` | Show the effective naming context here |
-| `yamine db list\|create\|drop` | Per-worktree databases |
+| `yamine db list\|create\|drop\|describe` | Per-worktree databases — whole sets, multi-database aware (see [Worktrees](#worktrees)) |
 | `yamine worktree add\|list\|remove\|clean` | Worktree lifecycle — see [Worktrees](#worktrees) |
 | `yamine hosts sync` | Write the managed block to `/etc/hosts` (Safari, custom TLDs, file-only resolvers) |
 | `yamine clean` | Remove state and `/etc/hosts` entries |
