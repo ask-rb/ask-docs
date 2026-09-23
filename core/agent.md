@@ -690,6 +690,13 @@ approves it. Built on the async-tools seam (`Ask::Result.pending` →
 `register_pending_tool` → `complete_pending_tool`), so the agent never blocks
 on an approval.
 
+{: .note }
+> `PermissionRules`, `ApprovalPolicy`, and `ApprovalQueue` live in the
+> **ask-permissions** gem under `Ask::Permissions::*` — they are no longer
+> under `Ask::Agent`. ask-agent depends on ask-permissions at runtime, so
+> `approval:` sessions work without extra setup; projects that reference
+> these classes directly must also declare `gem "ask-permissions"`.
+
 ### Declaring a tool
 
 ```ruby
@@ -736,7 +743,7 @@ Persisted `allow` / `ask` / `deny` patterns classify every tool call before
 it executes or prompts — "approve once, remember the pattern":
 
 ```ruby
-rules = Ask::Agent::Policies::PermissionRules.new do |r|
+rules = Ask::Permissions::PermissionRules.new do |r|
   r.allow :bash, /^git (pull|push|status)/   # these run without asking
   r.ask   :bash, /^rm -rf/                   # always prompt for destructive
   r.deny  :write, %r{/\.env(\.local)?$}      # never touch secrets
@@ -760,7 +767,8 @@ session = Ask::Agent::Session.new(
 - **Dangerous-rule guard**: an unrestricted `:allow` on a code-executing
   tool (`bash`, `code`, `repl`, or `:all`) is downgraded to `:ask` — so
   "approve once" can't become "approve anything". Opt out explicitly with
-  `PermissionRules.new(auto_allow_dangerous: true) { ... }`; `rules.dangerous_rules`
+  `Ask::Permissions::PermissionRules.new(auto_allow_dangerous: true) { ... }`;
+  `rules.dangerous_rules`
   lists what the guard caught.
 
 ### Deciding later
@@ -783,12 +791,12 @@ session.approval_queue.reject_all
 
 ### Standalone hook
 
-`Ask::Agent::Policies::ApprovalPolicy` works as a plain `before_tool` hook
-for full control:
+`Ask::Permissions::ApprovalPolicy` (ask-permissions) works as a plain
+`before_tool` hook for full control:
 
 ```ruby
-queue = Ask::Agent::ApprovalQueue.new
-policy = Ask::Agent::Policies::ApprovalPolicy.new(
+queue = Ask::Permissions::ApprovalQueue.new
+policy = Ask::Permissions::ApprovalPolicy.new(
   queue: queue, tools: [SendEmail], require_approval: :all
 )
 session = Ask::Agent::Session.new(
@@ -1080,15 +1088,19 @@ Policies are opt-in, replaceable implementations of the tool-lifecycle hook
 seam (`before_tool` / `after_tool`). The agent loop runs without them, and
 you can swap in your own classes with the same signatures. Core mechanisms
 stay on `Session` — the approval queue, the `:pending` result status, and
-the `approval: true` option are core; `Policies::ApprovalPolicy` is the
-reference classification policy wired on top of them.
+the `approval: true` option are core; `Ask::Permissions::ApprovalPolicy`
+(ask-permissions) is the reference classification policy wired on top of them.
 
 Built-in policies (under `Ask::Agent::Policies`):
 
 - **Permissions** — Enforce access modes (`:full_access`, `:read_only`, `:ask_before_changes`) on tool calls
 - **RateLimiter** — Prevent runaway tool calls
 - **AuditLog** — Immutable, append-only tool call log
-- **ApprovalPolicy** — Queue approval-required tool calls into an `ApprovalQueue`
+
+The approval stack is not part of `Ask::Agent::Policies` anymore:
+`ApprovalPolicy`, `PermissionRules`, and the `ApprovalQueue` they enqueue
+into live in the **ask-permissions** gem under `Ask::Permissions::*` — see
+[Tool Approval](#tool-approval-human-in-the-loop).
 
 ## Scheduler (Recurring Agent Runs)
 

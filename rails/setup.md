@@ -112,7 +112,7 @@ end
 | `:read_only` | Write/edit/bash/destroy tools blocked |
 | `:ask_before_changes` | Write/edit/bash/destroy require approval |
 
-When a mode is set, `agent_session` automatically creates a `Permissions` extension
+When a mode is set, `agent_session` automatically creates a `Permissions` policy
 that enforces the mode at the agent loop level. The command allowlist rules apply
 additionally to the `RunCommand` tool.
 

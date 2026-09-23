@@ -4,6 +4,15 @@
 
 ### Changed
 
+- **Permission extraction → ask-permissions**. `PermissionRules`,
+  `ApprovalPolicy`, and `ApprovalQueue` now live in the ask-permissions gem
+  under `Ask::Permissions::*` instead of `Ask::Agent::Policies` /
+  `Ask::Agent`. ask-agent depends on ask-permissions at runtime, so
+  `approval:` sessions keep working unchanged; projects that reference these
+  classes directly must declare `gem "ask-permissions"`. Documented under
+  Tool Approval in [core/agent](/ask-docs/core/agent) and Human Approval in
+  [core/tools](/ask-docs/core/tools).
+
 - GitHub, Slack, Notion, Linear, Sentry, and Honeybadger guides now mark the
   corresponding ask gems deprecated, recommend the companies' official MCP
   servers, and label retained details as legacy.
