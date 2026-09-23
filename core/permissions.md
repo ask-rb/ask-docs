@@ -7,123 +7,166 @@ nav_order: 19
 
 # Ask Permissions
 
-Tools run whatever the model hands them. ask-permissions is the gate in front
-of that: every tool call is classified before it executes — allowed through,
-queued for a human, or denied outright. It backs the human-in-the-loop
-approval flow in the [agent loop](/ask-docs/core/agent) and the coarse access
-modes (`:full_access`, `:read_only`, `:ask_before_changes`) the Rails and
-Ruby harnesses set per environment.
+In this guide you will learn how the `ask-permissions` gem gates every tool
+call before it runs. You will write `allow` / `ask` / `deny` rules, classify
+calls with `PermissionRules#classify`, choose an `ApprovalPolicy` mode,
+read tool metadata (`risk_level`, `side_effect_scope`, `always_ask`), and
+resolve human approvals through `ApprovalQueue`.
 
-The stack is three classes in the **ask-permissions** gem, all under
-`Ask::Permissions::*`:
+By the end you will know what the host owns, what the safe defaults are,
+and what the gem deliberately does *not* do.
+
+The stack is three classes under `Ask::Permissions::*`:
 
 | Class | Job |
 |---|---|
 | `PermissionRules` | Ordered `allow` / `ask` / `deny` patterns, evaluated on each call — never persisted |
-| `ApprovalQueue` | Stores pending `Action`s and resolves their approved / rejected callbacks |
-| `ApprovalPolicy` | The `before_tool` hook that applies the rules and enqueues what needs review |
+| `ApprovalPolicy` | Mode-aware `before_tool` hook (`full_access` / `ask_before_changes` / `read_only`) that applies rules plus tool metadata |
+| `ApprovalQueue` | Holds pending actions (`submit` / `pending_actions` / `approve` / `reject`) plus versioned `snapshot` / `restore_pending` |
 
 {: .note }
 > `PermissionRules`, `ApprovalPolicy`, and `ApprovalQueue` used to live under
-> `Ask::Agent`. ask-agent depends on ask-permissions at runtime, so
-> `approval:` sessions work without extra setup; projects that reference
+> `Ask::Agent`. `ask-agent` depends on `ask-permissions` at runtime, so
+> `approval:` sessions work without extra setup. Projects that reference
 > these classes directly must also declare `gem "ask-permissions"`.
 
-## Installation
+## 1. Install the gate
 
+Add the gem and require it only when you build rules, policies, or queues
+yourself. Passing `approval:` to a session pulls the stack in through
+`ask-agent`.
+
+<!-- docs-example: not-verified -->
 ```ruby
 # Gemfile
 gem "ask-permissions"
+gem "ask-tools" # if you define Ask::Tool classes or use tool metadata
 ```
 
+<!-- docs-example: not-verified -->
 ```ruby
+require "ask-tools"
 require "ask-permissions"
 ```
 
-The require is only needed when you build rules, queues, or policies
-yourself — passing `approval:` to a session pulls the stack in through
-ask-agent.
+## 2. Write PermissionRules with allow / ask / deny
 
-## Setting up rules and an approval policy
+`PermissionRules` is an ordered list. You declare tool patterns and optional
+argument patterns. First match wins when you call `#classify`.
 
-Declare which tools deserve a human gate, write down the patterns you want
-matched, and hand both to the session:
+Tool patterns accept an exact name (`"bash"`), a `Symbol` (`:bash`), a
+`Regexp`, or `:all`. Argument patterns accept a `Regexp`, a substring, or
+nothing at all (match any arguments). Hash arguments are matched as JSON.
 
+<!-- docs-example: not-verified -->
 ```ruby
-# ask-tools
-class SendEmail < Ask::Tool
-  approval_required true
-  param :to, type: :string, desc: "Recipient", required: true
-  param :body, type: :string, desc: "Message", required: true
+require "ask-permissions"
 
-  def execute(to:, body:)
-    Ask::Result.ok(data: "Email sent to #{to}")
-  end
-end
-
-# ask-permissions
 rules = Ask::Permissions::PermissionRules.new do |r|
-  r.allow :bash, /^git (pull|push|status)/   # these run without asking
-  r.ask   :bash, /^rm -rf/                   # always prompt for destructive
-  r.deny  :write, %r{/\.env(\.local)?$}      # never touch secrets
+  r.allow :bash, /git (status|log|diff)/
+  r.ask   :bash, /rm -rf/
+  r.deny  :write, %r{/\.env(\.local)?}
   r.ask   :destroy
 end
 
+rules.classify(:bash, { command: "git status" })
+# => :allow — first rule matches, runs without asking
+
+rules.classify(:bash, { command: "rm -rf /tmp/cache" })
+# => :ask — queued for a human
+
+rules.classify(:write, { path: "config/.env" })
+# => :deny — blocked outright, never queued
+```
+
+What to remember:
+
+* `:deny` blocks. `:ask` queues for a human. `:allow` proceeds.
+* Rules are evaluated in declaration order. Put specific rules first.
+* A call that matches no rule falls through to the policy default (see
+  section 4). There is no implicit deny: an empty ruleset is an open door.
+* Rules are never persisted. Build a new `PermissionRules` on boot from code
+  you can review. The gem does not remember session or project grant choices
+  for you.
+
+Wire the rules into a session:
+
+<!-- docs-example: not-verified -->
+```ruby
+require "ask-agent"
+
 session = Ask::Agent::Session.new(
   model: "gpt-4o",
-  tools: [Bash, Write, Destroy, SendEmail],
+  tools: [Bash, Write, Destroy],
   approval: { rules: rules }
 )
 
-session.run("Email bob about the launch")
+session.run("Check git status, then clean the cache")
+# git status runs, rm -rf waits in session.approval_queue
 ```
 
-The session wires an `ApprovalPolicy` over your rules and its own
-`ApprovalQueue`. Calls classified `:ask` land in the queue; the session
-keeps running and you resolve them whenever you are ready.
+## 3. Dangerous allows become asks by default
 
-If you do not need custom patterns, the simpler option shapes still work:
+A universal `:allow` on a code-executing tool is too broad to be safe. If you
+allow `bash`, `code`, `repl`, or `:all` without an argument pattern, the
+ruleset rewrites that rule to `:ask` automatically. "Approve once" can never
+silently become "approve anything".
 
+<!-- docs-example: not-verified -->
 ```ruby
-Ask::Agent::Session.new(model: "gpt-4o", tools: [SendEmail], approval: true)
+require "ask-permissions"
 
-Ask::Agent::Session.new(
-  model: "gpt-4o",
-  tools: [SendEmail, Ping],
-  approval: {
-    require_approval: ["destroy", /^admin_/],  # extra tools to gate
-    auto_approve: { "ping" => true }           # user-enabled auto-approval
-  }
-)
+rules = Ask::Permissions::PermissionRules.new do |r|
+  r.allow :bash # universal allow — converted to :ask
+end
+
+rules.classify(:bash, { command: "echo hello" })
+# => :ask — the dangerous-allow guard rewrote it
+
+rules.dangerous_rules
+# => lists the rewritten rules so you can see what was caught
 ```
 
-### How rules match
+Opt out only when you mean it, for example in a throwaway sandbox:
 
-- **Tool patterns**: exact name (`"bash"`), `Symbol`, `Regexp`, or `:all`.
-  **Argument patterns**: `Regexp`, substring, or omitted for any arguments
-  (hashes are matched as JSON). First matching rule wins, in declaration
-  order.
-- Rules take precedence over tool declarations: `:deny` blocks outright,
-  `:allow` proceeds without the queue (even for `approval_required` tools),
-  and `:ask` queues regardless of `auto_approvable`.
-
-## Using ApprovalPolicy in another host
-
-The gem does not execute tools or pause a session. In another agent or tool
-runner, adapt its call object to the policy interface, then handle the
-decision in the host. The callbacks connect queue resolution to your review
-UI and execution lifecycle:
-
+<!-- docs-example: not-verified -->
 ```ruby
-queue = Ask::Permissions::ApprovalQueue.new(
-  on_submit:  ->(action) { review_ui.enqueue(action) },
-  on_approve: ->(action) { executor.resume(action.tool_call_id) },
-  on_reject:  ->(action) { executor.reject(action.tool_call_id) }
-)
+require "ask-permissions"
+
+rules = Ask::Permissions::PermissionRules.new(auto_allow_dangerous: true) do |r|
+  r.allow :bash
+end
+
+rules.classify(:bash, { command: "echo hello" })
+# => :allow — you accepted the risk explicitly
+```
+
+{: .warning }
+> Keep the default. Pass `auto_allow_dangerous: true` only in environments
+> where arbitrary code execution is already expected, never for a user-facing
+> agent.
+
+## 4. Pick an ApprovalPolicy mode
+
+`ApprovalPolicy` is the `before_tool` hook that sits between the model and
+execution. It combines your `PermissionRules` with a coarse mode:
+
+| Mode | Effect |
+|---|---|
+| `:full_access` | `:deny` rules still block and `:ask` rules still queue; otherwise calls proceed, including high-risk tools unless `always_ask` is set |
+| `:ask_before_changes` | `:deny` blocks, `:ask` queues, and side-effecting or high/critical-risk tools queue unless an explicit `:allow` rule matches |
+| `:read_only` | Tools with side effects are blocked; rules still apply to read-only calls |
+
+<!-- docs-example: not-verified -->
+```ruby
+require "ask-permissions"
+
+queue = Ask::Permissions::ApprovalQueue.new
 policy = Ask::Permissions::ApprovalPolicy.new(
   queue: queue,
   rules: rules,
-  tools: tool_registry
+  tools: tool_registry,
+  mode: :ask_before_changes
 )
 
 decision = policy.before_tool_call(tool_call, context)
@@ -134,96 +177,231 @@ when :pending then executor.pause(tool_call, decision[:action_id])
 end
 ```
 
-When a reviewer responds, resolve the queue action by its id:
+When the reviewer responds, resolve by id through the queue (see section 6):
 
+<!-- docs-example: not-verified -->
 ```ruby
-queue.approve(decision[:action_id]) # or queue.reject(decision[:action_id])
+queue.approve(decision[:action_id])
+# or:
+queue.reject(decision[:action_id])
 ```
 
-The host owns the implementations of `review_ui` and `executor`, including
-how it stores suspended calls and resumes or rejects them. This boundary
-lets the same rules and queue work without depending on ask-agent.
+Use the mode for the environment and the rules for the call. Production that
+should never write is `:read_only`. Staging that may write with a human in
+the loop is `:ask_before_changes`. See
+[per-environment permissions](/ask-docs/rails/setup#per-environment-permissions)
+for how the Rails harness sets `env.mode`.
 
-## Resolving the queue
+## 5. Read tool metadata: risk, scope, and always_ask
 
+Rules see the tool name and arguments. Metadata sees what kind of tool it is.
+`ApprovalPolicy` consults both. Precedence matters: `:deny` and `:ask` rules
+are handled first, then `always_ask`, then read-only side-effect blocking,
+then an explicit `:allow` rule. The ordinary mode and risk checks apply after
+those decisions.
+
+Declare metadata on the tool:
+
+<!-- docs-example: not-verified -->
 ```ruby
-session.approval_queue.pending_actions   # [{id: 1, tool_name: "send_email", ...}]
-session.approval_queue.approve(1)        # executes the tool, feeds result back
-session.approval_queue.reject(1)         # injects "rejected by the user"
-session.approval_queue.approve_all
-session.approval_queue.reject_all
+require "ask-tools"
+
+class SendEmail < Ask::Tool
+  risk_level :high          # or :critical for irreversible actions
+  side_effect_scope :external
+  always_ask true           # hard confirmation, never bypassed
+
+  param :to, type: :string, desc: "Recipient", required: true
+  param :body, type: :string, desc: "Message", required: true
+
+  def execute(to:, body:)
+    Ask::Result.ok(data: "Email sent to #{to}")
+  end
+end
 ```
 
-- **Approving** executes the real tool call and the follow-up turn voices the
-  outcome. **Rejecting** injects a "rejected by the user" message and the
-  agent adapts. A failed apply leaves the action pending for retry.
-- The agent never blocks on approval: the tool call resolves as
-  `Ask::Result.pending`, the conversation continues, and the completed result
-  re-enters the loop through `register_pending_tool` →
-  `complete_pending_tool`.
-- **Auto-approval is a dual signal**: a tool marked `auto_approvable true`
-  AND a user rule enabling it (`auto_approve: { "tool_name" => true }`).
-  Nothing is silently applied past a manual gate — eligible actions drain in
-  id order with a single-flight guard, so no action applies twice.
+What each field means:
 
-## Security caveats
+* `risk_level` — `:high` or `:critical` marks a tool as changing something
+  important. In `:ask_before_changes` mode these queue even without a
+  matching `ask` rule. An explicit `:allow` rule can override this ordinary
+  risk check; `always_ask` cannot be overridden. `:full_access` also bypasses
+  the ordinary risk check.
+* `side_effect_scope` — where the effect lands: `:none`, `:session`,
+  `:workspace`, `:project`, `:system`, `:external`, or `:unknown`. Treat
+  `:unknown` as side-effecting. Any scope other than `:none` queues under
+  `:ask_before_changes` and blocks under `:read_only`, unless an earlier
+  explicit `:ask`/`:deny` rule already decided the call. An explicit `:allow`
+  rule bypasses the `:ask_before_changes` scope check, but not read-only mode.
+* `always_ask` — hard confirmation. Even an `:allow` rule never bypasses it.
+  Use it for irreversible or outward-facing tools (send email, publish,
+  delete, charge, deploy).
 
-{: .warning }
-> The gate is only as strong as the rules you write. Three behaviors to
-> know before you trust it.
+<!-- docs-example: not-verified -->
+```ruby
+require "ask-permissions"
 
-### A dangerous `:allow` is downgraded to `:ask`
+rules = Ask::Permissions::PermissionRules.new do |r|
+  r.allow :send_email, /bob@example\.com/
+end
 
-An unrestricted `:allow` on a code-executing tool (`bash`, `code`, `repl`,
-or `:all`) is downgraded to `:ask` — so "approve once" can't become
-"approve anything". `rules.dangerous_rules` lists what the guard caught.
-Only opt out deliberately:
-`Ask::Permissions::PermissionRules.new(auto_allow_dangerous: true) { ... }`.
+# SendEmail has always_ask true, so the policy still queues it:
+rules.classify(:send_email, { to: "bob@example.com" }) # => :allow
+# ApprovalPolicy#before_tool_call returns :pending — always_ask wins
+```
 
-### Rules default to allow
+{: .note }
+> If you remember one sentence: `allow` means "you may skip the queue",
+> `always_ask` means "there is no queue-skipping for this tool".
 
-Rules only act where they match. A call that matches no rule falls through
-to the session's baseline approval behavior — tools without
-`approval_required`, outside every `require_approval` pattern, run
-immediately. There is no implicit deny: an empty ruleset is an open door
-(the guard above only rewrites `:allow` rules that already exist). Write
-rules for what must be gated or blocked; never rely on "I did not allow it"
-to mean "it cannot run."
+## 6. Resolve the ApprovalQueue
 
-### The queue is in-memory
+The queue holds pending actions in process memory. You submit, list, approve,
+or reject. The queue invokes its callback; the host decides how the approval
+or rejection resumes the saved call.
 
-`ApprovalQueue` holds pending actions in process memory. Restart the process
-and they are gone; a second process cannot see or resolve them. Resolve
-pending approvals — or accept losing them — before shutdown, and pair it
-with an append-only audit trail (the `AuditLog` policy, or the
-[Rails audit log](/ask-docs/rails/setup#audit-log)) if you need a durable
-record of what was approved and what ran.
+<!-- docs-example: not-verified -->
+```ruby
+action_id = queue.submit(
+  tool_call_id: "call_123",
+  tool_name: "send_email",
+  args: { to: "bob@example.com" },
+  message: "Send this email?"
+)
+action = queue[action_id]
+queue.pending_actions
+# => [#<Action id: 1, tool_name: "send_email", args: {...}, status: :pending, ...>]
 
-## Permissions gate vs ApprovalPolicy
+queue.approve(action_id) # => [resolved Action]; invokes on_approve(action)
+# Instead of approving, reject the same still-pending action:
+queue.reject(action_id)  # => [resolved Action]; invokes on_reject(action)
+```
 
-ask-permissions also includes a much simpler gate:
-**`Ask::Permissions::Permissions`**. Where `ApprovalPolicy` classifies
-individual calls, the Permissions gate only asks which mode the environment
-is in:
+The queue itself does not execute tools. Its one-argument callbacks are where
+the host resumes or refuses the saved tool call. In an `Ask::Agent::Session`,
+the session wires those callbacks for you.
 
-| Mode | Effect |
-|---|---|
-| `:full_access` | All tools allowed, no approval needed |
-| `:read_only` | Write/edit/bash/destroy tools blocked |
-| `:ask_before_changes` | Write/edit/bash/destroy require approval |
+Through a session the same queue is exposed as `session.approval_queue`:
 
-- **Permissions gate** — pick a mode and every tool call is checked against
-  it: no argument patterns, with approvals sticky only for the same
-  `tool_call_id`. This is the policy
-  `agent_session` creates automatically when a harness sets `env.mode` (see
-  [per-environment permissions](/ask-docs/rails/setup#per-environment-permissions)).
-- **ApprovalPolicy** — classifies each call by pattern: `:deny` blocks,
-  `:ask` enqueues, `:allow` passes, plus `require_approval` patterns and the
-  auto-approval dual signal. Reach for it when the decision depends on which
-  tool and which arguments — "always ask for `rm -rf`, never ask for
-  `git status`, never touch `.env`."
+<!-- docs-example: not-verified -->
+```ruby
+session.approval_queue.pending_actions
+session.approval_queue.approve(1) # or reject(1), not both
+```
 
-Choose the gate when policy is a property of the environment (production is
-read-only). Choose `ApprovalPolicy` when policy is a property of the call.
-Both sit on the same `before_tool` seam — run either, replace either, or
-write your own with the same signature.
+The agent never blocks on approval: the tool call resolves as pending, the
+conversation continues, and the completed result re-enters the loop when you
+approve.
+
+### Snapshot and restore pending only
+
+`snapshot` captures a versioned copy of pending actions. `restore_pending`
+replaces the pending list with that copy. It restores data only: no callbacks
+fire on restore, and decided actions (approved / rejected) are not carried
+over.
+
+<!-- docs-example: not-verified -->
+```ruby
+snapshot = queue.snapshot
+# => { version: 1, next_id: 1, pending_actions: [...] }
+
+restored_queue = Ask::Permissions::ApprovalQueue.new(
+  on_approve: ->(action) { resume_saved_call(action) },
+  on_reject: ->(action) { refuse_saved_call(action) }
+)
+restored_queue.restore_pending(snapshot)
+# Restores into an empty queue; no on_submit / on_approve / on_reject fires.
+```
+
+Use snapshots to survive a host restart or to hand pending work to another
+process. On restore, re-present each action in your review UI because the
+original callbacks will not re-fire.
+
+### Approval scopes in Ask Agent
+
+The permissions queue records whether an explicit approval is `:once`,
+`:session`, or `:project`. The queue does not apply those choices itself:
+the host decides which scopes it supports. Ask Agent applies `:session` by
+granting that whole tool for the current session; later matching calls skip
+the ordinary approval queue. `:once` stays one-shot, and Ask Agent does not
+turn `:project` into a session grant.
+
+Ask Agent includes session grants in both `Session.persist!` / `Session.load`
+and `SessionAdapter` snapshots / resume. Other hosts using
+`ApprovalPolicy` directly must persist and restore
+`SessionPermissionGrants#snapshot` themselves. The app-server offers only
+`once` and `session` in `approval.required`; it rejects a `project` request
+until it has a project-scoped store to honor it.
+
+## 7. What the host owns
+
+The gem classifies and queues. Your app executes, pauses, resumes, and
+renders. Concretely, the host is responsible for:
+
+* Adapting its call object to `before_tool_call(tool_call, context)` and
+  honoring the three decisions: `:proceed`, `:block`, `:pending`.
+* Storing suspended calls (`tool_call_id` / `action_id`) and resuming or
+  refusing them after `approve` / `reject`.
+* Building the review UI: who sees pending actions, in what order, with what
+  argument preview and redaction.
+* Persisting an audit trail. The queue is in-memory by design, so pair it
+  with an append-only log (the `AuditLog` policy, or the
+  [Rails audit log](/ask-docs/rails/setup#audit-log)) if you need a durable
+  record of what was approved and what ran.
+* Choosing `snapshot` discipline: when to snapshot, where to store the
+  versioned payload, and how to re-present restored pending actions. A host
+  that restores pending work must reconnect each action to its saved tool
+  call; the queue snapshot alone cannot recreate host execution state.
+
+## 8. Safe defaults checklist
+
+Start here, then relax deliberately:
+
+1. Mode `:ask_before_changes` unless the environment is explicitly full access
+   or read-only.
+2. Keep the dangerous-allow guard on. Do not pass
+   `auto_allow_dangerous: true` in user-facing apps.
+3. Add a `deny` rule for secrets first, for example
+   `r.deny :write, %r{/\.env(\.local)?}` and `r.ask :bash, /rm -rf/`.
+4. Mark tools that must always require a person with `always_ask true`.
+   Use `risk_level :high` or `:critical` and an honest `side_effect_scope`
+   to strengthen ordinary modes; remember that `:full_access` and an
+   explicit `:allow` rule bypass ordinary risk checks.
+   Remember `:unknown` means most restrictive.
+5. Offer session/project scopes only when the host can apply and retain those
+   grants; otherwise offer `once` only.
+6. Resolve or snapshot pending approvals before shutdown. Accept that an
+   unsnapshotted restart loses the queue.
+7. Log every decision. Classification without an audit trail is not a safety
+   story.
+
+## 9. What permissions does not do
+
+To avoid surprises, the gem deliberately does not:
+
+* Persist rules or provide a project-grant store. There are no remembered
+  `PermissionRules` to load later; rebuild them from reviewable code on every
+  boot. `SessionPermissionGrants` holds whole-tool grants in memory and
+  exposes a versioned snapshot. Ask Agent persists that snapshot as session
+  state; hosts using the permissions gem directly must persist and restore it.
+* Store project grants. The protocol can carry `once`, `session`, and
+  `project` resolution choices, and the queue records the selected choice on
+  its resolved `Action`; the host must decide which scopes it can honor and
+  apply the matching grant. The gem has no project-grant backing store. This
+  is distinct from a tool's `side_effect_scope`, which describes its impact
+  rather than how long an approval lasts.
+* Execute tools, pause sessions, or render UI. Those are host
+  responsibilities (see section 7).
+
+## More in this series
+
+* [The Agent Loop](/ask-docs/core/agent) — how `approval:` sessions enqueue
+  `:ask` calls and resume after `approve` / `reject`.
+* [Tools and Execution](/ask-docs/core/tools) — declaring tools and their
+  metadata (`risk_level`, `side_effect_scope`, `always_ask`).
+* [Rails Setup — Per-Environment Permissions](/ask-docs/rails/setup#per-environment-permissions) — setting `env.mode` so each environment gets its own default.
+* [Core Components](/ask-docs/core) — the full component index.
+
+Next: build a small ruleset for your own tools, run it through `#classify`
+with safe and dangerous arguments, and confirm the dangerous-allow guard and
+`always_ask` behave as this guide describes before wiring it to a live agent.
