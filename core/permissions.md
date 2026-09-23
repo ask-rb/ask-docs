@@ -20,7 +20,8 @@ The stack is three classes under `Ask::Permissions::*`:
 
 | Class | Job |
 |---|---|
-| `PermissionRules` | Ordered `allow` / `ask` / `deny` patterns, evaluated on each call — never persisted |
+| `PermissionRules` | Ordered `allow` / `ask` / `deny` patterns, evaluated on each call |
+| `PermissionRuleSet` | Composes default and project rule layers with deny-first precedence |
 | `ApprovalPolicy` | Mode-aware `before_tool` hook (`full_access` / `ask_before_changes` / `read_only`) that applies rules plus tool metadata |
 | `ApprovalQueue` | Holds pending actions (`submit` / `pending_actions` / `approve` / `reject`) plus versioned `snapshot` / `restore_pending` |
 
@@ -85,9 +86,50 @@ What to remember:
 * Rules are evaluated in declaration order. Put specific rules first.
 * A call that matches no rule falls through to the policy default (see
   section 4). There is no implicit deny: an empty ruleset is an open door.
-* Rules are never persisted. Build a new `PermissionRules` on boot from code
-  you can review. The gem does not remember session or project grant choices
-  for you.
+* The gem does not choose or persist project identity or policy. Hosts may
+  store a versioned rules snapshot using their own trusted storage and
+  authorization boundary.
+
+## 3. Layer project rules without weakening defaults
+
+Use `PermissionRuleSet` when a host supplies workspace-specific rules on top
+of application defaults. A matching deny in either layer always wins. If
+neither layer denies, a matching project rule overrides the default; if the
+project layer has no match, the default decision applies. An unmatched call
+falls through to `ApprovalPolicy` as before.
+
+<!-- docs-example: not-verified -->
+```ruby
+defaults = Ask::Permissions::PermissionRules.new do |r|
+  r.deny :bash, /rm\s+-rf/
+  r.ask :write
+end
+
+project = Ask::Permissions::PermissionRules.new do |r|
+  r.allow :write # permit writes in this workspace
+  r.allow :read_file
+end
+
+approval = {
+  rules: defaults,
+  project_rules: project,
+  mode: :ask_before_changes
+}
+
+session = Ask::Agent::Session.new(model: "gpt-4o", tools: tools, approval: approval)
+```
+
+The project allow cannot override the default `bash` deny (nor can any
+project rule override a deny in either layer). Project rules are evaluated
+against the same tool name and arguments as defaults.
+
+`PermissionRules#snapshot` and `PermissionRuleSet#snapshot` return versioned,
+JSON-safe data. Restore with `.from_snapshot`; validate and authorize the
+workspace identity in the host before using restored rules. The permissions
+gem intentionally provides no database adapter or project directory: hosts
+such as a Rails application decide where rules live, who can edit them, and
+which verified project they apply to. This is separate from `project_grants`,
+which records approval of a whole tool for future calls.
 
 Wire the rules into a session:
 
@@ -105,7 +147,7 @@ session.run("Check git status, then clean the cache")
 # git status runs, rm -rf waits in session.approval_queue
 ```
 
-## 3. Dangerous allows become asks by default
+## 4. Dangerous allows become asks by default
 
 A universal `:allow` on a code-executing tool is too broad to be safe. If you
 allow `bash`, `code`, `repl`, or `:all` without an argument pattern, the
@@ -146,7 +188,7 @@ rules.classify(:bash, { command: "echo hello" })
 > where arbitrary code execution is already expected, never for a user-facing
 > agent.
 
-## 4. Pick an ApprovalPolicy mode
+## 5. Pick an ApprovalPolicy mode
 
 `ApprovalPolicy` is the `before_tool` hook that sits between the model and
 execution. It combines your `PermissionRules` with a coarse mode:
@@ -230,7 +272,7 @@ An explicit mode that conflicts with the configured `env.mode` is an
 `ArgumentError`, not an override — the harness refuses to guess which one
 you meant.
 
-## 5. Read tool metadata: risk, scope, and always_ask
+## 6. Read tool metadata: risk, scope, and always_ask
 
 Rules see the tool name and arguments. Metadata sees what kind of tool it is.
 `ApprovalPolicy` consults both. Precedence matters: `:deny` and `:ask` rules
@@ -292,7 +334,7 @@ rules.classify(:send_email, { to: "bob@example.com" }) # => :allow
 > If you remember one sentence: `allow` means "you may skip the queue",
 > `always_ask` means "there is no queue-skipping for this tool".
 
-## 6. Resolve the ApprovalQueue
+## 7. Resolve the ApprovalQueue
 
 The queue holds pending actions in process memory. You submit, list, approve,
 or reject. The queue invokes its callback; the host decides how the approval
@@ -393,7 +435,7 @@ collaborator, so a project grant would have nowhere to live. Offer
 `:project` only through a host that provides the store — the app-server, in
 the paragraph above.
 
-## 7. What the host owns
+## 8. What the host owns
 
 The gem classifies and queues. Your app executes, pauses, resumes, and
 renders. Concretely, the host is responsible for:
@@ -413,7 +455,7 @@ renders. Concretely, the host is responsible for:
   that restores pending work must reconnect each action to its saved tool
   call; the queue snapshot alone cannot recreate host execution state.
 
-## 8. Safe defaults checklist
+## 9. Safe defaults checklist
 
 Start here, then relax deliberately:
 
@@ -435,7 +477,7 @@ Start here, then relax deliberately:
 7. Log every decision. Classification without an audit trail is not a safety
    story.
 
-## 9. What permissions does not do
+## 10. What permissions does not do
 
 To avoid surprises, the gem deliberately does not:
 
