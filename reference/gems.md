@@ -182,7 +182,7 @@ Service gems provide an authenticated client plus system-prompt metadata and err
 
 | Gem | Purpose |
 |---|---|
-| **[yamine](https://github.com/ask-rb/yamine)** | Stable named `https://<app>.localhost` URLs for Ruby development. Zero runtime dependencies. [Guide](/ask-docs/core/local) |
+| **[yamine](https://github.com/ask-rb/yamine)** | Stable named `https://<app>.localhost` URLs for Ruby development. Zero runtime dependencies. [Guide](/ask-docs/core/yamine) |
 | ask-local-rails (deprecated) | Rails integration for `ask-local` — superseded by `RAILS_DEVELOPMENT_HOSTS` injection in core. Moved to deprecated/. |
 
 ## Evaluation
