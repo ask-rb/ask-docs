@@ -93,6 +93,27 @@ blocked tool needs approval and `interaction/requestUserInput` when it needs
 input from the user — so your client can build approval and prompt flows into
 its own UI.
 
+### Durable resume and workspace context
+
+`session/resume` is built to survive a restart, so the client re-states the
+workspace it expects: nested under `workspace.workspacePath`, or at the top
+level as `workspacePath`. The server canonicalizes that path, hashes it, and
+verifies it against the hashed canonical identity recorded when the session
+was persisted — raw paths are never written to the store.
+
+- **Context matches** — the resume pins the session's tools back to that
+  workdir and restores the workspace's `project` approval grants from the
+  configured `ask-state-providers` backend, so project-scoped approvals
+  survive the restart (see
+  [Permissions — Approval scopes](/ask-docs/core/permissions#approval-scopes-in-ask-agent)).
+- **Context missing or mismatched** — the session resumes without project
+  scope and with no pinned workdir. Nothing is inferred from the server's
+  own working directory; re-send the correct workspace to get both back.
+
+Resuming a session that is still alive in the same process is unchanged: the
+in-memory session is returned as-is, with its tools and grants already in
+place.
+
 ## Clients
 
 Any client that speaks the app-server protocol can connect — including

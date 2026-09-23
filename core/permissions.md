@@ -192,6 +192,44 @@ the loop is `:ask_before_changes`. See
 [per-environment permissions](/ask-docs/rails/setup#per-environment-permissions)
 for how the Rails harness sets `env.mode`.
 
+### Harness environment modes
+
+`Ask::Ruby::Harness` turns that per-environment config into the session's
+approval mode. The `env.mode` for the running environment is forwarded to
+Ask Agent as `approval: { mode: ... }` when `agent_session` builds the
+session, so the policy from this section is what enforces the environment —
+you configure once and the same modes, queue, and metadata rules apply:
+
+<!-- docs-example: not-verified -->
+```ruby
+Ask::Ruby::Harness.configure do |config|
+  config.environment :production do |env|
+    env.mode = :read_only
+    env.allowed_commands = [/^bundle /]
+    env.denied_commands  = [/rm/, /dropdb/]
+  end
+end
+
+session = Ask::Ruby::Harness.agent_session
+# the session runs ApprovalPolicy with mode: :read_only
+```
+
+Three details matter in practice:
+
+* The command allow/deny filters are additional `RunCommand` checks, not
+  `PermissionRules`. They narrow that one tool on top of whatever the mode
+  and your rules already decide; every other tool is left alone.
+* `:ask_before_changes` is actionable, not advisory. Queued calls land in
+  `session.approval_queue.pending_actions`, and you resolve each id with
+  `queue.approve(id)` or `queue.reject(id)` — the same queue as section 6,
+  reached through the harness-built session.
+* `:read_only` never queues side effects: calls with a side-effecting
+  `side_effect_scope`, `:unknown` included, are blocked outright (section 5).
+
+An explicit mode that conflicts with the configured `env.mode` is an
+`ArgumentError`, not an override — the harness refuses to guess which one
+you meant.
+
 ## 5. Read tool metadata: risk, scope, and always_ask
 
 Rules see the tool name and arguments. Metadata sees what kind of tool it is.
@@ -334,6 +372,26 @@ and `SessionAdapter` snapshots / resume. Other hosts using
 grants by a hashed canonical workspace identity in its configured
 `ask-state-providers` backend. Without a workspace it offers only `once` and
 `session`, and rejects a project request instead of silently downgrading it.
+
+### Approval scopes in the AskAgent adapter
+
+The AskAgent adapter from `ask-coding-providers` (`Ask::CodingProviders`,
+registry name `:ask_agent`) answers the scope question for hosts that drive
+an ask-agent session through an adapter. It exposes two methods, and both
+apply the scopes the queue records:
+
+<!-- docs-example: not-verified -->
+```ruby
+adapter.approve_action(sid, action_id, scope: :once)    # this call only
+adapter.approve_action(sid, action_id, scope: :session) # this tool, this session
+adapter.approve_all(scope: :session)                    # drain the pending queue
+```
+
+`scope:` accepts `:once` or `:session`. `:project` is unsupported and
+rejected rather than downgraded: the adapter does not inject a project grant
+collaborator, so a project grant would have nowhere to live. Offer
+`:project` only through a host that provides the store — the app-server, in
+the paragraph above.
 
 ## 7. What the host owns
 
