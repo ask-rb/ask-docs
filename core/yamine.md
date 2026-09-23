@@ -102,30 +102,45 @@ yamine worktree clean                 # tear down everything already merged
 
 `add` lands the worktree beside the repo, copies the gitignored
 per-checkout config (`config/local.yml`, `config/local.secrets`,
-`config/master.key`, `config/credentials/*.key`), runs
-`bundle install`, **asks the app what databases it has** — one
-`bin/rails runner` probe resolves database.yml and credentials inside
-the app process, so yamine never parses config or touches a key — and
-provisions every database with schema: each name gains a
-collision-guarded per-worktree suffix, the test database is created and
-schema-prepared (so `rails test` runs as-is), and the claim records all
-names plus server coordinates. The next step is just `yamine start` in
-it. `clean` is the done-and-merged sweep: it never touches uncommitted
-work, and unmerged branches survive everything except `remove --force`
-(`git branch -d` refuses what git has not seen merged). `--dry-run`
-prints the plan before anything happens.
+`config/master.key`, and the development/test credential keys — never
+production/staging keys), runs `bundle install`, **asks the app what
+databases it has** — one `bin/rails runner` probe resolves database.yml
+and credentials inside the app process, so yamine never parses config
+or touches a key — and provisions every database with schema: each name
+gains a collision-guarded per-worktree suffix, the test database is
+created and schema-prepared (so `rails test` runs as-is), and the claim
+records all names plus server coordinates. It also writes the
+worktree's environment files — `.env` / `.env.development` (the
+development set: `DATABASE_URL` plus one `NAME_DATABASE_URL` per
+configuration) and `.env.test` (the test URL under
+`PRIMARY_DATABASE_URL`) — mode 0600, git-excluded automatically. The
+next step is just `yamine start` in it. `clean` is the done-and-merged
+sweep: it never touches uncommitted work, and unmerged branches survive
+everything except `remove --force` (`git branch -d` refuses what git
+has not seen merged). `--dry-run` prints the plan before anything
+happens.
 
 Boot injects `DATABASE_URL` plus one `NAME_DATABASE_URL` per database
 configuration (Rails' own convention), so every supervised process is
 isolated. **Hand-run commands** (`rails console`, `rails test`,
-`db:migrate` in your own shell) read your environment, not yamine's —
-opt the app in once with the `.yamine-db-suffix` hook at the top of
-`config/database.yml` (copy it from the
-[yamine README](https://github.com/ask-rb/yamine#multi-database-apps)).
-`worktree add` writes the token and confirms the hook with
-`database.yml reads .yamine-db-suffix`; without the hook it warns
-exactly what the hand-run gap is, while supervised boots stay isolated
-via env either way.
+`db:migrate` in your own shell) read the `.env` files instead — which
+takes two one-time things, both boring:
+
+1. **Component-form development/test config** — `database:` keys, never
+   `url:`. A `url:` key (the usual credentials-driven style) takes
+   precedence over the *entire* environment: Rails skips URL-shaped
+   configs when merging environment variables, so nothing injected or
+   loaded can redirect them. Staging/production URLs are untouched by
+   yamine either way. See the
+   [yamine README](https://github.com/ask-rb/yamine#multi-database-apps)
+   for the shape.
+2. **A dotenv loader** — `gem "dotenv-rails", groups: [:development, :test]`
+   (any dotenv loader works).
+
+`worktree add` verifies both and prints
+`.env loaded — hand-run commands are isolated too`; a warning names
+exactly which requirement is missing and the fix. There is zero
+yamine-specific code in `database.yml`.
 
 ```bash
 yamine db describe    # what this checkout resolves to (passwords masked)
@@ -135,8 +150,8 @@ yamine db create      # re-probe + provision (after the app grows a database)
 
 Teardown drops the entire set as a unit — including from an orphaned
 claim whose directory is already gone, without booting the app — and
-never leaves a suffixed test database behind. The main checkout has no
-marker file: its databases are its databases, untouched.
+never leaves a suffixed test database behind. The main checkout never
+gets `.env` files: its databases are its databases, untouched.
 
 ## Commands
 
