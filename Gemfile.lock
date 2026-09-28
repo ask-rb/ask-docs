@@ -91,7 +91,7 @@ GEM
       rails_autolink (>= 1.0.2)
     ask-acp (0.1.2)
       json
-    ask-ag-ui (0.1.0)
+    ask-ag-ui (0.1.1)
       ag-ui-protocol (~> 0.2)
     ask-agent (0.36.0)
       ask-core (>= 0.1)
@@ -591,7 +591,7 @@ CHECKSUMS
   ag-ui-protocol (0.2.0) sha256=858906fb7283335bbba47ba8bb19351690d5401653e32142182c6e293b9e7ac1
   ask (0.5.3) sha256=1c56fca41086629c95d0383f0b61119106badf4f7067d3c4e2675f0c5390115b
   ask-acp (0.1.2) sha256=dbc69c6493676b56c5abc78bf664e91b55691120eb1aa5a46acf91eaada7e2a3
-  ask-ag-ui (0.1.0) sha256=1dcd59df5c131f02fccfea12dbe7c75d04db1f80250e8aa0336694c569187c41
+  ask-ag-ui (0.1.1) sha256=da5999b2a4492fa79156521d5625241c5c6988d9624db500ff45d1992afb0058
   ask-agent (0.36.0) sha256=f8b11d00d0ffd5693f1be0a112beb9b3f9f11bccd1b6ed3f8eebc2184758ebd5
   ask-auth (0.2.3) sha256=a50c217cdaeb2a9174ef90fc0640764044519006113fff5e1b80acdd70e6ed9f
   ask-core (0.12.0) sha256=b3e0f4ed31fb27342b45113b06916a093bf2f93032c6650d39b6249bb2b149af

@@ -188,13 +188,13 @@ JSON.parse(body.first)
 #       {"identity" =>
 #         {"name" => "assistant",
 #          "description" => "Docs helper",
-#          "version" => "0.1.0"},
+#          "version" => "0.1.1"},
 #        "transport" => {"streaming" => true},
 #        "tools" => {"supported" => true, "clientProvided" => true},
 #        "reasoning" => {"supported" => true, "streaming" => true}},
 #      "description" => "Docs helper"}},
 #  "mode" => "sse",
-#  "version" => "0.1.0"}
+#  "version" => "0.1.1"}
 ```
 
 The default capabilities advertise exactly what the emitter drives: SSE transport, client-provided tools, and streaming reasoning. Pass your own `AgUiProtocol::Core::Capabilities::AgentCapabilities` to override them, or `agent_class_name:` to name a real class on `/info`.
@@ -205,7 +205,7 @@ The default capabilities advertise exactly what the emitter drives: SSE transpor
 
 Everything the emitter does not recognize rides a single `CUSTOM` frame: `name` is the event's class name, and `value` is its `to_h`. That is how an app's own state vocabulary — todos, plans, compaction — reaches a frontend without the gem knowing anything about it.
 
-The `name` is the **demodulized** class name: the last segment, so `MyApp::TodoUpdated` arrives as `TodoUpdated`. The class name is also the only lever. If your frontend expects a `"todo.updated"` frame, you name your event class that way — ask-ag-ui 0.1.0 has no separate `name:` option on `Emitter.new`:
+The `name` is the **demodulized** class name: the last segment, so `MyApp::TodoUpdated` arrives as `TodoUpdated`. That class name is the default, not the only lever — pass `custom_names: { "TodoUpdated" => "todo.updated" }` to `Emitter.new`, or override the public `Emitter#custom_name(event)`, and anything you leave unnamed still falls back to the class name:
 
 ```ruby
 require "ask-ag-ui"
