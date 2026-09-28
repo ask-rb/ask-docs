@@ -30,6 +30,7 @@ The building blocks of the ask-rb ecosystem. Each component is a standalone gem 
 | [Session Protocol](/ask-docs/core/session-protocol) | Canonical wire contract for ask sessions — events, interactions, versioning |
 | [Terminal](/ask-docs/core/terminal) | Terminal thin client for the session protocol — the `ask` TUI |
 | [ACP Client & Server](/ask-docs/core/acp) | Agent Client Protocol — JSON-RPC 2.0 over stdio: drive coding agents or host your own |
+| [AG-UI Protocol](/ask-docs/core/ag-ui) | Agent-User Interaction protocol over SSE — emitter plus a mountable Rack server for chat frontends |
 | [RAG Pipeline](/ask-docs/core/rag) | Document loaders, text splitters, vector stores, MMR — full RAG pipeline |
 | [Decisions](/ask-docs/core/decisions) | Jev-scored decisions — route, filter, guard, compact with calibrated probabilities |
 | [Token Usage](/ask-docs/core/token-usage) | Token counting, pricing, wallet engine, ledger — usage-based billing |

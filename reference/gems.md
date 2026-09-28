@@ -32,6 +32,7 @@ Start from what you're building, not from the gem list. Every gem declares its o
 | Bill for token usage | `ask-tokens` (+ `ask-tokens-rails` for ActiveRecord) |
 | Give every app a stable `https://<app>.localhost` URL | `yamine` |
 | Expose the agent over the session protocol | `ask-app-server` + `ask-session-protocol` |
+| Serve the agent to a chat frontend (assistant-ui, CopilotKit) over AG-UI | `ask-ag-ui` |
 | Drive the agent from a terminal | `ask-terminal` |
 | Monitor cost and latency in production | `ask-monitoring` (+ `ask-observability` for Prometheus/OTel) |
 | Trace requests with OpenTelemetry | `ask-opentelemetry` |
@@ -121,6 +122,7 @@ Don't add gems you don't need. `ask-agent` alone gets you a working agent; every
 |---|---|
 | **[ask-session-protocol](https://github.com/ask-rb/ask-session-protocol)** | Canonical wire protocol for ask sessions: events, interactions, methods, versioning, JSON Schema. [Guide](/ask-docs/core/session-protocol) |
 | **[ask-terminal](https://github.com/ask-rb/ask-terminal)** | Terminal client for the session protocol (command `ask`). Spawns or attaches to the host. [Guide](/ask-docs/core/terminal) |
+| **[ask-ag-ui](https://github.com/ask-rb/ask-ag-ui)** | AG-UI (Agent-User Interaction) protocol over SSE: an `Emitter` seam and a mountable Rack server for assistant-ui, CopilotKit, and other chat frontends. [Guide](/ask-docs/core/ag-ui) |
 
 ## Instrumentation & Observability
 

@@ -2,6 +2,19 @@
 
 ## [Unreleased]
 
+### Added
+
+- **ask-ag-ui guide** (ask-ag-ui 0.1.0). The AG-UI (Agent-User Interaction)
+  protocol server for the ecosystem: `Ask::AGUI::Emitter` turns duck-typed
+  agent events into AG-UI SSE frames, and `Ask::AGUI::Server` is the mountable
+  Rack app serving `GET /info`, `POST /agent/:id/run`, `/connect`, and
+  `/stop/:thread_id`. Documents the event vocabulary, driving the emitter
+  from your own transport, the endpoint each route answers, and the two
+  traps: a `CUSTOM` frame is named after the event's demodulized class name,
+  and the in-memory run store only serves a single process. Added
+  `ask-ag-ui` to the Gemfile so the guide's examples verify in CI. See
+  [core/ag-ui](/ask-docs/core/ag-ui).
+
 ### Changed
 
 - **Permission extraction → ask-permissions**. `PermissionRules`,
